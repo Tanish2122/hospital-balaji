@@ -1,0 +1,512 @@
+{
+  "doctors": [
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Shitiz Agarwal",
+      "url": "https://balajihospitaljaipur.com",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com/orthopedic/spine-treatment-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Ramesh Agarwal M",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-fracture-treatment-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Ramesh Agarwal M",
+      "url": "https://balajihospitaljaipur.com/orthopedic/hip-replacement-hospital-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Ramesh Agarwal M",
+      "url": "https://balajihospitaljaipur.com/orthopedic/shoulder-arthroscopy-replacement-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Ramesh Agarwal M",
+      "url": "https://balajihospitaljaipur.com/orthopedic/hand-upper-limb-surgery-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Ramesh Agarwal M",
+      "url": "https://balajihospitaljaipur.com/orthopedic/ankle-replacement-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com/orthopedic/ankle-replacement-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Ramesh Agarwal M",
+      "url": "https://balajihospitaljaipur.com/orthopedic/joint-pain-treatment-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com/orthopedic/joint-pain-treatment-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Alok Maheshwari",
+      "url": "https://balajihospitaljaipur.com/orthopedic/plastic-vascular-surgery-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Alok Maheshwari",
+      "url": "https://balajihospitaljaipur.com/orthopedic/plastic-vascular-surgery-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Sheela Agarwal",
+      "url": "https://balajihospitaljaipur.com/orthopedic/physiotherapy-and-rehabilitation-centre-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Sheela Agarwal",
+      "url": "https://balajihospitaljaipur.com/orthopedic/physiotherapy-and-rehabilitation-centre-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-orthopedic-hospital-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-orthopedic-hospital-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-sports-medicine-hospital-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Ramesh Agarwal is Trusted for Sports Injuries",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-sports-medicine-hospital-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-knee-replacement-hospital-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-knee-replacement-hospital-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Alok Maheshwari",
+      "url": "https://balajihospitaljaipur.com/ent/best-ear-surgery-hospital-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Alok Maheshwari",
+      "url": "https://balajihospitaljaipur.com/ent/best-ear-surgery-hospital-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Alok Maheshwari",
+      "url": "https://balajihospitaljaipur.com/ent/best-nose-surgery-hospital-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Alok Maheshwari",
+      "url": "https://balajihospitaljaipur.com/ent/best-nose-surgery-hospital-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Alok Maheshwari",
+      "url": "https://balajihospitaljaipur.com/ent/best-throat-surgery-hospital-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Alok Maheshwari",
+      "url": "https://balajihospitaljaipur.com/ent/best-throat-surgery-hospital-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Alok Maheshwari",
+      "url": "https://balajihospitaljaipur.com/speciality/kidney-stones-treatment-in-jaipur",
+      "specialty": ""
+    },
+    {
+      "name": "Dr. Alok Maheshwari",
+      "url": "https://balajihospitaljaipur.com/speciality/kidney-stones-treatment-in-jaipur",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com/team",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Shitiz Agarwal",
+      "url": "https://balajihospitaljaipur.com/team",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Ramesh Agarwal",
+      "url": "https://balajihospitaljaipur.com/doctor-detail/69b259bad37a8",
+      "specialty": "Specialist"
+    },
+    {
+      "name": "Dr. Shitiz Agarwal",
+      "url": "https://balajihospitaljaipur.com/doctor-detail/69b25b84889d1",
+      "specialty": "Specialist"
+    }
+  ],
+  "services": [
+    {
+      "name": "Trauma &amp; Fractures",
+      "url": "https://balajihospitaljaipur.com/orthopedic",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Paediatric Orthopaedics Hospital in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/paediatric-orthopaedics-treatment-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Best Spine Hospital in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/spine-treatment-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Best Fracture Treatment in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-fracture-treatment-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Hip Replacement Treatment at  Hospital",
+      "url": "https://balajihospitaljaipur.com/orthopedic/hip-replacement-hospital-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Shoulder Arthroscopy Replacement in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/shoulder-arthroscopy-replacement-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Hand &amp; Upper Limb Surgery in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/hand-upper-limb-surgery-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Ankle Replacement in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/ankle-replacement-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Joint Pain Treatment in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/joint-pain-treatment-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Plastic &amp; Vascular Surgery in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/plastic-vascular-surgery-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Physiotherapy and Rehabilitation Centre in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/physiotherapy-and-rehabilitation-centre-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Best Orthopedic Hospital in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-orthopedic-hospital-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Best Sports Medicine Hospital in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-sports-medicine-hospital-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Best Knee Replacement Hospital in Jaipur",
+      "url": "https://balajihospitaljaipur.com/orthopedic/best-knee-replacement-hospital-in-jaipur",
+      "category": "orthopedic"
+    },
+    {
+      "name": "Ear surgery",
+      "url": "https://balajihospitaljaipur.com/ent",
+      "category": "ent"
+    },
+    {
+      "name": "Best Ear Surgery Hospital in Jaipur",
+      "url": "https://balajihospitaljaipur.com/ent/best-ear-surgery-hospital-in-jaipur",
+      "category": "ent"
+    },
+    {
+      "name": "Best Nose Surgery Hospital in Jaipur",
+      "url": "https://balajihospitaljaipur.com/ent/best-nose-surgery-hospital-in-jaipur",
+      "category": "ent"
+    },
+    {
+      "name": "Best Throat Surgery Hospital in Jaipur",
+      "url": "https://balajihospitaljaipur.com/ent/best-throat-surgery-hospital-in-jaipur",
+      "category": "ent"
+    },
+    {
+      "name": "Kidney Stones Treatment in Jaipur",
+      "url": "https://balajihospitaljaipur.com/speciality/kidney-stones-treatment-in-jaipur",
+      "category": "speciality"
+    }
+  ],
+  "facilities": [
+    "Our Facilities",
+    "Explore Our Best Facilities",
+    "Reception Area",
+    "Surgery Ward",
+    "NICU",
+    "Pediatric OPD",
+    "Gynaecology Ward",
+    "Useful Link",
+    "Contact Information",
+    "Location"
+  ],
+  "departments": [],
+  "contact": {
+    "phones": [
+      "+91 7276229049"
+    ],
+    "emails": [
+      "info@balajihospitalaljaipur.com",
+      "demo@gmail.com"
+    ],
+    "addresses": [],
+    "workingHours": ""
+  },
+  "gallery": [
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/logo/6864d3c756898.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/6216980798gallery-6.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/0686927981gallery-5.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/2996168706gallery-4.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/0916786692gallery-3.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/9961017689gallery-5.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/6607189991gallery-2.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/9197106986gallery-1.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/6896080010gallery-6.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/0600961088gallery-4.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/6600890801gallery-2.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/img1.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/7178276376IMG20230427121131.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/img2.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/img3.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/img4.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/15186611236.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/81631565115.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/28395161616.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/16361814257.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/63811416558.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/51716116389.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/683185113610.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/671591813611.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/106168936112.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/612383616113.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/138116763614.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/651611358615.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/866161813616.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/811611836617.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/619663188118.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/760118116319.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/482171366120.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/736861371121.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/6192846401images.jpg",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/5527579126dressingRoom2-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/2679257515generalWard1-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/9751225657generalWard-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/6729552157ot2-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/5729652157ot-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/9526577152medicalStore1-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/5965221775reception1-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/6559512277xRay3-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/5927156275xRay2-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/9215725576xRay1-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/2956725571digitalXray-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/2756915257physiotherapy3-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/7755162295physiotherapy2-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/5926721575physiotherapy1-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/6229751557physiotherapy-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/5722567159outdoor-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/7001541470IMG_20200831_185253.webp",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/46807170755722567159outdoor-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/86077041572679257515generalWard1-small.png",
+      "alt": ""
+    },
+    {
+      "src": "https://balajihospitaljaipur.com/uploads/gallery/9016779965blog-img4.jpg",
+      "alt": ""
+    }
+  ]
+}
