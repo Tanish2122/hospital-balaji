@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Phone, Menu, X, ChevronRight, Calendar } from "lucide-react";
 import Logo from "../ui/Logo";
 
@@ -17,8 +18,14 @@ const navLinks = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Hide header on doctor dashboard pages
+  if (pathname?.startsWith("/doctor")) {
+    return null;
+  }
 
   useEffect(() => {
     const handleScroll = () => {
