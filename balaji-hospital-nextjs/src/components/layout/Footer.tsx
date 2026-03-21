@@ -7,9 +7,7 @@ import { MapPin, Phone, Mail, Facebook, Instagram, Youtube, HeartPulse } from "l
 export default function Footer() {
   const pathname = usePathname();
 
-  if (pathname?.startsWith("/doctor")) {
-    return null;
-  }
+  if (pathname === '/doctor' || pathname?.startsWith('/doctor/')) return null;
 
   return (
     <footer className="bg-slate-900 pt-24 pb-12 text-slate-400">

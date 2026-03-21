@@ -35,6 +35,7 @@ export default function AppointmentsPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [dateFilter, setDateFilter] = useState('')
   const [doctorId, setDoctorId] = useState('')
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     const fetchDoctorAndAppointments = async () => {
@@ -43,26 +44,30 @@ export default function AppointmentsPage() {
 
       const { data: doctor } = await supabase
         .from('doctors')
-        .select('id')
+        .select('id, is_admin')
         .eq('auth_id', user.id)
         .single()
 
       if (!doctor) return
       setDoctorId(doctor.id)
-      fetchAppointments(doctor.id)
+      setIsAdmin(doctor.is_admin || false)
+      fetchAppointments(doctor.id, doctor.is_admin || false)
     }
 
     fetchDoctorAndAppointments()
   }, [])
 
-  const fetchAppointments = async (docId: string) => {
+  const fetchAppointments = async (docId: string, adminStatus: boolean) => {
     setLoading(true)
     let query = supabase
       .from('appointments')
-      .select('*')
-      .eq('doctor_id', docId)
+      .select('*, doctors(name)')
       .order('appointment_date', { ascending: false })
       .order('appointment_time', { ascending: false })
+
+    if (!adminStatus) {
+      query = query.eq('doctor_id', docId)
+    }
 
     if (statusFilter !== 'all') {
       query = query.eq('status', statusFilter)
@@ -81,7 +86,7 @@ export default function AppointmentsPage() {
 
   useEffect(() => {
     if (doctorId) {
-      fetchAppointments(doctorId)
+      fetchAppointments(doctorId, isAdmin)
     }
   }, [statusFilter, dateFilter])
 
@@ -166,6 +171,7 @@ export default function AppointmentsPage() {
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600 uppercase tracking-wider">Patient</th>
+                {isAdmin && <th className="px-6 py-4 text-sm font-semibold text-slate-600 uppercase tracking-wider">Specialist</th>}
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600 uppercase tracking-wider">Date & Time</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600 uppercase tracking-wider text-right">Actions</th>
@@ -196,13 +202,18 @@ export default function AppointmentsPage() {
                           {app.patient_name.charAt(0)}
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-800">{app.patient_name}</p>
+                          <p className="font-semibold text-slate-800 uppercase tracking-tight">{app.patient_name}</p>
                           <p className="text-xs text-slate-500 flex items-center gap-1">
                             <Phone className="w-3 h-3" /> {app.phone}
                           </p>
                         </div>
                       </div>
                     </td>
+                    {isAdmin && (
+                      <td className="px-6 py-4">
+                        <p className="text-sm font-bold text-slate-700">Dr. {(app as any).doctors?.name || 'Unassigned'}</p>
+                      </td>
+                    )}
                     <td className="px-6 py-4">
                       <div className="space-y-1">
                         <p className="text-sm font-medium text-slate-700 flex items-center gap-1">

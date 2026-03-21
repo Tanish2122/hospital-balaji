@@ -27,7 +27,7 @@ export default function DashboardLayout({
       // Verify if the user is a doctor
       const { data: doctor } = await supabase
         .from('doctors')
-        .select('id')
+        .select('id, is_admin')
         .eq('auth_id', session.user.id)
         .single()
 

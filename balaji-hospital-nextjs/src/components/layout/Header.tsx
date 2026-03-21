@@ -22,11 +22,6 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Hide header on doctor dashboard pages
-  if (pathname?.startsWith("/doctor")) {
-    return null;
-  }
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -37,6 +32,8 @@ export default function Header() {
   }, []);
 
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
+
+  if (pathname === '/doctor' || pathname?.startsWith('/doctor/')) return null;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
