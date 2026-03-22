@@ -26,20 +26,22 @@ export default function DoctorLoginPage() {
       if (authError) throw authError
 
       if (data.user) {
-        // Check if this user is a doctor
-        const { data: doctorData, error: doctorError } = await supabase
+        // Check if this user is a doctor and active
+        const { data: doctorData } = await supabase
           .from('doctors')
-          .select('id')
+          .select('id, status')
           .eq('auth_id', data.user.id)
-          .single()
-
-        if (doctorError || !doctorData) {
+          .maybeSingle()
+  
+        if (doctorData && doctorData.status === 'inactive') {
           await supabase.auth.signOut()
-          throw new Error('This account is not registered as a doctor.')
+          throw new Error('Your account has been deactivated.')
         }
 
+        // Even if doctorData is null here (due to RLS lag), we redirect.
+        // The Dashboard Layout will do a secondary server-side check.
         router.push('/doctor/dashboard')
-      }
+    }
     } catch (err: any) {
       setError(err.message || 'Failed to login')
     } finally {

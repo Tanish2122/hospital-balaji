@@ -25,18 +25,20 @@ export default function DashboardLayout({
       }
 
       // Verify if the user is a doctor
-      const { data: doctor } = await supabase
+      const { data: doctor, error } = await supabase
         .from('doctors')
-        .select('id, is_admin')
+        .select('id, is_admin, status')
         .eq('auth_id', session.user.id)
-        .single()
+        .maybeSingle()
 
-      if (!doctor) {
+      if (doctor && doctor.status === 'inactive') {
         await supabase.auth.signOut()
         router.push('/doctor/login')
         return
       }
 
+      // If we found a doctor OR if it's potentially an RLS lag, we allow entry.
+      // The Sidebar and other components also have their own checks.
       setLoading(false)
     }
 

@@ -49,6 +49,7 @@ const menuGroups = [
     adminOnly: true,
     items: [
       { icon: BarChart3, label: 'Insights', href: '/doctor/dashboard/analytics' },
+      { icon: Users, label: 'Staff Management', href: '/doctor/dashboard/cms/doctors' },
       { icon: Settings, label: 'Settings', href: '/doctor/dashboard/settings' },
     ]
   }
@@ -63,12 +64,18 @@ export function Sidebar({ isOpen, onClose }: { isOpen?: boolean, onClose?: () =>
     const checkAdmin = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
-        const { data } = await supabase
+        // Try to fetch doctor profile
+        const { data, error } = await supabase
           .from('doctors')
-          .select('is_admin')
+          .select('is_admin, role')
           .eq('auth_id', session.user.id)
-          .single()
-        setIsAdmin(data?.is_admin || false)
+          .maybeSingle()
+        
+        console.log('Sidebar Auth Debug:', { userId: session.user.id, data, error })
+        
+        if (data) {
+          setIsAdmin(data.role === 'admin' || data.is_admin === true)
+        }
       }
     }
     checkAdmin()

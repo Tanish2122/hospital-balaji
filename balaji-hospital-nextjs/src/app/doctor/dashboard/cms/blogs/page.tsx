@@ -25,6 +25,10 @@ interface Blog {
   author: string
   category: string
   image: string | null
+  featured_image_url: string | null
+  excerpt: string
+  is_published: boolean
+  published_at: string
   created_at: string
 }
 
@@ -57,7 +61,11 @@ export default function BlogsCMS() {
     const blogData = {
       ...currentBlog,
       slug: currentBlog?.title?.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
-      author: currentBlog?.author || 'Balaji Hospital'
+      author: currentBlog?.author || 'Balaji Hospital',
+      is_published: true,
+      published_at: new Date().toISOString(),
+      featured_image_url: currentBlog?.image || null,
+      excerpt: currentBlog?.excerpt || currentBlog?.content?.substring(0, 150) + '...'
     }
 
     let error
@@ -71,6 +79,9 @@ export default function BlogsCMS() {
       fetchBlogs()
       setIsModalOpen(false)
       setCurrentBlog(null)
+    } else {
+      console.error('Save error:', error)
+      alert('Error saving article: ' + (error.message || 'Unknown error'))
     }
     setSaving(false)
   }
@@ -215,6 +226,17 @@ export default function BlogsCMS() {
                     placeholder="e.g. Health Tips"
                     />
                 </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Excerpt (Short Summary)</label>
+                <textarea
+                  rows={2}
+                  value={currentBlog?.excerpt || ''}
+                  onChange={(e) => setCurrentBlog({ ...currentBlog, excerpt: e.target.value })}
+                  className="w-full px-4 py-2 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium resize-none"
+                  placeholder="A brief summary for the blog list..."
+                />
               </div>
 
               <div className="space-y-1">
