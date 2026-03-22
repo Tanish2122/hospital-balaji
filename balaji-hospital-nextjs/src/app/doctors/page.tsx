@@ -26,7 +26,7 @@ async function getDoctors() {
         designation,
         departments(name)
       `)
-      .eq('is_active', true);
+      .eq('status', 'active');
 
     if (error || !data || data.length === 0) {
       // Fallback to local static data
