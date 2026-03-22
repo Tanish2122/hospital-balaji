@@ -138,7 +138,7 @@ export default async function DoctorsPage() {
                 Want to join our <br /> medical team?
               </h2>
               <p className="text-medical-100 text-lg mb-8 max-w-lg">
-                We are always looking for passionate healthcare professionals to join our family at Balaji Hospital.
+                We are always looking for passionate healthcare professionals to join our family at Balaji Hospital & Orthopaedic Centre.
               </p>
               <Link
                 href="/careers"

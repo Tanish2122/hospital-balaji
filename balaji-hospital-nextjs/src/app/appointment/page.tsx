@@ -3,8 +3,8 @@ import Container from "@/components/ui/Container";
 import AppointmentController from "@/components/appointment/AppointmentController";
 
 export const metadata = {
-  title: "Book an Appointment | Balaji Cure & Care Hospital",
-  description: "Schedule your visit at Balaji Hospital. Choose between Emergency and Non-Emergency appointment flows.",
+  title: "Book an Appointment | Balaji Hospital & Orthopaedic Centre",
+  description: "Schedule your visit at Balaji Hospital & Orthopaedic Centre. Choose between Emergency and Non-Emergency appointment flows.",
 };
 
 export default function AppointmentPage() {

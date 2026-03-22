@@ -4,8 +4,8 @@ import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import ContactForm from "@/components/ContactForm";
 
 export const metadata = {
-  title: "Contact Us | Balaji Cure & Care Hospital",
-  description: "Get in touch with Balaji Hospital Jaipur. Reach us via phone, email, or visit our multispeciality facility in Jaipur.",
+  title: "Contact Us | Balaji Hospital & Orthopaedic Centre",
+  description: "Get in touch with Balaji Hospital & Orthopaedic Centre, Jaipur. Reach us via phone, email, or visit our facility in Jaipur.",
 };
 
 const ContactPage = () => {
@@ -71,8 +71,11 @@ const ContactPage = () => {
               <div>
                 <div className="text-sm font-bold text-slate-400 mb-1 uppercase tracking-wider">Our Location</div>
                 <address className="text-slate-900 font-bold not-italic">
-                  27, Ratan Nagar, Dher Ke Balaji, Sikar Road, Jaipur, Rajasthan 302039
+                  27, Ratan Nagar, Dher Ke Balaji, Sikar Road, Jaipur, Rajasthan. 302039
                 </address>
+                <p className="text-xs text-red-600 font-bold mt-2 uppercase tracking-tight italic">
+                  Note: We do not have any branches anywhere else.
+                </p>
               </div>
             </div>
           </div>

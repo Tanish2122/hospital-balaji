@@ -61,7 +61,7 @@ export default function BlogsCMS() {
     const blogData = {
       ...currentBlog,
       slug: currentBlog?.title?.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
-      author: currentBlog?.author || 'Balaji Hospital',
+      author: currentBlog?.author || 'Balaji Hospital & Orthopaedic Centre',
       is_published: true,
       published_at: new Date().toISOString(),
       featured_image_url: currentBlog?.image || null,

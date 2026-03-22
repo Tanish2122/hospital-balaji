@@ -84,7 +84,7 @@ export default function Contact() {
               <ContactInfoCard 
                 icon={MapPin} 
                 title="Address" 
-                content="27, Ratan Nagar, Dher Ke Balaji, Sikar Road, Jaipur, RAJ. 302039"
+                content="27, Ratan Nagar, Dher Ke Balaji, Sikar Road, Jaipur, Rajasthan. 302039 (No branches anywhere else)"
                 color="bg-medical-100 text-medical-600"
               />
               <ContactInfoCard 
@@ -242,11 +242,11 @@ export default function Contact() {
             </div>
             <div>
               <h4 className="text-xl font-bold text-slate-900 leading-tight">Find us on Maps</h4>
-              <p className="text-slate-600 font-medium">Located on Sirsi Road, Jaipur</p>
+              <p className="text-slate-600 font-medium">Located on Sikar Road, Jaipur</p>
             </div>
           </div>
           <a 
-            href="https://maps.google.com/?q=Balaji+Cure+Care+Hospital+Jaipur" 
+            href="https://maps.google.com/?q=Balaji+Hospital+%26+Orthopaedic+Center+Jaipur" 
             target="_blank" 
             className="bg-white hover:bg-slate-50 text-slate-900 px-10 py-5 rounded-2xl font-black flex items-center gap-3 transition-all border border-slate-200 shadow-sm"
           >

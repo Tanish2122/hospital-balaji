@@ -19,9 +19,10 @@ export default function Footer() {
               <div className="w-10 h-10 bg-medical-600 rounded-lg flex items-center justify-center text-white">
                 <HeartPulse className="w-6 h-6" />
               </div>
-              <div className="flex flex-col">
-                <span className="text-lg font-display font-bold text-white leading-none">Balaji Cure & Care</span>
-                <span className="text-[10px] text-medical-400 font-bold uppercase tracking-wider mt-0.5">Multispeciality Hospital</span>
+              <div className="flex flex-col text-left">
+                <span className="text-lg font-display font-bold text-white leading-none">Balaji Hospital</span>
+                <span className="text-[10px] text-medical-400 font-bold uppercase tracking-wider mt-0.5">& Orthopaedic Centre</span>
+                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.15em] mt-0.5">Serving Since 1996</span>
               </div>
             </Link>
             <p className="text-sm leading-relaxed max-w-xs">
@@ -97,7 +98,7 @@ export default function Footer() {
                 <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center shrink-0">
                   <MapPin className="w-5 h-5 text-medical-500" />
                 </div>
-                <span>27, Ratan Nagar, Dher Ke Balaji, Sikar Road, Jaipur RAJ. 302039</span>
+                <span>27, Ratan Nagar, Dher Ke Balaji, Sikar Road, Jaipur, Rajasthan. 302039</span>
               </li>
               <li className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center shrink-0">
@@ -117,7 +118,8 @@ export default function Footer() {
 
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-sm">
-            © {new Date().getFullYear()} Balaji Hospital & Orthopaedic Centre. All rights reserved.
+            © {new Date().getFullYear()} Balaji Hospital & Orthopaedic Centre. All rights reserved. <br className="md:hidden" />
+            <span className="text-medical-400 font-bold ml-0 md:ml-4">Single Location Hospital — No Branches Anywhere Else</span>
           </p>
           <div className="flex gap-8 text-sm">
             <Link href="/contact" className="hover:text-white transition-colors">Privacy Policy</Link>

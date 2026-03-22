@@ -15,8 +15,9 @@ export default function Logo({ className = "" }: { className?: string }) {
         />
       </div>
       <div className="flex flex-col">
-        <span className="text-lg font-display font-bold text-slate-900 leading-none">Balaji Cure & Care</span>
-        <span className="text-[10px] text-medical-600 font-bold uppercase tracking-wider mt-0.5">Multispeciality Hospital</span>
+        <span className="text-lg font-display font-bold text-slate-900 leading-none">Balaji Hospital</span>
+        <span className="text-[10px] text-medical-600 font-bold uppercase tracking-wider mt-0.5">& Orthopaedic Centre</span>
+        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.15em] mt-0.5">Serving Since 1996</span>
       </div>
     </Link>
   );
