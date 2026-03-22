@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Instagram, Facebook, Youtube, Play, Heart, MessageCircle, Share2, ExternalLink, ThumbsUp, MessageSquare } from "lucide-react";
 import Container from "../ui/Container";
+import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 const instagramPosts = [
   {
@@ -68,6 +71,55 @@ const facebookPost = {
 };
 
 export default function SocialMedia() {
+  const [posts, setPosts] = useState(instagramPosts);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchLiveFeed() {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('key', 'social_feed')
+        .single();
+
+      const config = data?.value as any;
+      console.log('SocialMedia Social Config:', config);
+      
+      if (config?.type === 'live' && config?.instagram_url) {
+        setLoading(true);
+        try {
+          console.log('SocialMedia Fetching from:', config.instagram_url);
+          const res = await fetch(config.instagram_url);
+          const json = await res.json();
+          console.log('SocialMedia Data Received:', json);
+          
+          // Map Behold.so or standard API format
+          const rawPosts = json.posts || json.data || json;
+          if (Array.isArray(rawPosts)) {
+            const formatted = rawPosts.slice(0, 4).map((p: any) => ({
+              id: p.id || Math.random().toString(),
+              image: p.media_url || p.image || p.thumbnail_url || p.url,
+              likes: p.like_count || p.likes || 'Live',
+              comments: p.comments_count || p.comments || '...',
+              type: (p.media_type || p.type || '').toLowerCase().includes('video') ? 'video' : 'image',
+              caption: p.caption || p.text || 'Latest from Instagram',
+              permalink: p.permalink || p.link
+            }));
+            console.log('SocialMedia Formatted Posts:', formatted);
+            setPosts(formatted);
+          }
+        } catch (err) {
+          console.error("Failed to fetch live social feed:", err);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        console.log('SocialMedia Live Sync is DISABLED or URL is missing.');
+      }
+    }
+    fetchLiveFeed();
+  }, []);
+
   return (
     <section id="social" className="py-24 bg-white relative overflow-hidden">
       {/* Background Decorative Elements */}
@@ -83,7 +135,7 @@ export default function SocialMedia() {
                 <span className="w-8 h-0.5 bg-medical-600" />
                 Social Feed
               </div>
-              <h2 className="text-4xl lg:text-5xl font-display font-bold text-slate-900 mb-6">
+              <h2 className="text-4xl lg:text-5xl font-display font-bold text-slate-900 mb-6 font-poppins">
                 Real Stories, <br />
                 <span className="text-gradient">Real Connections</span>
               </h2>
@@ -98,19 +150,19 @@ export default function SocialMedia() {
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] p-1 shadow-lg">
                     <div className="w-full h-full rounded-full bg-white p-0.5">
-                      <div className="w-full h-full rounded-full bg-medical-600 flex items-center justify-center text-white font-bold text-xl">
+                      <div className="w-full h-full rounded-full bg-medical-600 flex items-center justify-center text-white font-bold text-xl font-poppins">
                         B
                       </div>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900 leading-none flex items-center gap-1.5">
+                    <h4 className="font-bold text-slate-900 leading-none flex items-center gap-1.5 font-poppins">
                       balajihospitaljaipur
                       <span className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                         <svg className="w-2.5 h-2.5 text-white fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                       </span>
                     </h4>
-                    <p className="text-xs text-slate-500 mt-1">2.4k followers • 156 posts</p>
+                    <p className="text-xs text-slate-500 mt-1">2.4k followers • {loading ? '...' : '156+'} posts</p>
                   </div>
                 </div>
                 <a 
@@ -124,41 +176,49 @@ export default function SocialMedia() {
               </div>
 
               <div className="grid grid-cols-2 gap-6">
-                {instagramPosts.map((post, idx) => (
+                {posts.map((post: any, idx) => (
                   <motion.div
                     key={post.id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
-                    className="group relative aspect-square rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-slate-100"
+                    onClick={() => post.permalink && window.open(post.permalink, '_blank')}
+                    className={cn(
+                        "group relative aspect-square rounded-[2.2rem] overflow-hidden cursor-pointer shadow-xl border border-slate-100",
+                        loading && "animate-pulse bg-slate-100"
+                    )}
                   >
-                    <Image
-                      src={post.image}
-                      alt={`Instagram post: ${post.caption.slice(0, 50)}`}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      sizes="(max-width: 1024px) 45vw, 20vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 flex flex-col justify-end text-white">
-                      <p className="text-xs font-medium mb-4 line-clamp-2 leading-relaxed">
-                        {post.caption}
-                      </p>
-                      <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-1.5 font-bold">
-                          <Heart className="w-5 h-5 fill-current text-rose-500" />
-                          <span>{post.likes}</span>
+                    {!loading && (
+                      <>
+                        <Image
+                          src={post.image}
+                          alt={`Instagram post: ${post.caption.slice(0, 50)}`}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-700"
+                          sizes="(max-width: 1024px) 45vw, 20vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 flex flex-col justify-end text-white">
+                          <p className="text-[11px] font-medium mb-4 line-clamp-3 leading-relaxed">
+                            {post.caption}
+                          </p>
+                          <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-tighter">
+                              <Heart className="w-5 h-5 fill-current text-rose-500" />
+                              <span>{post.likes}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-tighter">
+                              <MessageCircle className="w-5 h-5 fill-current text-sky-400" />
+                              <span>{post.comments}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1.5 font-bold">
-                          <MessageCircle className="w-5 h-5 fill-current text-sky-400" />
-                          <span>{post.comments}</span>
-                        </div>
-                      </div>
-                    </div>
-                    {post.type === "video" && (
-                      <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full">
-                        <Play className="w-4 h-4 text-white fill-current" />
-                      </div>
+                        {post.type === "video" && (
+                          <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md p-2 rounded-full">
+                            <Play className="w-4 h-4 text-white fill-current" />
+                          </div>
+                        )}
+                      </>
                     )}
                   </motion.div>
                 ))}

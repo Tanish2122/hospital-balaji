@@ -18,7 +18,8 @@ import {
   MessageSquare,
   BarChart3,
   Stethoscope,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Instagram
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
@@ -42,6 +43,7 @@ const menuGroups = [
       { icon: FileText, label: 'Blog Posts', href: '/doctor/dashboard/cms/blogs' },
       { icon: MessageSquare, label: 'Testimonials', href: '/doctor/dashboard/cms/testimonials' },
       { icon: ImageIcon, label: 'Gallery', href: '/doctor/dashboard/cms/gallery' },
+      { icon: Instagram, label: 'Social Feed', href: '/doctor/dashboard/cms/social' },
     ]
   },
   {
