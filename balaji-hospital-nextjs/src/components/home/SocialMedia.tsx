@@ -77,7 +77,7 @@ export default function SocialMedia() {
   useEffect(() => {
     async function fetchLiveFeed() {
       const { data } = await supabase
-        .from('site_settings')
+        .from('app_config')
         .select('value')
         .eq('key', 'social_feed')
         .single();

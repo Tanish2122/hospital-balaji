@@ -37,7 +37,7 @@ export default function SocialSettings() {
   const fetchSettings = async () => {
     setLoading(true)
     const { data } = await supabase
-      .from('site_settings')
+      .from('app_config')
       .select('value')
       .eq('key', 'social_feed')
       .single()
@@ -60,7 +60,7 @@ export default function SocialSettings() {
   const handleSave = async () => {
     setSaving(true)
     const { error } = await supabase
-      .from('site_settings')
+      .from('app_config')
       .upsert({ 
         key: 'social_feed', 
         value: settings,
