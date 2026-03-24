@@ -85,15 +85,13 @@ export default function SocialMedia() {
       const config = data?.value as any;
       console.log('SocialMedia Social Config:', config);
       
-      if (config?.type === 'live' && config?.instagram_url) {
+      if (config?.instagram_live && config?.instagram_url) {
         setLoading(true);
         try {
-          console.log('SocialMedia Fetching from:', config.instagram_url);
+          console.log('SocialMedia Fetching Instagram from:', config.instagram_url);
           const res = await fetch(config.instagram_url);
           const json = await res.json();
-          console.log('SocialMedia Data Received:', json);
           
-          // Map Behold.so or standard API format
           const rawPosts = json.posts || json.data || json;
           if (Array.isArray(rawPosts)) {
             const formatted = rawPosts.slice(0, 4).map((p: any) => ({
@@ -105,16 +103,13 @@ export default function SocialMedia() {
               caption: p.caption || p.text || 'Latest from Instagram',
               permalink: p.permalink || p.link
             }));
-            console.log('SocialMedia Formatted Posts:', formatted);
             setPosts(formatted);
           }
         } catch (err) {
-          console.error("Failed to fetch live social feed:", err);
+          console.error("Failed to fetch live instagram feed:", err);
         } finally {
           setLoading(false);
         }
-      } else {
-        console.log('SocialMedia Live Sync is DISABLED or URL is missing.');
       }
     }
     fetchLiveFeed();
