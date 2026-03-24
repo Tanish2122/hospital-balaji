@@ -19,12 +19,19 @@ import {
   BarChart3,
   Stethoscope,
   Image as ImageIcon,
-  Instagram
+  Instagram,
+  Globe
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 
 const menuGroups = [
+  {
+    title: 'Website',
+    items: [
+      { icon: Globe, label: 'Go to Website', href: '/' },
+    ]
+  },
   {
     title: 'Practice Management',
     items: [
