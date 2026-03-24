@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
-const instagramPosts = [
+const defaultInstagramPosts = [
   {
     id: 1,
     image: "/images/gallery/img1.jpg",
@@ -43,11 +43,11 @@ const instagramPosts = [
   },
 ];
 
-const youtubeVideos = [
+const defaultYoutubeVideos = [
   {
     id: "w_nDMzNpT24",
     title: "Success Story: Complex Orthopedic Surgery",
-    thumbnail: "https://img.youtube.com/vi/w_nDMzNpT24/maxresdefault.jpg",
+    thumbnail: "https://img.youtube.com/vi/w_nDMzNpT24/hqdefault.jpg",
     views: "5.4k",
     duration: "4:20",
   },
@@ -60,7 +60,7 @@ const youtubeVideos = [
   },
 ];
 
-const facebookPost = {
+const defaultFacebookPost = {
   author: "Balaji Hospital Jaipur",
   date: "2 hours ago",
   content: "अरे ये क्या? कहीं आपके जीवन की गाड़ी भी रुक तो नहीं चल रही? क्या 2 कदम भी चलना आपके लिए मुश्किल हो गया है? हमारे विशेषज्ञ डॉक्टरों से सलाह लें और दर्द मुक्त जीवन की शुरुआत करें। #JointPain #JaipurHospital #HealthAwareness",
@@ -71,7 +71,9 @@ const facebookPost = {
 };
 
 export default function SocialMedia() {
-  const [posts, setPosts] = useState(instagramPosts);
+  const [posts, setPosts] = useState(defaultInstagramPosts);
+  const [ytVideos, setYtVideos] = useState(defaultYoutubeVideos);
+  const [fbPost, setFbPost] = useState(defaultFacebookPost);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -83,34 +85,42 @@ export default function SocialMedia() {
         .single();
 
       const config = data?.value as any;
-      console.log('SocialMedia Social Config:', config);
       
       if (config?.instagram_live && config?.instagram_url) {
         setLoading(true);
         try {
-          console.log('SocialMedia Fetching Instagram from:', config.instagram_url);
           const res = await fetch(config.instagram_url);
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
           const json = await res.json();
-          
           const rawPosts = json.posts || json.data || json;
+
           if (Array.isArray(rawPosts)) {
-            const formatted = rawPosts.slice(0, 4).map((p: any) => ({
-              id: p.id || Math.random().toString(),
-              image: p.media_url || p.image || p.thumbnail_url || p.url,
-              likes: p.like_count || p.likes || 'Live',
-              comments: p.comments_count || p.comments || '...',
-              type: (p.media_type || p.type || '').toLowerCase().includes('video') ? 'video' : 'image',
-              caption: p.caption || p.text || 'Latest from Instagram',
-              permalink: p.permalink || p.link
-            }));
-            setPosts(formatted);
+            const formatted = rawPosts
+              .map((p: any) => {
+                const isVideo = (p.mediaType || p.media_type || p.type || '').toLowerCase().includes('video') || p.isReel;
+                return {
+                  id: p.id || Math.random().toString(),
+                  image: isVideo ? (p.thumbnailUrl || p.thumbnail_url || p.mediaUrl || p.media_url || '') : (p.mediaUrl || p.media_url || p.image || p.url || ''),
+                  likes: p.like_count || (p.likes && typeof p.likes === 'object' ? p.likes.count : p.likes) || 'Live',
+                  comments: p.comments_count || (p.comments && typeof p.comments === 'object' ? p.comments.count : p.comments) || '...',
+                  type: isVideo ? 'video' : 'image',
+                  caption: p.caption || p.text || 'Latest from Instagram',
+                  permalink: p.permalink || p.link
+                };
+              })
+              .filter((p: any) => typeof p.image === 'string' && p.image.length > 0)
+              .slice(0, 4);
+            if (formatted.length > 0) setPosts(formatted);
           }
         } catch (err) {
-          console.error("Failed to fetch live instagram feed:", err);
+          console.error("Live instagram feed error:", err);
         } finally {
           setLoading(false);
         }
       }
+      
+      // Basic YT/FB logic (use fallbacks if disabled or no URL)
+      // Note: Full live implementation for YT/FB would require more complex API logic
     }
     fetchLiveFeed();
   }, []);
@@ -177,7 +187,7 @@ export default function SocialMedia() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1 }}
+                    transition={{ delay: (idx as number) * 0.1 }}
                     onClick={() => post.permalink && window.open(post.permalink, '_blank')}
                     className={cn(
                         "group relative aspect-square rounded-[2.2rem] overflow-hidden cursor-pointer shadow-xl border border-slate-100",
@@ -190,6 +200,7 @@ export default function SocialMedia() {
                           src={post.image}
                           alt={`Instagram post: ${post.caption.slice(0, 50)}`}
                           fill
+                          unoptimized
                           className="object-cover group-hover:scale-110 transition-transform duration-700"
                           sizes="(max-width: 1024px) 45vw, 20vw"
                         />
@@ -248,7 +259,7 @@ export default function SocialMedia() {
               </div>
 
               <div className="space-y-8 relative z-10">
-                {youtubeVideos.map((video) => (
+                {ytVideos.map((video: any) => (
                   <div key={video.id} className="group cursor-pointer">
                     <div className="relative aspect-video rounded-[1.5rem] overflow-hidden mb-4 shadow-2xl">
                       <Image
@@ -295,8 +306,8 @@ export default function SocialMedia() {
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900 leading-none">{facebookPost.author}</h4>
-                    <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-widest font-bold">{facebookPost.date}</p>
+                    <h4 className="font-bold text-slate-900 leading-none">{fbPost.author}</h4>
+                    <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-widest font-bold">{fbPost.date}</p>
                   </div>
                 </div>
                 <Facebook className="w-6 h-6 text-blue-600 fill-current" />
@@ -304,13 +315,14 @@ export default function SocialMedia() {
 
               <div className="mb-6">
                 <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                  {facebookPost.content}
+                  {fbPost.content}
                 </p>
                 <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-lg">
                   <Image
-                    src={facebookPost.image}
+                    src={fbPost.image}
                     alt="Facebook post from Balaji Hospital"
                     fill
+                    unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 1024px) 90vw, 350px"
                   />
@@ -321,11 +333,11 @@ export default function SocialMedia() {
                 <div className="flex items-center gap-4 text-slate-400">
                   <div className="flex items-center gap-1.5">
                     <ThumbsUp className="w-4 h-4" />
-                    <span className="text-xs font-bold">{facebookPost.likes}</span>
+                    <span className="text-xs font-bold">{fbPost.likes}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <MessageSquare className="w-4 h-4" />
-                    <span className="text-xs font-bold">{facebookPost.comments}</span>
+                    <span className="text-xs font-bold">{fbPost.comments}</span>
                   </div>
                 </div>
                 <a 
