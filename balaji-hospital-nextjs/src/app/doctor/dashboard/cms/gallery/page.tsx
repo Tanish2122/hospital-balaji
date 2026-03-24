@@ -28,6 +28,7 @@ interface GalleryItem {
   category: string
   type: 'facility' | 'xray' | 'news'
   is_active: boolean
+  alt_text?: string
   created_at: string
 }
 
@@ -69,7 +70,7 @@ export default function GalleryManagement() {
     
     const galleryData = {
       ...currentItem,
-      alt_text: currentItem?.alt_text || currentItem?.title || 'Hospital Gallery Image'
+      alt_text: (currentItem as any)?.alt_text || currentItem?.title || 'Hospital Gallery Image'
     }
 
     let error
