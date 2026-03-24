@@ -56,7 +56,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, id: emgId });
 
     } else if (type === "non-emergency") {
-      const { patientName, whatsapp, doctorId, department, date, slotId, hospitalId } = body;
+      const { 
+        patientName, whatsapp, doctorId, department, date, slotId, hospitalId,
+        appointmentType, previousVisitDate 
+      } = body;
       const aptId = generateId("APT");
 
       // Select hospital (Standardized)
@@ -105,7 +108,9 @@ export async function POST(request: Request) {
           appointment_date: date,
           appointment_time: slotId,
           appointment_no: appointmentNo,
-          reason: "General Consultation",
+          appointment_type: appointmentType || 'new',
+          previous_visit_date: previousVisitDate || null,
+          reason: appointmentType === 'followup' ? `Follow-up (Last visit: ${previousVisitDate})` : "General Consultation",
           status: "CONFIRMED"
         }]);
 
@@ -117,7 +122,7 @@ export async function POST(request: Request) {
 
       await sendWhatsAppMessage({
         to: `${formattedPatientPhone}@c.us`,
-        message: `Hello ${patientName},\n\nYour appointment is confirmed at ${hospital.name} 🏥\n\nAppointment No: *${appointmentNo}*\nDoctor: ${doctorName}\nDate: ${date}\nTime: ${slotId}`
+        message: `Hello ${patientName},\n\nYour appointment is confirmed at ${hospital.name} 🏥\n\nType: *${appointmentType === 'followup' ? 'Follow-Up (Recheck)' : 'New Consultation'}*\nAppointment No: *${appointmentNo}*\nDoctor: ${doctorName}\nDate: ${date}\nTime: ${slotId}`
       });
 
       // 5. Send WhatsApp to Doctor (Hospital Specific)

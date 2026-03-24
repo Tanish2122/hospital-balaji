@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { User, MessageSquare, Calendar, Send, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import DoctorSelector from "./DoctorSelector";
 import TimeSlotPicker from "./TimeSlotPicker";
 
@@ -13,6 +14,8 @@ export default function NonEmergencyForm() {
     doctorId: "",
     date: "",
     slotId: "",
+    appointmentType: "new" as "new" | "followup",
+    previousVisitDate: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
@@ -61,6 +64,8 @@ export default function NonEmergencyForm() {
           department: formData.department,
           date: formData.date,
           slotId: formData.slotId,
+          appointmentType: formData.appointmentType,
+          previousVisitDate: formData.appointmentType === "followup" ? formData.previousVisitDate : null,
         }),
       });
 
@@ -76,6 +81,8 @@ export default function NonEmergencyForm() {
         doctorId: "",
         date: "",
         slotId: "",
+        appointmentType: "new",
+        previousVisitDate: "",
       });
     } catch (error: any) {
       console.error("Error booking appointment:", error);
@@ -157,6 +164,76 @@ export default function NonEmergencyForm() {
               <p className="text-[10px] text-red-500 font-bold ml-2">Must be exactly 10 digits</p>
             )}
           </div>
+        </div>
+
+        {/* Appointment Type Selection */}
+        <div className="pt-8 border-t border-slate-50">
+          <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1 mb-6 block">
+            Appointment Type *
+          </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div 
+              onClick={() => setFormData(prev => ({ ...prev, appointmentType: 'new' }))}
+              className={cn(
+                "p-5 rounded-3xl border-2 transition-all cursor-pointer flex items-center gap-4",
+                formData.appointmentType === 'new' 
+                  ? "border-medical-500 bg-medical-50/50 shadow-lg shadow-medical-100/50" 
+                  : "border-slate-100 bg-white hover:border-slate-200"
+              )}
+            >
+              <div className={cn(
+                "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shadow-inner",
+                formData.appointmentType === 'new' ? "border-medical-600 bg-medical-600" : "border-slate-300"
+              )}>
+                {formData.appointmentType === 'new' && <div className="w-2 h-2 bg-white rounded-full shadow-sm" />}
+              </div>
+              <div>
+                <p className="font-bold text-slate-800 leading-none mb-1">New Consultation</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">First time visit</p>
+              </div>
+            </div>
+
+            <div 
+              onClick={() => setFormData(prev => ({ ...prev, appointmentType: 'followup' }))}
+              className={cn(
+                "p-5 rounded-3xl border-2 transition-all cursor-pointer flex items-center gap-4",
+                formData.appointmentType === 'followup' 
+                  ? "border-medical-500 bg-medical-50/50 shadow-lg shadow-medical-100/50" 
+                  : "border-slate-100 bg-white hover:border-slate-200"
+              )}
+            >
+              <div className={cn(
+                "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shadow-inner",
+                formData.appointmentType === 'followup' ? "border-medical-600 bg-medical-600" : "border-slate-300"
+              )}>
+                {formData.appointmentType === 'followup' && <div className="w-2 h-2 bg-white rounded-full shadow-sm" />}
+              </div>
+              <div>
+                <p className="font-bold text-slate-800 leading-none mb-1">Follow-Up (Recheck)</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Revisiting for the same issue</p>
+              </div>
+            </div>
+          </div>
+
+          {formData.appointmentType === 'followup' && (
+            <div className="mt-6 p-6 bg-blue-50/30 rounded-[2rem] border border-blue-100/50 animate-in slide-in-from-top-4 duration-300">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-widest pl-1">
+                  <Calendar className="w-3.5 h-3.5" /> Previous Visit Date *
+                </div>
+                <input
+                  type="date"
+                  name="previousVisitDate"
+                  value={formData.previousVisitDate}
+                  onChange={handleChange}
+                  required={formData.appointmentType === 'followup'}
+                  max={new Date().toISOString().split('T')[0]}
+                  className="w-full px-6 py-4 bg-white border border-blue-100 rounded-2xl outline-none focus:ring-4 focus:ring-medical-500/10 focus:border-medical-500 transition-all font-semibold text-slate-900"
+                />
+                <p className="text-[10px] text-blue-500 font-bold tracking-tight">Select the date of your last consultation for this condition.</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Doctor & Dept Selector */}
