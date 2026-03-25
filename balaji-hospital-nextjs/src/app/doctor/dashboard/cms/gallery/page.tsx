@@ -49,6 +49,7 @@ export default function GalleryManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentItem, setCurrentItem] = useState<Partial<GalleryItem> | null>(null)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     fetchGallery()
@@ -103,6 +104,45 @@ export default function GalleryManagement() {
         .update({ is_active: !item.is_active })
         .eq('id', item.id)
     if (!error) fetchGallery()
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      // Create a unique filename
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2)}${Date.now()}.${fileExt}`
+      const filePath = `gallery-assets/${fileName}`
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('gallery')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (error) {
+        if (error.message.includes('bucket not found')) {
+            throw new Error('Supabase "gallery" bucket not found! Please create it in your Supabase dashboard.')
+        }
+        throw error
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('gallery')
+        .getPublicUrl(filePath)
+
+      setCurrentItem(prev => ({ ...prev, url: publicUrl }))
+    } catch (err: any) {
+      alert('Upload failed: ' + err.message)
+    } finally {
+      setUploading(false)
+    }
   }
 
   const filteredItems = items.filter(item => {
@@ -324,18 +364,46 @@ export default function GalleryManagement() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Image URL</label>
-                <div className="relative">
-                    <input
-                    type="text"
-                    required
-                    value={currentItem?.url || ''}
-                    onChange={(e) => setCurrentItem({ ...currentItem, url: e.target.value })}
-                    className="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold pr-12"
-                    placeholder="https://example.com/image.jpg"
-                    />
-                    <ImageIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Asset Source</label>
+                <div className="flex gap-4 items-start">
+                    <div className="flex-1 space-y-2">
+                        <div className="relative">
+                            <input
+                            type="text"
+                            required
+                            value={currentItem?.url || ''}
+                            onChange={(e) => setCurrentItem({ ...currentItem, url: e.target.value })}
+                            className="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold pr-12"
+                            placeholder="https://example.com/image.jpg"
+                            />
+                            <ImageIcon className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                        </div>
+                    </div>
+                    <div className="flex-shrink-0">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                            id="gallery-file-upload"
+                        />
+                        <label 
+                            htmlFor="gallery-file-upload"
+                            className={cn(
+                                "flex flex-col items-center justify-center w-16 h-14 bg-blue-600/10 text-blue-600 rounded-2xl cursor-pointer hover:bg-blue-600/20 transition-all border-2 border-dashed border-blue-200",
+                                uploading && "opacity-50 cursor-not-allowed animate-pulse"
+                            )}
+                        >
+                            {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
+                            <span className="text-[8px] font-black mt-1">UPLOAD</span>
+                        </label>
+                    </div>
                 </div>
+                {currentItem?.url && (
+                    <div className="mt-3 relative aspect-video rounded-2xl overflow-hidden border border-slate-100 bg-slate-50">
+                        <img src={currentItem.url} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                )}
               </div>
 
               <div className="space-y-2">

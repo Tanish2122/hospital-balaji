@@ -18,7 +18,8 @@ import {
   Trash2,
   UserCheck,
   UserX,
-  Edit2
+  Edit2,
+  Plus
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createDoctorAccount, updateDoctorStatus, updateDoctorRole, deleteDoctorAccount, updateDoctorProfile } from '@/app/actions/adminActions'
@@ -55,6 +56,7 @@ export default function DoctorsManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
   const [newDoctor, setNewDoctor] = useState({
@@ -63,7 +65,8 @@ export default function DoctorsManagement() {
     phone: '',
     specialization: '',
     experience: 0,
-    role: 'doctor' as const
+    role: 'doctor' as const,
+    image_url: ''
   })
 
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null)
@@ -96,7 +99,7 @@ export default function DoctorsManagement() {
       setMessage({ type: 'success', text: 'Doctor account created successfully!' })
       setIsModalOpen(false)
       fetchDoctors()
-      setNewDoctor({ name: '', email: '', phone: '', specialization: '', experience: 0, role: 'doctor' })
+      setNewDoctor({ name: '', email: '', phone: '', specialization: '', experience: 0, role: 'doctor', image_url: '' })
     } else {
       setMessage({ type: 'error', text: result.error || 'Failed to create account' })
     }
@@ -147,6 +150,38 @@ export default function DoctorsManagement() {
     if (confirm('Are you sure you want to PERMANENTLY delete this account?')) {
       const result = await deleteDoctorAccount(id, authId)
       if (result.success) fetchDoctors()
+    }
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'new' | 'edit') => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2)}${Date.now()}.${fileExt}`
+      const filePath = `doctor-assets/${fileName}`
+
+      const { data, error } = await supabase.storage
+        .from('gallery')
+        .upload(filePath, file)
+
+      if (error) throw error
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('gallery')
+        .getPublicUrl(filePath)
+
+      if (type === 'new') {
+        setNewDoctor(prev => ({ ...prev, image_url: publicUrl }))
+      } else {
+        setEditingDoctor(prev => prev ? ({ ...prev, image_url: publicUrl }) : null)
+      }
+    } catch (err: any) {
+      alert('Upload failed: ' + err.message)
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -403,15 +438,37 @@ export default function DoctorsManagement() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Specialization</label>
-                <input
-                  type="text"
-                  required
-                  value={newDoctor.specialization}
-                  onChange={(e) => setNewDoctor({...newDoctor, specialization: e.target.value})}
-                  placeholder="e.g. Orthopedic Surgeon"
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
-                />
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Profile Photo</label>
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={newDoctor.image_url}
+                      onChange={(e) => setNewDoctor({...newDoctor, image_url: e.target.value})}
+                      placeholder="https://example.com/photo.jpg"
+                      className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                    />
+                  </div>
+                  <div className="flex-shrink-0">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileUpload(e, 'new')}
+                      className="hidden"
+                      id="new-doctor-file-upload"
+                    />
+                    <label 
+                      htmlFor="new-doctor-file-upload"
+                      className={cn(
+                        "flex flex-col items-center justify-center w-12 h-10 bg-blue-50 text-blue-600 rounded-xl cursor-pointer hover:bg-blue-100 transition-all border border-dashed border-blue-200",
+                        uploading && "opacity-50 animate-pulse"
+                      )}
+                    >
+                      {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                      <span className="text-[8px] font-bold mt-0.5">LOAD</span>
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div className="pt-4 p-2 bg-blue-50 rounded-2xl">
@@ -510,15 +567,42 @@ export default function DoctorsManagement() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Photo URL</label>
-                <input
-                  type="text"
-                  required
-                  value={editingDoctor.image_url || ''}
-                  onChange={(e) => setEditingDoctor({...editingDoctor, image_url: e.target.value})}
-                  placeholder="https://example.com/photo.jpg"
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
-                />
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Profile Photo</label>
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={editingDoctor.image_url || ''}
+                      onChange={(e) => setEditingDoctor({...editingDoctor, image_url: e.target.value})}
+                      placeholder="https://example.com/photo.jpg"
+                      className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                    />
+                  </div>
+                  <div className="flex-shrink-0">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileUpload(e, 'edit')}
+                      className="hidden"
+                      id="edit-doctor-file-upload"
+                    />
+                    <label 
+                      htmlFor="edit-doctor-file-upload"
+                      className={cn(
+                        "flex flex-col items-center justify-center w-12 h-10 bg-blue-50 text-blue-600 rounded-xl cursor-pointer hover:bg-blue-100 transition-all border border-dashed border-blue-200",
+                        uploading && "opacity-50 animate-pulse"
+                      )}
+                    >
+                      {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                      <span className="text-[8px] font-bold mt-0.5">LOAD</span>
+                    </label>
+                  </div>
+                </div>
+                {editingDoctor.image_url && (
+                  <div className="mt-2 w-16 h-16 rounded-xl overflow-hidden border border-slate-100 shadow-sm">
+                    <img src={editingDoctor.image_url} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1">

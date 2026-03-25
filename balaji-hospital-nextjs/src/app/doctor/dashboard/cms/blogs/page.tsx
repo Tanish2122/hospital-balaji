@@ -39,6 +39,7 @@ export default function BlogsCMS() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentBlog, setCurrentBlog] = useState<Partial<Blog> | null>(null)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     fetchBlogs()
@@ -90,6 +91,34 @@ export default function BlogsCMS() {
     if (confirm('Are you sure you want to delete this blog post?')) {
       const { error } = await supabase.from('blogs').delete().eq('id', id)
       if (!error) fetchBlogs()
+    }
+  }
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2)}${Date.now()}.${fileExt}`
+      const filePath = `blog-assets/${fileName}`
+
+      const { error } = await supabase.storage
+        .from('gallery')
+        .upload(filePath, file)
+
+      if (error) throw error
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('gallery')
+        .getPublicUrl(filePath)
+
+      setCurrentBlog(prev => ({ ...prev, image: publicUrl }))
+    } catch (err: any) {
+      alert('Upload failed: ' + err.message)
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -252,14 +281,42 @@ export default function BlogsCMS() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Hero Image URL</label>
-                <input
-                  type="text"
-                  value={currentBlog?.image || ''}
-                  onChange={(e) => setCurrentBlog({ ...currentBlog, image: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
-                  placeholder="https://example.com/blog-hero.jpg"
-                />
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Article Image</label>
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={currentBlog?.image || ''}
+                      onChange={(e) => setCurrentBlog({ ...currentBlog, image: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                      placeholder="https://example.com/blog-hero.jpg"
+                    />
+                  </div>
+                  <div className="flex-shrink-0">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="blog-file-upload"
+                    />
+                    <label 
+                      htmlFor="blog-file-upload"
+                      className={cn(
+                        "flex flex-col items-center justify-center w-12 h-10 bg-blue-50 text-blue-600 rounded-xl cursor-pointer hover:bg-blue-100 transition-all border border-dashed border-blue-200",
+                        uploading && "opacity-50 animate-pulse"
+                      )}
+                    >
+                      {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                      <span className="text-[8px] font-bold mt-0.5">LOAD</span>
+                    </label>
+                  </div>
+                </div>
+                {currentBlog?.image && (
+                  <div className="mt-2 relative aspect-video rounded-xl overflow-hidden border border-slate-100">
+                    <img src={currentBlog.image} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
               </div>
 
               <button

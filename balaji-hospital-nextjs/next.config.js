@@ -45,6 +45,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cdn2.behold.pictures',
       },
+      {
+        protocol: 'https',
+        hostname: 'yroieafhxcorwitzwyjj.supabase.co',
+      },
     ],
   },
 
