@@ -9,6 +9,7 @@ import Blog from "@/components/home/Blog";
 import SocialMedia from "@/components/home/SocialMedia";
 import Testimonials from "@/components/home/Testimonials";
 import Contact from "@/components/home/Contact";
+import AnatomyExplorer from "@/components/home/AnatomyExplorer";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <Process />
       <Departments />
       <Facilities />
+      <AnatomyExplorer />
       <Stats />
       <Doctors />
       <Insurance />
