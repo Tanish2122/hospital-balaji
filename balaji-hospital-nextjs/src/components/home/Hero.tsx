@@ -68,7 +68,7 @@ export default function Hero() {
             >
               <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-medical-500/10">
                 <Image
-                  src="/images/gallery/main building.png"
+                  src="/images/gallery/main building final .png"
                   alt="Balaji Hospital Jaipur"
                   fill
                   priority
