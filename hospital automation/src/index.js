@@ -57,7 +57,7 @@ async function startBot() {
         // Start HTTP API
         const server = http.createServer(async (req, res) => {
             // CORS Headers
-            res.setHeader('Access-Control-Allow-Origin', '*'); 
+            res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
             res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -114,14 +114,14 @@ async function startBot() {
 
             // Start Public Tunnel (Exposing local port 3001 to the live website)
             try {
-                const tunnel = await localtunnel({ 
+                const tunnel = await localtunnel({
                     port: API_PORT,
                     subdomain: 'balaji-hospital-bot' // Try to request a fixed subdomain
                 });
-                
+
                 console.log(`\n🚀 PUBLIC API URL: ${tunnel.url}`);
                 console.log(`👉 Copy this URL into your Next.js '.env.local' as NEXT_PUBLIC_WHATSAPP_API_URL\n`);
-                
+
                 tunnel.on('close', () => {
                     console.log('Tunnel was closed.');
                 });
@@ -133,6 +133,8 @@ async function startBot() {
     });
 
     client.on('message', async (msg) => {
+        if (msg.from === 'status@broadcast') return; // Ignore status updates
+
         const phone = msg.from;
         let session = await sessionManager.getSession(phone);
 
@@ -217,13 +219,13 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
                 data.deptId = text;
                 data.department = departments[text].name;
                 let docMsg = `Choosing ${data.department}. Please choose a doctor:\n`;
-                
+
                 const doctors = departments[text].doctors;
                 if (doctors.length === 0) {
-                   docMsg = `Currently no specialized doctors are listed for ${data.department} on our website. Please contact support.`;
-                   await client.sendMessage(phone, docMsg);
-                   await sessionManager.deleteSession(phone);
-                   return;
+                    docMsg = `Currently no specialized doctors are listed for ${data.department} on our website. Please contact support.`;
+                    await client.sendMessage(phone, docMsg);
+                    await sessionManager.deleteSession(phone);
+                    return;
                 }
 
                 doctors.forEach((doc, i) => {
