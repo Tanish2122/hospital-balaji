@@ -2,61 +2,64 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const WhatsAppCloudAPI = require('./cloud_api_client');
 const { hospitals } = require('./hospitals');
-const config = require('./config');
 const { setupDatabase } = require('./database');
 const SessionManager = require('./sessionManager');
+const supabase = require('./supabase_client');
 
 const app = express();
 app.use(bodyParser.json());
 
 const PORT = 3002; // Use a different port if needed
-let sessionManager;
-let cloudAPI;
+let dynamicDepartments = {};
 
 async function init() {
     const db = await setupDatabase();
     sessionManager = new SessionManager(db);
     cloudAPI = new WhatsAppCloudAPI(config.cloudApiAccessToken, config.cloudPhoneNumberId);
+    
+    console.log("Fetching live hospital data for Cloud API...");
+    dynamicDepartments = await supabase.getBotData() || config.fallbackDepartments;
+    console.log(`Loaded ${Object.keys(dynamicDepartments).length} departments.`);
 }
 
-// 1. DEPARTMENT LIST (Match Screenshot)
+// 1. DEPARTMENT LIST (Dynamic)
 const getDeptMenu = (phone) => {
+    const rows = Object.entries(dynamicDepartments).map(([id, dept]) => ({
+        id: `dept_${id}`,
+        title: dept.name.toUpperCase().slice(0, 24) // WhatsApp limit
+    }));
+
     return cloudAPI.sendList(
         phone,
-        "Options 👇",
-        "Please select from the following options",
-        "Select Option",
+        "Select Department 🏥",
+        "Please select a department for your appointment",
+        "Select Dept",
         [{
-            title: "Departments",
-            rows: [
-                { id: "dept_ortho", title: "ORTHOPAEDIC" },
-                { id: "dept_ent", title: "ENT" },
-                { id: "dept_other", title: "ANY OTHER PROBLEM" }
-            ]
+            title: "Hospital Departments",
+            rows: rows
         }]
     );
 };
 
-// 2. DOCTOR LIST
-const getDoctorMenu = (phone, deptId) => {
-    // Dynamic based on department
-    let doctorRows = [];
-    if (deptId === 'dept_ortho') {
-        doctorRows = [
-            { id: "dr_ramesh", title: "DR. RAMESH AGARWAL", description: "Senior Ortho Surgeon" },
-            { id: "dr_shitiz", title: "DR. SHITIZ AGARWAL", description: "Cons. Orthopaedic" }
-        ];
-    } else {
-        doctorRows = [
-            { id: "dr_saloni", title: "DR. SALONI AGARWAL", description: "ENT Surgeon" },
-            { id: "dr_kanika", title: "DR. KANIKA SHARMA", description: "ENT & Allergy" }
-        ];
+// 2. DOCTOR LIST (Dynamic)
+const getDoctorMenu = (phone, deptKey) => {
+    const dept = dynamicDepartments[deptKey];
+    if (!dept) return cloudAPI.sendText(phone, "❌ Department not found.");
+
+    const doctorRows = dept.doctors.map((doc, index) => ({
+        id: `dr_${doc.id}`,
+        title: doc.name.toUpperCase().slice(0, 24),
+        description: "Specialist"
+    }));
+
+    if (doctorRows.length === 0) {
+        return cloudAPI.sendText(phone, `Currently no doctors listed for ${dept.name}.`);
     }
 
     return cloudAPI.sendList(
         phone,
         "👨‍⚕️ Select Doctor",
-        "Choose a specialist for your consultation",
+        `Available specialists in ${dept.name}`,
         "Select Doctor",
         [{
             title: "Available Doctors",
@@ -108,9 +111,11 @@ app.post('/webhook', async (req, res) => {
 
             switch (session.state) {
                 case 'SELECT_DEPT':
+                    const deptKey = selectionId.replace('dept_', '');
                     data.department = selectionTitle;
+                    data.deptKey = deptKey;
                     await sessionManager.updateSession(phone, 'SELECT_DOCTOR', data);
-                    await getDoctorMenu(phone, selectionId);
+                    await getDoctorMenu(phone, deptKey);
                     break;
 
                 case 'SELECT_DOCTOR':
@@ -124,7 +129,7 @@ app.post('/webhook', async (req, res) => {
                     data.date = new Date().toISOString().split('T')[0];
                     const aptId = await sessionManager.saveNormalAppointment(data);
                     
-                    await cloudAPI.sendText(phone, `✅ *BOOKING CONFIRMED!*\n\nHospital: Balaji Hospital 🏥\nID: *${aptId}*\nDoctor: ${data.doctor}\nDate: ${data.date}\nTime: ${data.time}\n\nThank you for choosing us!`);
+                    await cloudAPI.sendText(phone, `✅ *BOOKING CONFIRMED!*\n\nHospital: Balaji Hospital 🏥\nID: *${aptId}*\nDoctor: ${data.doctor}\nDate: ${data.date}\nTime: ${data.time}\n\nManage your booking at: https://hospital-balaji.vercel.app/appointment\n\nThank you for choosing us!`);
                     
                     // Notify Admin/Doctor (Fallback to config.adminPhone)
                     await cloudAPI.sendText(config.adminPhone.split('@')[0], `NEW APPOINTMENT\n\nPatient: ${phone}\nID: ${aptId}\nTime: ${data.time}`);

@@ -19,8 +19,9 @@ export async function sendWhatsAppMessage({ to, message, media }: WhatsAppMessag
     if (media) console.log(`ATTACHMENT: ${media}`);
     console.log(`--------------------------`);
 
-    // Call the local WhatsApp API Gateway (Hospital Automation)
-    const response = await fetch("http://localhost:3001/send-message", {
+    // Call the WhatsApp API Gateway (Hospital Automation)
+    const baseUrl = process.env.NEXT_PUBLIC_WHATSAPP_API_URL || "http://localhost:3001";
+    const response = await fetch(`${baseUrl}/send-message`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -6,9 +6,10 @@ import { CheckCircle2, Award, Heart, ShieldCheck, Clock } from "lucide-react";
 import AboutCTA from "@/components/about/AboutCTA";
 
 export const metadata = {
-  title: "About Us | Balaji Hospital & Orthopaedic Centre Jaipur",
+  title: "About Us | Leading Orthopedic & ENT Hospital in Jaipur",
   description:
-    "Founded in 1996, Balaji Hospital & Orthopaedic Centre, Jaipur provides best-in-class orthopedic, ENT, and speciality care. Learn about our history, mission, values, and team.",
+    "Balaji Hospital & Orthopaedic Centre Jaipur. Expert care since 1996 in joint replacement, ENT, and spine surgery. Learn about our 28-year legacy of clinical excellence.",
+  keywords: ["best hospital jaipur history", "dr ramesh agarwal jaipur", "medical excellence jaipur", "affordable healthcare jaipur"],
 };
 
 const milestones = [

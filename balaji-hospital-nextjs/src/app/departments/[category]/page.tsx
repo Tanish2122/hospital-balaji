@@ -12,13 +12,14 @@ type CategoryParam = "orthopedic" | "ent" | "speciality";
 
 const categoryMeta: Record<
   CategoryParam,
-  { label: string; value: string; description: string; color: string; since?: string }
+  { label: string; value: string; description: string; keywords: string[]; color: string; since?: string }
 > = {
   orthopedic: {
     label: "Orthopedic Department",
     value: "Orthopedic",
     description:
-      "Established in 1996, Balaji Hospital is Jaipur's most trusted orthopaedic care centre with over 50,000 surgeries performed. Our senior surgeons specialise in joint replacement, spine surgery, fracture management, sports medicine, and paediatric orthopaedics — offering both surgical and non-surgical solutions tailored to each patient.",
+      "Balaji Hospital is Jaipur's most trusted orthopaedic centre since 1996. Specialized in knee/hip replacement, spine surgery, and fracture management. Over 50,000 successful surgeries performed by senior surgeons.",
+    keywords: ["best orthopedic hospital in jaipur", "knee replacement jaipur", "hip surgery jaipur", "spine specialist jaipur", "fracture treatment jaipur"],
     color: "bg-amber-50 border-amber-200 text-amber-700",
     since: "Since 1996 — 50,000+ Surgeries",
   },
@@ -26,14 +27,16 @@ const categoryMeta: Record<
     label: "ENT Department",
     value: "ENT",
     description:
-      "Our ENT department provides comprehensive care for ear, nose, and throat disorders. Using advanced endoscopic and microscopic techniques, our specialists treat everything from chronic ear infections to nasal polyps and voice disorders.",
+      "Top ENT specialist hospital in Jaipur. Advanced endoscopic sinus surgery, microscopic ear surgery, and throat care by senior consultants. Expert hearing restoration and sinus treatment.",
+    keywords: ["ent specialist in jaipur", "best ent hospital jaipur", "sinus surgery jaipur", "ear surgery jaipur", "throat specialist jaipur"],
     color: "bg-blue-50 border-blue-200 text-blue-700",
   },
   speciality: {
     label: "Speciality Department",
     value: "Speciality",
     description:
-      "Beyond orthopaedics and ENT, our speciality department handles complex cases including kidney stone treatment, plastic and vascular surgery, and other multi-disciplinary procedures requiring expert care.",
+      "Multi-specialty care in Jaipur including advanced urology (kidney stones), plastic surgery, and vascular surgery. Expert surgical solutions for complex medical needs.",
+    keywords: ["urologist in jaipur", "kidney stone treatment jaipur", "plastic surgery jaipur", "vascular surgeon jaipur"],
     color: "bg-purple-50 border-purple-200 text-purple-700",
   },
 };
@@ -65,8 +68,12 @@ export async function generateMetadata({
   const meta = categoryMeta[category as CategoryParam];
   if (!meta) return {};
   return {
-    title: `${meta.label} | Balaji Hospital Jaipur`,
+    title: `${meta.label} | Best Specialists in Jaipur`,
     description: meta.description,
+    keywords: meta.keywords,
+    alternates: {
+      canonical: `https://balajihospitaljaipur.com/departments/${category}`,
+    },
   };
 }
 

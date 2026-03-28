@@ -7,9 +7,10 @@ import { orthopedicServices } from "@/data/orthopedicServices";
 import { services as localServices } from "@/data/services";
 
 export const metadata = {
-  title: "Departments & Services | Balaji Hospital & Orthopaedic Centre Jaipur",
+  title: "Specialized Medical Departments | Best Hospital in Jaipur",
   description:
-    "Explore our full range of medical specialities: Orthopaedic (Spine, Knee, Hip), ENT (Ear, Nose, Throat), and Speciality care. Serving Jaipur since 1996.",
+    "Explore our full range of medical specialities at Balaji Hospital Jaipur: Orthopaedic (Spine, Joint Replacement), ENT, and Urology care. Dedicated to healthcare excellence since 1996.",
+  keywords: ["orthopedic department jaipur", "ent department jaipur", "medical services jaipur", "urologist in jaipur", "spine surgery centre jaipur"],
 };
 
 export const revalidate = 60;

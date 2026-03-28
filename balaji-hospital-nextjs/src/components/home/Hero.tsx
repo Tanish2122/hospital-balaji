@@ -35,8 +35,8 @@ export default function Hero() {
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-bold text-slate-900 leading-[1.15] lg:leading-[1.1]">
-                {"The name you know."}<br className="hidden sm:block" />
-                <span className="text-gradient">{"The doctors you trust."}</span>
+                {"Best Orthopedic &"}<br className="hidden sm:block" />
+                <span className="text-gradient">{"ENT Hospital in Jaipur"}</span>
               </h1>
 
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
@@ -69,7 +69,7 @@ export default function Hero() {
               <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-medical-500/10">
                 <Image
                   src="/images/gallery/main building .png"
-                  alt="Balaji Hospital Jaipur"
+                  alt="Balaji Hospital & Orthopaedic Centre - Best Hospital in Jaipur"
                   fill
                   priority
                   className="object-cover"

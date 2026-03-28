@@ -7,8 +7,9 @@ import { doctors as localDoctors } from "@/data/doctors";
 import { supabase } from "@/lib/supabase";
 
 export const metadata = {
-  title: "Our Doctors | Balaji Cure & Care Hospital",
-  description: "Meet our highly qualified team of specialists at Balaji Hospital Jaipur, including senior orthopedic and ENT surgeons.",
+  title: "Our Specialists | Best Orthopedic & ENT Doctors in Jaipur",
+  description: "Meet our team of senior healthcare professionals at Balaji Hospital Jaipur. Expert orthopedic surgeons, ENT specialists, and urologists with decades of experience.",
+  keywords: ["best orthopedic surgeon jaipur", "top ent specialist jaipur", "dr ramesh agarwal", "dr saloni agarwal", "urologist jaipur"],
 };
 
 export const revalidate = 60; // Revalidate every 60 seconds

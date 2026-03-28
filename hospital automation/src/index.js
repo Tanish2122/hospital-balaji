@@ -1,4 +1,5 @@
 const http = require('http');
+const localtunnel = require('localtunnel');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
@@ -6,10 +7,24 @@ const path = require('path');
 const { setupDatabase } = require('./database');
 const SessionManager = require('./sessionManager');
 const config = require('./config');
+const supabase = require('./supabase_client');
 
 const API_PORT = 3001;
 
+// Global Error Handlers to debug silent crashes
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+});
+
 async function startBot() {
+    console.log("Fetching live hospital data from website...");
+    const dynamicDepartments = await supabase.getBotData() || config.fallbackDepartments;
+    console.log(`Loaded ${Object.keys(dynamicDepartments).length} departments from Balaji Hospital.`);
+
     const db = await setupDatabase();
     const sessionManager = new SessionManager(db);
 
@@ -17,13 +32,23 @@ async function startBot() {
         authStrategy: new LocalAuth(),
         puppeteer: {
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: true
+            headless: 'new' // Recommended for newer Puppeteer versions
         }
     });
 
+    console.log('Initializing WhatsApp client...');
+
     client.on('qr', (qr) => {
-        console.log('Scan the QR code below with your WhatsApp:');
+        console.log('QR Code received. Scan it with your WhatsApp:');
         qrcode.generate(qr, { small: true });
+    });
+
+    client.on('auth_failure', (msg) => {
+        console.error('AUTHENTICATION FAILURE:', msg);
+    });
+
+    client.on('disconnected', (reason) => {
+        console.error('Client was logged out:', reason);
     });
 
     client.on('ready', () => {
@@ -31,6 +56,17 @@ async function startBot() {
 
         // Start HTTP API
         const server = http.createServer(async (req, res) => {
+            // CORS Headers
+            res.setHeader('Access-Control-Allow-Origin', '*'); 
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+            if (req.method === 'OPTIONS') {
+                res.writeHead(204);
+                res.end();
+                return;
+            }
+
             if (req.method === 'POST' && req.url === '/send-message') {
                 let body = '';
                 req.on('data', chunk => { body += chunk.toString(); });
@@ -44,11 +80,16 @@ async function startBot() {
                         if (!cleanNumber.endsWith('@c.us')) cleanNumber = `${cleanNumber}@c.us`;
                         to = cleanNumber;
 
-                        console.log(`[API] Sending message to ${to}`);
+                        console.log(`[API] Sending message to ${to}...`);
 
-                        if (media) {
-                            const mediaObj = await MessageMedia.fromUrl(media);
-                            await client.sendMessage(to, mediaObj, { caption: message });
+                        if (media && media.startsWith('http')) {
+                            try {
+                                const mediaObj = await MessageMedia.fromUrl(media);
+                                await client.sendMessage(to, mediaObj, { caption: message });
+                            } catch (mediaErr) {
+                                console.error('[API] Media Load Error:', mediaErr);
+                                await client.sendMessage(to, message);
+                            }
                         } else {
                             await client.sendMessage(to, message);
                         }
@@ -67,8 +108,27 @@ async function startBot() {
             }
         });
 
-        server.listen(API_PORT, () => {
-            console.log(`WhatsApp API Gateway running on http://localhost:${API_PORT}`);
+        server.listen(API_PORT, async () => {
+            console.log(`WhatsApp API Gateway is active for ${config.hospitalName}`);
+            console.log(`Local Endpoint: http://localhost:${API_PORT}`);
+
+            // Start Public Tunnel (Exposing local port 3001 to the live website)
+            try {
+                const tunnel = await localtunnel({ 
+                    port: API_PORT,
+                    subdomain: 'balaji-hospital-bot' // Try to request a fixed subdomain
+                });
+                
+                console.log(`\n🚀 PUBLIC API URL: ${tunnel.url}`);
+                console.log(`👉 Copy this URL into your Next.js '.env.local' as NEXT_PUBLIC_WHATSAPP_API_URL\n`);
+                
+                tunnel.on('close', () => {
+                    console.log('Tunnel was closed.');
+                });
+            } catch (err) {
+                console.error('Error starting localtunnel:', err.message);
+                console.log('Falling back to local-only mode.');
+            }
         });
     });
 
@@ -83,18 +143,18 @@ async function startBot() {
             return;
         }
 
-        await handleConversationalFlow(client, phone, msg, session, sessionManager);
+        await handleConversationalFlow(client, phone, msg, session, sessionManager, dynamicDepartments);
     });
 
     client.initialize();
 }
 
 async function sendMainMenu(client, phone) {
-    const menu = `Welcome to *${config.hospitalName}*! 🏥\n\nPlease choose an option:\n1️⃣ *Emergency 🚨*\n2️⃣ *Book Appointment 🏥*`;
+    const menu = `Welcome to *${config.hospitalName}*! 🏥\n\nPlease choose an option:\n1️⃣ *Emergency 🚨*\n2️⃣ *Book Appointment 🏥*\n\nWebsite: https://hospital-balaji.vercel.app/appointment`;
     await client.sendMessage(phone, menu).catch(err => console.error("Send Error:", err));
 }
 
-async function handleConversationalFlow(client, phone, msg, session, sessionManager) {
+async function handleConversationalFlow(client, phone, msg, session, sessionManager, departments) {
     const text = msg.body.trim();
     const data = session.data;
     data.phone = phone;
@@ -106,8 +166,8 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
                 await client.sendMessage(phone, "🚨 *Emergency Mode Activated*\nPlease enter the *Patient Name*.");
             } else if (text === '2') {
                 await sessionManager.updateSession(phone, 'NORMAL_DEPT', data);
-                let deptMsg = "🏥 *Normal Booking*\nPlease choose a department:\n";
-                for (const [id, dept] of Object.entries(config.departments)) {
+                let deptMsg = "🏥 *Appointment Booking*\nPlease choose a department:\n";
+                for (const [id, dept] of Object.entries(departments)) {
                     deptMsg += `${id}️⃣ ${dept.name}\n`;
                 }
                 await client.sendMessage(phone, deptMsg).catch(err => console.error("Send Error:", err));
@@ -153,11 +213,20 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
 
         // --- NORMAL FLOW ---
         case 'NORMAL_DEPT':
-            if (config.departments[text]) {
+            if (departments[text]) {
                 data.deptId = text;
-                data.department = config.departments[text].name;
+                data.department = departments[text].name;
                 let docMsg = `Choosing ${data.department}. Please choose a doctor:\n`;
-                config.departments[text].doctors.forEach((doc, i) => {
+                
+                const doctors = departments[text].doctors;
+                if (doctors.length === 0) {
+                   docMsg = `Currently no specialized doctors are listed for ${data.department} on our website. Please contact support.`;
+                   await client.sendMessage(phone, docMsg);
+                   await sessionManager.deleteSession(phone);
+                   return;
+                }
+
+                doctors.forEach((doc, i) => {
                     docMsg += `${i + 1}️⃣ ${doc.name}\n`;
                 });
                 await sessionManager.updateSession(phone, 'NORMAL_DOC', data);
@@ -169,10 +238,10 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
 
         case 'NORMAL_DOC':
             const docIdx = parseInt(text) - 1;
-            const doctors = config.departments[data.deptId].doctors;
-            if (doctors[docIdx]) {
-                data.doctor = doctors[docIdx].name;
-                data.doctorPhone = doctors[docIdx].phone;
+            const doctorsList = departments[data.deptId].doctors;
+            if (doctorsList[docIdx]) {
+                data.doctor = doctorsList[docIdx].name;
+                data.doctorPhone = doctorsList[docIdx].phone;
                 await sessionManager.updateSession(phone, 'NORMAL_NAME', data);
                 await client.sendMessage(phone, `Doctor: ${data.doctor}\nPlease enter the *Patient Name*.`);
             } else {
@@ -207,7 +276,7 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
             if (chosenSlot && await sessionManager.isSlotAvailable(data.date, chosenSlot, data.doctor)) {
                 data.time = chosenSlot;
                 const appId = await sessionManager.saveNormalAppointment(data);
-                await client.sendMessage(phone, `✅ *Booking Confirmed!*\nID: *${appId}*\nDate: ${data.date}\nTime: ${data.time}\nDoctor: ${data.doctor}`);
+                await client.sendMessage(phone, `✅ *Booking Confirmed!*\nID: *${appId}*\nDate: ${data.date}\nTime: ${data.time}\nDoctor: ${data.doctor}\n\nManage your booking at: https://hospital-balaji.vercel.app/appointment`);
 
                 // Notify Doctor
                 await notifyDoctor(client, data.doctorPhone, {

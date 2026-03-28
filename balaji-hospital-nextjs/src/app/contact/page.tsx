@@ -4,8 +4,9 @@ import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import ContactForm from "@/components/ContactForm";
 
 export const metadata = {
-  title: "Contact Us | Balaji Hospital & Orthopaedic Centre",
-  description: "Get in touch with Balaji Hospital & Orthopaedic Centre, Jaipur. Reach us via phone, email, or visit our facility in Jaipur.",
+  title: "Contact Us | Best Hospital in Jaipur | Balaji Hospital",
+  description: "Get in touch with Balaji Hospital & Orthopaedic Centre, Jaipur. Contact us at +91 7276229049 for 24/7 emergency care, trauma, or appointments.",
+  keywords: ["hospital contact jaipur", "emergency number jaipur hospital", "balaji hospital location", "orthopedic clinic jaipur address"],
 };
 
 const ContactPage = () => {
