@@ -47,6 +47,7 @@ const menuGroups = [
     adminOnly: true,
     items: [
       { icon: Stethoscope, label: 'Services', href: '/doctor/dashboard/cms/services' },
+      { icon: User, label: 'Doctor Profiles', href: '/doctor/dashboard/cms/doctor-profiles' },
       { icon: FileText, label: 'Blog Posts', href: '/doctor/dashboard/cms/blogs' },
       { icon: MessageSquare, label: 'Testimonials', href: '/doctor/dashboard/cms/testimonials' },
       { icon: ImageIcon, label: 'Gallery', href: '/doctor/dashboard/cms/gallery' },

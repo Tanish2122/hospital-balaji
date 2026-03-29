@@ -23,6 +23,8 @@ async function getDoctor(id: string) {
         designation,
         bio,
         image_url,
+        schedule,
+        services,
         departments(name)
       `)
       .eq('slug', id)
@@ -42,6 +44,8 @@ async function getDoctor(id: string) {
         designation,
         bio,
         image_url,
+        schedule,
+        services,
         departments(name)
       `)
       .eq('id', id)
@@ -72,8 +76,12 @@ async function getDoctor(id: string) {
 }
 
 export async function generateStaticParams() {
-  // Pre-render using local static data as the canonical list
-  return localDoctors.map((d) => ({ id: d.id }));
+  const { data } = await supabase.from('doctors').select('id, slug');
+  
+  const dbParams = data?.map((d) => ({ id: d.slug || d.id })) || [];
+  const localParams = localDoctors.map((d) => ({ id: d.id }));
+  
+  return [...dbParams, ...localParams];
 }
 
 

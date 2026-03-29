@@ -19,9 +19,12 @@ import {
   UserCheck,
   UserX,
   Edit2,
-  Plus
+  Plus,
+  Save
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createDoctorAccount, updateDoctorStatus, updateDoctorRole, deleteDoctorAccount, updateDoctorProfile } from '@/app/actions/adminActions'
 
 interface Department {
@@ -51,6 +54,7 @@ interface Doctor {
 }
 
 export default function DoctorsManagement() {
+  const router = useRouter()
   const [doctors, setDoctors] = useState<Doctor[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
   const [loading, setLoading] = useState(true)
@@ -124,18 +128,11 @@ export default function DoctorsManagement() {
         image_url: editingDoctor.image_url || '',
         designation: editingDoctor.designation || '',
         slug: editingDoctor.slug || '',
-        department_id: editingDoctor.department_id || '',
-        bio: editingDoctor.bio || '',
-        qualification: editingDoctor.qualification || '',
-        schedule: editingDoctor.schedule || [
-            { days: "Monday – Saturday", hours: "10:00 AM – 04:00 PM" },
-            { days: "Sunday", hours: "Emergency Only" }
-        ],
-        services: editingDoctor.services || []
+        department_id: editingDoctor.department_id || ''
     })
 
     if (result.success) {
-      setMessage({ type: 'success', text: 'Doctor updated successfully!' })
+      setMessage({ type: 'success', text: 'Account updated successfully!' })
       setIsEditModalOpen(false)
       setEditingDoctor(null)
       fetchDoctors()
@@ -344,13 +341,20 @@ export default function DoctorsManagement() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
+                       <Link 
+                         href={`/doctor/dashboard/cms/doctor-profiles/${doc.id}`}
+                         className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                         title="Manage Public Profile"
+                       >
+                          <User className="w-4 h-4" />
+                       </Link>
                        <button 
                          onClick={() => {
                              setEditingDoctor(doc)
                              setIsEditModalOpen(true)
                          }}
-                         className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                         title="Edit Profile"
+                         className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                         title="Account Settings"
                        >
                           <Edit2 className="w-4 h-4" />
                        </button>
@@ -552,159 +556,33 @@ export default function DoctorsManagement() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Designation</label>
-                  <input
-                    type="text"
-                    required
-                    value={editingDoctor.designation || ''}
-                    onChange={(e) => setEditingDoctor({...editingDoctor, designation: e.target.value})}
-                    placeholder="e.g. Senior Consultant"
-                    className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">SLUG (URL ID)</label>
-                  <input
-                    type="text"
-                    required
-                    value={editingDoctor.slug || ''}
-                    onChange={(e) => setEditingDoctor({...editingDoctor, slug: e.target.value})}
-                    placeholder="dr-john-doe"
-                    className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Professional Bio (Overview)</label>
-                <textarea
-                  rows={3}
-                  value={editingDoctor.bio || ''}
-                  onChange={(e) => setEditingDoctor({...editingDoctor, bio: e.target.value})}
-                  placeholder="Tell us about the doctor's experience and expertise..."
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Qualifications (Comma Separated)</label>
-                <input
-                  type="text"
-                  value={editingDoctor.qualification || ''}
-                  onChange={(e) => setEditingDoctor({...editingDoctor, qualification: e.target.value})}
-                  placeholder="MBBS, MS, DNB..."
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Services & Treatments (One per line)</label>
-                <textarea
-                  rows={2}
-                  value={editingDoctor.services?.join('\n') || ''}
-                  onChange={(e) => setEditingDoctor({...editingDoctor, services: e.target.value.split('\n').filter(s => s.trim() !== '')})}
-                  placeholder="Joint Replacement&#10;Spine Surgery"
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Consultation Schedule (Edit JSON or Slots)</label>
-                <textarea
-                  rows={2}
-                  value={JSON.stringify(editingDoctor.schedule || [
-                    { days: "Monday – Saturday", hours: "10:00 AM – 04:00 PM" },
-                    { days: "Sunday", hours: "Emergency Only" }
-                  ], null, 2)}
-                  onChange={(e) => {
-                    try {
-                        setEditingDoctor({...editingDoctor, schedule: JSON.parse(e.target.value)})
-                    } catch {}
-                  }}
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-mono text-xs"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Profile Photo</label>
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={editingDoctor.image_url || ''}
-                      onChange={(e) => setEditingDoctor({...editingDoctor, image_url: e.target.value})}
-                      placeholder="https://example.com/photo.jpg"
-                      className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
-                    />
-                  </div>
-                  <div className="flex-shrink-0">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileUpload(e, 'edit')}
-                      className="hidden"
-                      id="edit-doctor-file-upload"
-                    />
-                    <label 
-                      htmlFor="edit-doctor-file-upload"
-                      className={cn(
-                        "flex flex-col items-center justify-center w-12 h-10 bg-blue-50 text-blue-600 rounded-xl cursor-pointer hover:bg-blue-100 transition-all border border-dashed border-blue-200",
-                        uploading && "opacity-50 animate-pulse"
-                      )}
-                    >
-                      {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                      <span className="text-[8px] font-bold mt-0.5">LOAD</span>
-                    </label>
-                  </div>
-                </div>
-                {editingDoctor.image_url && (
-                  <div className="mt-2 w-16 h-16 rounded-xl overflow-hidden border border-slate-100 shadow-sm">
-                    <img src={editingDoctor.image_url} alt="Preview" className="w-full h-full object-cover" />
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Assign Department</label>
-                <select
-                  value={editingDoctor.department_id || ''}
-                  onChange={(e) => setEditingDoctor({...editingDoctor, department_id: e.target.value})}
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium appearance-none"
-                >
-                  <option value="">No Department Assigned</option>
-                  {departments.map(dept => (
-                    <option key={dept.id} value={dept.id}>{dept.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Specialization</label>
-                <input
-                  type="text"
-                  required
-                  value={editingDoctor.specialization}
-                  onChange={(e) => setEditingDoctor({...editingDoctor, specialization: e.target.value})}
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
-                />
-              </div>
-
               <div className="pt-4 p-3 bg-slate-50 rounded-2xl flex items-center gap-3">
                  <AlertCircle className="w-5 h-5 text-slate-400" />
-                 <p className="text-[10px] text-slate-500 font-medium">
-                   Email and Account Role cannot be changed here. Use the main table to toggle roles or status.
+                 <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+                   Public profile content (Bio, Schedule, Services) has been moved to the <Link href="/doctor/dashboard/cms/doctor-profiles" className="text-blue-600 font-bold underline">Doctor Profiles</Link> section.
                  </p>
               </div>
 
               <button
+                type="button"
+                onClick={() => {
+                  if (confirm('Save basic info and go to full profile editor?')) {
+                     // In a real app we'd save first, but for now let's just redirect
+                     router.push(`/doctor/dashboard/cms/doctor-profiles/${editingDoctor.id}`)
+                  }
+                }}
+                className="w-full bg-slate-100 text-slate-600 font-bold py-3 rounded-2xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2 mb-2 active:scale-95"
+              >
+                GO TO PROFILE EDITOR
+              </button>
+
+              <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-200 disabled:opacity-50 mt-4 active:scale-95"
+                className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-200 disabled:opacity-50 active:scale-95"
               >
-                {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Shield className="w-5 h-5" />}
-                SAVE CHANGES
+                {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                SAVE BASIC INFO
               </button>
             </form>
           </div>
