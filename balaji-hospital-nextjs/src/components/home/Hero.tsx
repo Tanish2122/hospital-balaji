@@ -31,7 +31,7 @@ export default function Hero() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-medical-100/50 border border-medical-200 text-medical-700 font-bold text-xs uppercase tracking-widest">
                 <span className="w-2 h-2 bg-medical-600 rounded-full animate-pulse"></span>
-                Established in 1996 — Jaipur''s Trusted Choice
+                Established in 1996 — Jaipur's Trusted Choice
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-bold text-slate-900 leading-[1.15] lg:leading-[1.1]">
