@@ -1,5 +1,5 @@
 const http = require('http');
-const ngrok = require('ngrok');
+const ngrok = require('@ngrok/ngrok');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
@@ -153,13 +153,14 @@ async function startBot() {
             console.log(`Local Endpoint: http://localhost:${API_PORT}`);
 
             // Start Public Tunnel (Exposing local port 3001 to the live website)
+            // Note: Using @ngrok/ngrok v3 SDK for better stability and agent support
             try {
-                const url = await ngrok.connect({
+                const listener = await ngrok.connect({
                     addr: API_PORT,
                     authtoken: config.ngrokToken ? config.ngrokToken.trim() : undefined
                 });
 
-                console.log(`\n🚀 PUBLIC API URL: ${url}`);
+                console.log(`\n🚀 PUBLIC API URL: ${listener.url()}`);
                 console.log(`👉 Copy this URL into your Next.js '.env.local' as NEXT_PUBLIC_WHATSAPP_API_URL\n`);
             } catch (err) {
                 console.error('Error starting ngrok:', err.message);
