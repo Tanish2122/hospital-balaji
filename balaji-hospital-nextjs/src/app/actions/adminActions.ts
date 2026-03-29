@@ -85,6 +85,10 @@ export async function updateDoctorProfile(id: string, updates: {
   designation: string
   slug: string
   department_id: string
+  bio?: string
+  qualification?: string
+  schedule?: any
+  services?: string[]
 }) {
   const { error } = await supabaseAdmin
     .from('doctors')

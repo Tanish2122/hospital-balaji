@@ -43,6 +43,10 @@ interface Doctor {
   role: 'admin' | 'doctor' | 'staff'
   status: 'active' | 'inactive'
   experience_years: number
+  qualification?: string
+  bio?: string
+  schedule?: any
+  services?: string[]
   created_at: string
 }
 
@@ -120,7 +124,14 @@ export default function DoctorsManagement() {
         image_url: editingDoctor.image_url || '',
         designation: editingDoctor.designation || '',
         slug: editingDoctor.slug || '',
-        department_id: editingDoctor.department_id || ''
+        department_id: editingDoctor.department_id || '',
+        bio: editingDoctor.bio || '',
+        qualification: editingDoctor.qualification || '',
+        schedule: editingDoctor.schedule || [
+            { days: "Monday – Saturday", hours: "10:00 AM – 04:00 PM" },
+            { days: "Sunday", hours: "Emergency Only" }
+        ],
+        services: editingDoctor.services || []
     })
 
     if (result.success) {
@@ -564,6 +575,56 @@ export default function DoctorsManagement() {
                     className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Professional Bio (Overview)</label>
+                <textarea
+                  rows={3}
+                  value={editingDoctor.bio || ''}
+                  onChange={(e) => setEditingDoctor({...editingDoctor, bio: e.target.value})}
+                  placeholder="Tell us about the doctor's experience and expertise..."
+                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Qualifications (Comma Separated)</label>
+                <input
+                  type="text"
+                  value={editingDoctor.qualification || ''}
+                  onChange={(e) => setEditingDoctor({...editingDoctor, qualification: e.target.value})}
+                  placeholder="MBBS, MS, DNB..."
+                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Services & Treatments (One per line)</label>
+                <textarea
+                  rows={2}
+                  value={editingDoctor.services?.join('\n') || ''}
+                  onChange={(e) => setEditingDoctor({...editingDoctor, services: e.target.value.split('\n').filter(s => s.trim() !== '')})}
+                  placeholder="Joint Replacement&#10;Spine Surgery"
+                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Consultation Schedule (Edit JSON or Slots)</label>
+                <textarea
+                  rows={2}
+                  value={JSON.stringify(editingDoctor.schedule || [
+                    { days: "Monday – Saturday", hours: "10:00 AM – 04:00 PM" },
+                    { days: "Sunday", hours: "Emergency Only" }
+                  ], null, 2)}
+                  onChange={(e) => {
+                    try {
+                        setEditingDoctor({...editingDoctor, schedule: JSON.parse(e.target.value)})
+                    } catch {}
+                  }}
+                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-mono text-xs"
+                />
               </div>
 
               <div className="space-y-1">
