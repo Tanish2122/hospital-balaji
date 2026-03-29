@@ -25,6 +25,8 @@ async function getDoctors() {
         experience_years,
         image_url,
         designation,
+        specialization,
+        status,
         departments(name)
       `)
       .eq('status', 'active');
@@ -44,7 +46,7 @@ async function getDoctors() {
     return data.map((doc: any) => ({
       id: doc.slug || doc.id,
       name: doc.name || 'Unknown Doctor',
-      specialty: doc.designation || 'Specialist',
+      specialty: doc.specialization || doc.designation || 'Specialist',
       image: doc.image_url || '/images/gallery/physiotherapy.png',
       experience: doc.experience_years ? `${doc.experience_years}+ Years` : 'Experienced',
       department: doc.departments?.name || 'General',

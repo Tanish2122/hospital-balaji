@@ -10,6 +10,9 @@ export interface Doctor {
   schedule: { days: string; hours: string }[];
   services: string[];
   phone?: string;
+  specialization?: string;
+  status?: 'active' | 'inactive';
+  auth_id?: string;
 }
 
 export const doctors: Doctor[] = [
