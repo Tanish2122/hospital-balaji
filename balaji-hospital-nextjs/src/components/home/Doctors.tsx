@@ -83,11 +83,7 @@ export default function Doctors() {
                   {doctor.designation}
                 </p>
 
-                <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
-                  <div className="flex items-center gap-1.5 text-amber-400">
-                    <Star className="w-4 h-4 fill-current" />
-                    <span className="text-sm font-black">4.9</span>
-                  </div>
+                <div className="flex items-center justify-end pt-4 border-t border-slate-700/50">
                   <button 
                     onClick={() => setIsAppointmentModalOpen(true)}
                     className="text-sm font-bold text-medical-400 hover:text-medical-300 transition-colors flex items-center gap-2 group/btn"
