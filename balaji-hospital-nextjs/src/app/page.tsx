@@ -15,10 +15,9 @@ export default function Home() {
   return (
     <main>
       <Hero />
-      <Process />
       <Departments />
-      <Facilities />
       <AnatomyExplorer />
+      <Facilities />
       <Stats />
       <Doctors />
       <Insurance />
