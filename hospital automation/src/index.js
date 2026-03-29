@@ -154,12 +154,10 @@ async function startBot() {
 
             // Start Public Tunnel (Exposing local port 3001 to the live website)
             try {
-                // Configure ngrok if token is available
-                if (config.ngrokToken) {
-                    await ngrok.authtoken(config.ngrokToken);
-                }
-
-                const url = await ngrok.connect(API_PORT);
+                const url = await ngrok.connect({
+                    addr: API_PORT,
+                    authtoken: config.ngrokToken ? config.ngrokToken.trim() : undefined
+                });
 
                 console.log(`\n🚀 PUBLIC API URL: ${url}`);
                 console.log(`👉 Copy this URL into your Next.js '.env.local' as NEXT_PUBLIC_WHATSAPP_API_URL\n`);
