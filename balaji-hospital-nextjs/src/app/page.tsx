@@ -14,6 +14,7 @@ import AnatomyExplorer from "@/components/home/AnatomyExplorer";
 export default function Home() {
   return (
     <main>
+      <h1 className="sr-only">Best Orthopedic & ENT Hospital in Jaipur | Balaji Hospital</h1>
       <Hero />
       <Departments />
       <AnatomyExplorer />

@@ -34,10 +34,10 @@ export default function Hero() {
                 Established in 1996 — Jaipur's Trusted Choice
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-bold text-slate-900 leading-[1.15] lg:leading-[1.1]">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-bold text-slate-900 leading-[1.15] lg:leading-[1.1]">
                 {"Best Orthopedic &"}<br className="hidden sm:block" />
                 <span className="text-gradient">{"ENT Hospital in Jaipur"}</span>
-              </h1>
+              </h2>
 
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
                 Balaji Hospital & Orthopaedic Centre was inaugurated in 1996 with a motive of providing

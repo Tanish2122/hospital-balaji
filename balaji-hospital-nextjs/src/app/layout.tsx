@@ -26,10 +26,15 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://balajihospitaljaipur.com"),
   title: {
-    template: "%s | Balaji Hospital & Orthopaedic Centre Jaipur",
-    default: "Balaji Hospital & Orthopaedic Centre | Best Orthopedic & ENT Hospital in Jaipur",
+    template: "%s | Balaji Hospital Jaipur",
+    default: "Balaji Hospital | Best Orthopedic & ENT Hospital in Jaipur",
   },
-  description: "Balaji Hospital & Orthopaedic Centre Jaipur. Expert orthopedic & ENT care since 1996. 24/7 emergency services. Senior consultants for knee, hip replacement & spine surgery. Top-rated specialists in Jaipur.",
+  description: "Balaji Hospital Jaipur — Jaipur's trusted choice for Orthopedic, ENT, and Speciality care since 1996. Top-rated surgeons for knee & hip surgery.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   keywords: [
     "best hospital in jaipur",
     "orthopedic hospital in jaipur",

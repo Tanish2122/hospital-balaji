@@ -82,7 +82,7 @@ export default function Facilities() {
                     <feature.icon className="w-7 h-7 transition-colors" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-slate-900 text-lg mb-0.5">{feature.title}</h4>
+                    <h3 className="font-bold text-slate-900 text-lg mb-0.5">{feature.title}</h3>
                     <p className="text-sm text-slate-500 font-medium">{feature.description}</p>
                   </div>
                   <CheckCircle className="w-6 h-6 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
