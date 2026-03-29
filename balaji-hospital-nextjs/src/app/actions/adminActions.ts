@@ -101,6 +101,35 @@ export async function updateDoctorProfile(id: string, updates: {
   return { success: true }
 }
 
+export async function updateDoctorAccountCredentials(id: string, authId: string, updates: { 
+  email?: string; 
+  password?: string;
+}) {
+  const { data: { user }, error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+    authId,
+    { 
+      email: updates.email, 
+      password: updates.password,
+      email_confirm: true // Ensure email is confirmed immediately
+    }
+  )
+
+  if (authError) return { success: false, error: authError.message }
+
+  // If email was updated, sync it to the doctors table
+  if (updates.email) {
+    const { error: dbError } = await supabaseAdmin
+      .from('doctors')
+      .update({ email: updates.email })
+      .eq('id', id)
+    
+    if (dbError) return { success: false, error: dbError.message }
+  }
+
+  revalidatePath('/doctor/dashboard/cms/doctors')
+  return { success: true }
+}
+
 export async function deleteDoctorAccount(id: string, authId: string) {
   // Soft delete prefered, but if actual delete is needed:
   const { error: profileError } = await supabaseAdmin.from('doctors').delete().eq('id', id)

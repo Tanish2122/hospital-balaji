@@ -25,7 +25,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createDoctorAccount, updateDoctorStatus, updateDoctorRole, deleteDoctorAccount, updateDoctorProfile } from '@/app/actions/adminActions'
+import { createDoctorAccount, updateDoctorStatus, updateDoctorRole, deleteDoctorAccount, updateDoctorProfile, updateDoctorAccountCredentials } from '@/app/actions/adminActions'
 
 interface Department {
   id: string
@@ -120,7 +120,8 @@ export default function DoctorsManagement() {
     if (!editingDoctor) return
     setSubmitting(true)
     
-    const result = await updateDoctorProfile(editingDoctor.id, {
+    // 1. Update Profile (Name, Phone, etc)
+    const profileResult = await updateDoctorProfile(editingDoctor.id, {
         name: editingDoctor.name,
         phone: editingDoctor.phone,
         specialization: editingDoctor.specialization,
@@ -131,13 +132,29 @@ export default function DoctorsManagement() {
         department_id: editingDoctor.department_id || ''
     })
 
-    if (result.success) {
+    // 2. Update Auth (Email, Password)
+    const authUpdate: any = {}
+    if (editingDoctor.email && editingDoctor.email !== doctors.find(d => d.id === editingDoctor.id)?.email) {
+      authUpdate.email = editingDoctor.email
+    }
+    const pwdInput = (document.getElementById('new-password') as HTMLInputElement)?.value
+    if (pwdInput) {
+      authUpdate.password = pwdInput
+    }
+
+    let authResult = { success: true, error: '' }
+    if (Object.keys(authUpdate).length > 0) {
+      const result = await updateDoctorAccountCredentials(editingDoctor.id, editingDoctor.auth_id, authUpdate)
+      authResult = { success: result.success, error: result.error || '' }
+    }
+
+    if (profileResult.success && authResult.success) {
       setMessage({ type: 'success', text: 'Account updated successfully!' })
       setIsEditModalOpen(false)
       setEditingDoctor(null)
       fetchDoctors()
     } else {
-      setMessage({ type: 'error', text: result.error || 'Failed to update' })
+      setMessage({ type: 'error', text: authResult.error || profileResult.error || 'Failed to update' })
     }
     setSubmitting(false)
     setTimeout(() => setMessage(null), 3000)
@@ -543,6 +560,27 @@ export default function DoctorsManagement() {
                     className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Login Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={editingDoctor.email}
+                  onChange={(e) => setEditingDoctor({...editingDoctor, email: e.target.value})}
+                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Reset Password (leave empty to keep current)</label>
+                <input
+                  type="password"
+                  id="new-password"
+                  placeholder="Enter new 6+ characters"
+                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                />
               </div>
 
               <div className="space-y-1">
