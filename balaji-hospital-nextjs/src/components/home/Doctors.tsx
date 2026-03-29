@@ -87,6 +87,7 @@ export default function Doctors() {
                   <button 
                     onClick={() => setIsAppointmentModalOpen(true)}
                     className="text-sm font-bold text-medical-400 hover:text-medical-300 transition-colors flex items-center gap-2 group/btn"
+                    aria-label={`Book Now with ${doctor.name}`}
                   >
                     Book Now <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </button>

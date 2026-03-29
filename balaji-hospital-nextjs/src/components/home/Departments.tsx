@@ -111,7 +111,11 @@ export default function Departments() {
                   <p className="text-slate-600 text-sm mb-6 leading-relaxed line-clamp-3">
                     {service.description}
                   </p>
-                  <Link href={`/departments/services/${service.slug}`} className="flex items-center text-medical-600 font-bold text-sm group-hover:gap-2 transition-all">
+                  <Link 
+                    href={`/departments/services/${service.slug}`} 
+                    className="flex items-center text-medical-600 font-bold text-sm group-hover:gap-2 transition-all"
+                    aria-label={`Learn more about ${service.title}`}
+                  >
                     <span>Learn More</span>
                     <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all -ml-2 group-hover:ml-0" />
                   </Link>

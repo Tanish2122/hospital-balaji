@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://balajihospitaljaipur.com/",
+    canonical: "/",
   },
   openGraph: {
     type: "website",
