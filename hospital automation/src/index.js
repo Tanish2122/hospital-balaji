@@ -1,5 +1,5 @@
 const http = require('http');
-const localtunnel = require('localtunnel');
+const ngrok = require('ngrok');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
@@ -67,7 +67,47 @@ async function startBot() {
                 return;
             }
 
-            if (req.method === 'POST' && req.url === '/send-message') {
+            if (req.method === 'POST' && req.url === '/notify-booking') {
+                let body = '';
+                req.on('data', chunk => { body += chunk.toString(); });
+                req.on('end', async () => {
+                    try {
+                        const { patient, appointment, doctor } = JSON.parse(body);
+                        
+                        // 1. Format Numbers
+                        const formatNum = (num) => {
+                            let clean = num.replace(/\D/g, '');
+                            if (clean.length === 10) clean = `91${clean}`;
+                            return clean.endsWith('@c.us') ? clean : `${clean}@c.us`;
+                        };
+
+                        const patientTo = formatNum(patient.phone);
+                        const adminTo = formatNum(config.adminPhone);
+                        const doctorTo = formatNum(doctor.phone || config.adminPhone);
+
+                        console.log(`[API] Processing booking notification for ${patient.name}...`);
+
+                        // 2. Notify Patient
+                        const patientMsg = `✅ *Appointment Confirmed*\n\nDear ${patient.name},\nYour appointment with *${doctor.name}* (${doctor.speciality}) has been scheduled.\n\n🗓️ Date: ${appointment.date}\n⏰ Time: ${appointment.time}\n📍 Location: ${config.hospitalName}\n\nThank you for choosing us!`;
+                        await client.sendMessage(patientTo, patientMsg);
+
+                        // 3. Notify Admin/Receptionist
+                        const adminMsg = `🏥 *NEW BOOKING ALERT*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nPlease ensure the slot is blocked in the manual register if required.`;
+                        await client.sendMessage(adminTo, adminMsg);
+
+                        // 4. Notify Doctor
+                        const docMsg = `👨‍⚕️ *NEW APPOINTMENT*\n\nYou have a new appointment scheduled.\n\nPatient: ${patient.name}\nDate: ${appointment.date}\nTime: ${appointment.time}\nType: Website Booking`;
+                        await client.sendMessage(doctorTo, docMsg);
+
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ success: true, message: "Notifications sent to Patient, Admin, and Doctor" }));
+                    } catch (err) {
+                        console.error('[API] Notification Error:', err);
+                        res.writeHead(500, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ success: false, error: err.message }));
+                    }
+                });
+            } else if (req.method === 'POST' && req.url === '/send-message') {
                 let body = '';
                 req.on('data', chunk => { body += chunk.toString(); });
                 req.on('end', async () => {
@@ -114,20 +154,17 @@ async function startBot() {
 
             // Start Public Tunnel (Exposing local port 3001 to the live website)
             try {
-                const tunnel = await localtunnel({
-                    port: API_PORT,
-                    subdomain: 'balaji-hospital-bot' // Try to request a fixed subdomain
+                const url = await ngrok.connect({
+                    proto: 'http',
+                    addr: API_PORT,
+                    // authtoken: config.ngrokToken // Optional: Use if provided
                 });
 
-                console.log(`\n🚀 PUBLIC API URL: ${tunnel.url}`);
+                console.log(`\n🚀 PUBLIC API URL: ${url}`);
                 console.log(`👉 Copy this URL into your Next.js '.env.local' as NEXT_PUBLIC_WHATSAPP_API_URL\n`);
-
-                tunnel.on('close', () => {
-                    console.log('Tunnel was closed.');
-                });
             } catch (err) {
-                console.error('Error starting localtunnel:', err.message);
-                console.log('Falling back to local-only mode.');
+                console.error('Error starting ngrok:', err.message);
+                console.log('Falling back to local-only mode (Ensure ngrok is configured correctly).');
             }
         });
     });

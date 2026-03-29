@@ -13,26 +13,36 @@ interface WhatsAppMessage {
 
 export async function sendWhatsAppMessage({ to, message, media }: WhatsAppMessage) {
   try {
-    console.log(`--- WHATSAPP SEND LOG ---`);
-    console.log(`TO: ${to}`);
-    console.log(`MESSAGE: ${message}`);
-    if (media) console.log(`ATTACHMENT: ${media}`);
-    console.log(`--------------------------`);
-
-    // Call the WhatsApp API Gateway (Hospital Automation)
     const baseUrl = process.env.NEXT_PUBLIC_WHATSAPP_API_URL || "http://localhost:3001";
     const response = await fetch(`${baseUrl}/send-message`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ to, message, media }),
     });
-
-    const result = await response.json();
-    return result;
+    return await response.json();
   } catch (error) {
     console.error("WhatsApp delivery failed:", error);
+    return { success: false, error };
+  }
+}
+
+interface BookingNotification {
+  patient: { name: string; phone: string };
+  appointment: { date: string; time: string; id?: string };
+  doctor: { name: string; speciality: string; phone?: string };
+}
+
+export async function notifyBooking(data: BookingNotification) {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_WHATSAPP_API_URL || "http://localhost:3001";
+    const response = await fetch(`${baseUrl}/notify-booking`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error("Booking notification failed:", error);
     return { success: false, error };
   }
 }

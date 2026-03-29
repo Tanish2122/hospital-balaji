@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { generateId } from "@/lib/id-generator";
-import { sendWhatsAppMessage } from "@/lib/whatsapp";
+import { sendWhatsAppMessage, notifyBooking } from "@/lib/whatsapp";
 import { doctors } from "@/data/doctors";
 import { hospitals } from "@/lib/hospitals";
 
@@ -116,19 +116,15 @@ export async function POST(request: Request) {
 
       if (error) throw error;
 
-      // 3. Send WhatsApp to Patient (Standardized Template)
-      const patientPhone = whatsapp.replace(/\D/g, "");
-      const formattedPatientPhone = patientPhone.length === 10 ? `91${patientPhone}` : patientPhone;
-
-      await sendWhatsAppMessage({
-        to: `${formattedPatientPhone}@c.us`,
-        message: `Hello ${patientName},\n\nYour appointment is confirmed at ${hospital.name} 🏥\n\nType: *${appointmentType === 'followup' ? 'Follow-Up (Recheck)' : 'New Consultation'}*\nAppointment No: *${appointmentNo}*\nDoctor: ${doctorName}\nDate: ${date}\nTime: ${slotId}`
-      });
-
-      // 5. Send WhatsApp to Doctor (Hospital Specific)
-      await sendWhatsAppMessage({
-        to: (doctor as any)?.phone || hospital.doctorPhone,
-        message: `New Appointment at ${hospital.name}\n\nPatient: ${patientName}\nPhone: ${whatsapp}\nTime: ${slotId}\nAppointment No: ${appointmentNo}`
+      // 4. Trigger Unified WhatsApp Notification (Patient, Admin, Doctor)
+      await notifyBooking({
+        patient: { name: patientName, phone: whatsapp },
+        appointment: { date, time: slotId, id: aptId },
+        doctor: { 
+          name: doctorName, 
+          speciality: department,
+          phone: (doctor as any)?.phone 
+        }
       });
 
       return NextResponse.json({ success: true, id: aptId });
