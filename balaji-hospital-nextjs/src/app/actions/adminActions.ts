@@ -10,7 +10,15 @@ export async function createDoctorAccount(formData: {
   specialization: string
   experience: number
   role: 'admin' | 'doctor' | 'staff'
+  image_url?: string
 }) {
+  // Generate a URL-friendly slug from the name
+  const slug = formData.name
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
   // 1. Create Auth User
   const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
     email: formData.email,
@@ -31,7 +39,9 @@ export async function createDoctorAccount(formData: {
       specialization: formData.specialization,
       experience_years: formData.experience,
       role: formData.role,
-      status: 'active'
+      status: 'active',
+      slug: slug,
+      image_url: formData.image_url || ''
     }])
 
   if (profileError) {
