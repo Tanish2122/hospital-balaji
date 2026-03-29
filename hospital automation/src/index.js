@@ -154,17 +154,18 @@ async function startBot() {
 
             // Start Public Tunnel (Exposing local port 3001 to the live website)
             try {
-                const url = await ngrok.connect({
-                    proto: 'http',
-                    addr: API_PORT,
-                    // authtoken: config.ngrokToken // Optional: Use if provided
-                });
+                // Configure ngrok if token is available
+                if (config.ngrokToken) {
+                    await ngrok.authtoken(config.ngrokToken);
+                }
+
+                const url = await ngrok.connect(API_PORT);
 
                 console.log(`\n🚀 PUBLIC API URL: ${url}`);
                 console.log(`👉 Copy this URL into your Next.js '.env.local' as NEXT_PUBLIC_WHATSAPP_API_URL\n`);
             } catch (err) {
                 console.error('Error starting ngrok:', err.message);
-                console.log('Falling back to local-only mode (Ensure ngrok is configured correctly).');
+                console.log('Falling back to local-only mode. (TIP: Ensure you have an ngrok account and token set up).');
             }
         });
     });

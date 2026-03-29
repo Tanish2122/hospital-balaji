@@ -17,5 +17,6 @@ module.exports = {
         }
     },
     slots: ["10:00 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"],
-    emergencyDoctor: { name: "Duty Medical Officer", phone: "916377433387@c.us" }
+    emergencyDoctor: { name: "Duty Medical Officer", phone: "916377433387@c.us" },
+    ngrokToken: "" // Optional: Paste your ngrok authtoken here for better stability
 };
