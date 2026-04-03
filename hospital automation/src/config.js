@@ -7,16 +7,35 @@ module.exports = {
     webhookVerifyToken: "YOUR_VERIFY_TOKEN",
     hospitalName: "Balaji Hospital & Orthopaedic Centre 🏥",
     adminPhone: "916377433387@c.us", 
-    // Fallback departments (used if dynamic fetching fails)
+    // Real departments and doctors from balajihospitaljaipur.com
     fallbackDepartments: {
         "1": {
-            name: "Cardiology",
+            name: "Orthopedic",
             doctors: [
-                { id: "doc1", name: "Dr. Mehta", phone: "916377433387@c.us" }
+                { id: "dr_shitiz", name: "Dr. Shitiz Agarwal", phone: "916377433387@c.us" },
+                { id: "dr_ramesh", name: "Dr. Ramesh Agarwal", phone: "916377433387@c.us" }
+            ]
+        },
+        "2": {
+            name: "ENT",
+            doctors: [
+                { id: "dr_utkarsh", name: "Dr. Utkarsh", phone: "916377433387@c.us" }
+            ]
+        },
+        "3": {
+            name: "Pediatrics",
+            doctors: [
+                { id: "dr_utkarsh_gen", name: "Dr. Utkarsh", phone: "916377433387@c.us" }
+            ]
+        },
+        "4": {
+            name: "General Medicine",
+            doctors: [
+                { id: "dr_utkarsh_med", name: "Dr. Utkarsh", phone: "916377433387@c.us" }
             ]
         }
     },
     slots: ["10:00 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"],
-    emergencyDoctor: { name: "Duty Medical Officer", phone: "916377433387@c.us" },
-    ngrokToken: "3Bd332vlf0YDT5MSvsXlX0RTB3q_6aQhgNFB5EyncXNT8DTXe" // Fixed with user provided authtoken
+    emergencyDoctor: { name: "Dr. Ramesh Agarwal", phone: "916377433387@c.us" },
+    ngrokToken: "3Bd332vlf0YDT5MSvsXlX0RTB3q_6aQhgNFB5EyncXNT8DTXe"
 };
