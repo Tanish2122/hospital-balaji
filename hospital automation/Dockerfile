@@ -62,13 +62,10 @@ COPY . .
 # Set environment variables
 ENV NODE_ENV=production
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/root/.cache/puppeteer/chrome/linux-140.0.7000.06/chrome-linux64/chrome
-
-# Note: The exact path above might change depending on the version installed by npx.
-# We will use a more generic way in the index.js to find the executable.
+ENV NODE_OPTIONS="--max-old-space-size=192"
 
 # Expose the API port
 EXPOSE 3001
 
-# Command to run the application
-CMD [ "npm", "start" ]
+# Command to run the application directly with Node (saves npm memory overhead)
+CMD [ "node", "src/index.js" ]

@@ -57,9 +57,10 @@ async function startBot() {
                 '--no-first-run',
                 '--no-zygote',
                 '--disable-gpu',
-                '--single-process', // Saves memory but less stable
+                '--single-process', // Critical for memory
                 '--disable-extensions',
-                '--js-flags="--max-old-space-size=256"' // Crucial: Limits internal memory of the browser
+                '--disable-features=IsolateOrigins,site-per-process', // Memory tweak
+                '--js-flags="--max-old-space-size=192"' // Limit internal memory
             ],
             headless: 'new'
         }
@@ -183,18 +184,20 @@ async function startBot() {
             console.log(`Local Endpoint: http://localhost:${API_PORT}`);
 
             // Start Public Tunnel (Exposing local port 3001 to the live website)
-            // Note: Using @ngrok/ngrok v3 SDK for better stability and agent support
-            try {
-                const listener = await ngrok.connect({
-                    addr: API_PORT,
-                    authtoken: config.ngrokToken ? config.ngrokToken.trim() : undefined
-                });
-
-                console.log(`\n🚀 PUBLIC API URL: ${listener.url()}`);
-                console.log(`👉 Copy this URL into your Next.js '.env.local' as NEXT_PUBLIC_WHATSAPP_API_URL\n`);
-            } catch (err) {
-                console.error('Error starting ngrok:', err.message);
-                console.log('Falling back to local-only mode. (TIP: Ensure you have an ngrok account and token set up).');
+            // Note: Disable Ngrok on Render to save memory
+            if (process.platform !== 'linux' && config.ngrokToken) {
+                try {
+                    const listener = await ngrok.connect({
+                        addr: API_PORT,
+                        authtoken: config.ngrokToken.trim()
+                    });
+                    console.log(`\n🚀 PUBLIC API URL: ${listener.url()}`);
+                    console.log(`👉 Copy this URL into your Next.js '.env.local' as NEXT_PUBLIC_WHATSAPP_API_URL\n`);
+                } catch (err) {
+                    console.error('Error starting ngrok:', err.message);
+                }
+            } else {
+                console.log('\n🚀 Running on Render. Public URL is assigned by Render.');
             }
         });
     });
