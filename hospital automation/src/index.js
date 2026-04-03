@@ -31,11 +31,11 @@ async function startBot() {
     // Dynamic Chrome path for Docker/Render
     let executablePath = '';
     if (process.platform === 'linux') {
-        // Try common locations in Docker
         const possiblePaths = [
             '/usr/bin/google-chrome',
+            '/usr/bin/google-chrome-stable',
             '/usr/bin/chromium',
-            '/root/.cache/puppeteer/chrome/linux-140.0.7000.06/chrome-linux64/chrome'
+            '/usr/bin/chromium-browser'
         ];
         for (const p of possiblePaths) {
             if (fs.existsSync(p)) {
