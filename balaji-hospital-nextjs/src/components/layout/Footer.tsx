@@ -74,12 +74,14 @@ export default function Footer() {
             <h4 className="text-white font-bold mb-6 text-lg">Specialties</h4>
             <ul className="space-y-4 text-sm">
               {[
-                { name: "Spine Treatment", href: "/departments/orthopedic/spine-treatment" },
-                { name: "Knee Replacement", href: "/departments/orthopedic/knee-replacement" },
-                { name: "Hip Replacement", href: "/departments/orthopedic/hip-replacement" },
-                { name: "Ear Surgery", href: "/departments/ent/ear-surgery" },
-                { name: "Kidney Stones", href: "/departments/speciality/kidney-stones" },
-                { name: "Physiotherapy", href: "/orthopedic/physiotherapy-and-rehabilitation-centre-in-jaipur" }
+                { name: "Spine Treatment in Jaipur",            href: "/orthopedic/spine-treatment-in-jaipur" },
+                { name: "Knee Replacement in Jaipur",           href: "/orthopedic/best-knee-replacement-hospital-in-jaipur" },
+                { name: "Hip Replacement in Jaipur",            href: "/orthopedic/hip-replacement-hospital-in-jaipur" },
+                { name: "Best Ear Surgery Hospital in Jaipur",  href: "/ent/best-ear-surgery-hospital-in-jaipur" },
+                { name: "Kidney Stones Treatment in Jaipur",    href: "/speciality/kidney-stones-treatment-in-jaipur" },
+                { name: "Physiotherapy & Rehabilitation",        href: "/orthopedic/physiotherapy-and-rehabilitation-centre-in-jaipur" },
+                { name: "Joint Pain Treatment in Jaipur",       href: "/orthopedic/joint-pain-treatment-in-jaipur" },
+                { name: "Sports Medicine Hospital in Jaipur",   href: "/orthopedic/best-sports-medicine-hospital-in-jaipur" },
               ].map((item) => (
                 <li key={item.name}>
                   <Link href={item.href} className="hover:text-medical-400 transition-colors inline-block">
@@ -89,6 +91,7 @@ export default function Footer() {
               ))}
             </ul>
           </div>
+
 
           {/* Contact Info */}
           <div>

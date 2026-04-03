@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Phone, Menu, X, ChevronRight, Calendar } from "lucide-react";
+import { Phone, Menu, X, ChevronRight, Calendar, ChevronDown } from "lucide-react";
 import Logo from "../ui/Logo";
 
 const navLinks = [
@@ -66,15 +66,56 @@ export default function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-8" aria-label="Main navigation">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                href={link.href}
-                className="text-sm font-semibold text-slate-700 hover:text-medical-600 transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) =>
+              link.name === "Departments" ? (
+                /* Departments Mega-Dropdown */
+                <div key="Departments" className="relative group">
+                  <button className="flex items-center gap-1 text-sm font-semibold text-slate-700 hover:text-medical-600 transition-colors py-2">
+                    Departments <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-200" />
+                  </button>
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0 z-50">
+                    <div className="p-3">
+                      <Link href="/orthopedic" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-50 transition-colors group/item">
+                        <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center shrink-0">
+                          <span className="text-amber-600 text-base">🦴</span>
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-slate-900 group-hover/item:text-amber-700 transition-colors">Best Orthopedic Hospital in Jaipur</div>
+                          <div className="text-xs text-slate-400">Knee, Hip, Spine & more</div>
+                        </div>
+                      </Link>
+                      <Link href="/ent" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 transition-colors group/item">
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+                          <span className="text-blue-600 text-base">👂</span>
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-slate-900 group-hover/item:text-blue-700 transition-colors">ENT Specialist in Jaipur</div>
+                          <div className="text-xs text-slate-400">Ear, Nose & Throat Surgery</div>
+                        </div>
+                      </Link>
+                      <Link href="/speciality" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-purple-50 transition-colors group/item">
+                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
+                          <span className="text-purple-600 text-base">🔬</span>
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">Speciality Hospital Jaipur</div>
+                          <div className="text-xs text-slate-400">Kidney Stones & Vascular</div>
+                        </div>
+                      </Link>
+                      <div className="border-t border-slate-100 mt-2 pt-2">
+                        <Link href="/departments" className="flex items-center justify-between px-4 py-2 rounded-xl text-xs font-bold text-medical-600 hover:bg-medical-50 transition-colors">
+                          View All Departments <ChevronRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Link key={link.name} href={link.href} className="text-sm font-semibold text-slate-700 hover:text-medical-600 transition-colors">
+                  {link.name}
+                </Link>
+              )
+            )}
             <Link 
               href="/appointment"
               className="hidden lg:flex items-center gap-2 bg-medical-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-medical-700 transition-all shadow-lg shadow-medical-200 active:scale-95"
@@ -142,6 +183,20 @@ export default function Header() {
               ))}
             </nav>
             
+            {/* Mobile Department quick links */}
+            <div className="mt-6 p-4 bg-slate-50 rounded-2xl space-y-1">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Departments</p>
+              <Link href="/orthopedic" onClick={closeMobileMenu} className="flex items-center gap-3 py-2.5 text-sm font-semibold text-slate-700 hover:text-amber-600 transition-colors">
+                🦴 Best Orthopedic Hospital in Jaipur <ChevronRight className="w-4 h-4 ml-auto text-slate-300" />
+              </Link>
+              <Link href="/ent" onClick={closeMobileMenu} className="flex items-center gap-3 py-2.5 text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">
+                👂 ENT Specialist in Jaipur <ChevronRight className="w-4 h-4 ml-auto text-slate-300" />
+              </Link>
+              <Link href="/speciality" onClick={closeMobileMenu} className="flex items-center gap-3 py-2.5 text-sm font-semibold text-slate-700 hover:text-purple-600 transition-colors">
+                🔬 Speciality Hospital Jaipur <ChevronRight className="w-4 h-4 ml-auto text-slate-300" />
+              </Link>
+            </div>
+
             <div className="mt-10 space-y-4">
               <Link 
                 href="/appointment"
