@@ -45,6 +45,8 @@ async function startBot() {
         }
     }
 
+    let botReady = false;
+
     const client = new Client({
         authStrategy: new LocalAuth(),
         puppeteer: {
@@ -66,6 +68,105 @@ async function startBot() {
         }
     });
 
+    // --- START SERVER IMMEDIATELY (For Render) ---
+    const server = http.createServer(async (req, res) => {
+        // CORS Headers
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+        if (req.method === 'OPTIONS') {
+            res.writeHead(204);
+            res.end();
+            return;
+        }
+
+        if (!botReady) {
+            res.writeHead(503, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: "Bot is still initializing WhatsApp. Please try again in a moment." }));
+            return;
+        }
+
+        if (req.method === 'POST' && req.url === '/notify-booking') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', async () => {
+                try {
+                    const { patient, appointment, doctor } = JSON.parse(body);
+                    
+                    const formatNum = (num) => {
+                        let clean = num.replace(/\D/g, '');
+                        if (clean.length === 10) clean = `91${clean}`;
+                        return clean.endsWith('@c.us') ? clean : `${clean}@c.us`;
+                    };
+
+                    const patientTo = formatNum(patient.phone);
+                    const adminTo = formatNum(config.adminPhone);
+                    const doctorTo = formatNum(doctor.phone || config.hostPhone || config.adminPhone);
+
+                    const apptNo = appointment.no ? `\n🔢 *Appointment No: ${appointment.no}*` : '';
+                    const patientMsg = `✅ *Appointment Confirmed*\n\nDear ${patient.name},\nYour appointment with *${doctor.name}* (${doctor.speciality}) has been scheduled.\n\n🗓️ Date: *${appointment.date}*\n⏰ Time: *${appointment.time}*${apptNo}\n📍 Location: *${config.hospitalName}*\n\nThank you for choosing us!`;
+                    await client.sendMessage(patientTo, patientMsg);
+
+                    const adminMsg = `🏥 *NEW BOOKING ALERT*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nPlease ensure the slot is blocked in the manual register if required.`;
+                    await client.sendMessage(adminTo, adminMsg);
+
+                    const docMsg = `👨‍⚕️ *NEW APPOINTMENT*\n\nYou have a new appointment scheduled.\n\nPatient: ${patient.name}\nDate: ${appointment.date}\nTime: ${appointment.time}\nType: Website Booking`;
+                    await client.sendMessage(doctorTo, docMsg);
+
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, message: "Notifications sent" }));
+                } catch (err) {
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: false, error: err.message }));
+                }
+            });
+        } else if (req.method === 'POST' && req.url === '/send-message') {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', async () => {
+                try {
+                    const { to, message, media } = JSON.parse(body);
+                    let cleanNumber = to.replace(/\D/g, '');
+                    if (cleanNumber.length === 10) cleanNumber = `91${cleanNumber}`;
+                    if (!cleanNumber.endsWith('@c.us')) cleanNumber = `${cleanNumber}@c.us`;
+                    
+                    if (media && media.startsWith('http')) {
+                        try {
+                            const mediaObj = await MessageMedia.fromUrl(media);
+                            await client.sendMessage(cleanNumber, mediaObj, { caption: message });
+                        } catch (mediaErr) {
+                            await client.sendMessage(cleanNumber, message);
+                        }
+                    } else {
+                        await client.sendMessage(cleanNumber, message);
+                    }
+
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true }));
+                } catch (err) {
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: false, error: err.message }));
+                }
+            });
+        } else {
+            res.writeHead(404);
+            res.end();
+        }
+    });
+
+    server.listen(API_PORT, async () => {
+        console.log(`\n✅ HTTP Server Listening on Port ${API_PORT}`);
+        if (process.platform !== 'linux' && config.ngrokToken) {
+            try {
+                const listener = await ngrok.connect({ addr: API_PORT, authtoken: config.ngrokToken.trim() });
+                console.log(`🚀 PUBLIC API URL: ${listener.url()}`);
+            } catch (err) { console.error('Ngrok Error:', err.message); }
+        } else {
+            console.log('🚀 Running on Render. Public URL is assigned by Render.');
+        }
+    });
+
     console.log('Initializing WhatsApp client...');
 
     client.on('qr', (qr) => {
@@ -82,124 +183,8 @@ async function startBot() {
     });
 
     client.on('ready', () => {
-        console.log('Advanced Hospital Bot is ready!');
-
-        // Start HTTP API
-        const server = http.createServer(async (req, res) => {
-            // CORS Headers
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-            if (req.method === 'OPTIONS') {
-                res.writeHead(204);
-                res.end();
-                return;
-            }
-
-            if (req.method === 'POST' && req.url === '/notify-booking') {
-                let body = '';
-                req.on('data', chunk => { body += chunk.toString(); });
-                req.on('end', async () => {
-                    try {
-                        const { patient, appointment, doctor } = JSON.parse(body);
-                        
-                        // 1. Format Numbers
-                        const formatNum = (num) => {
-                            let clean = num.replace(/\D/g, '');
-                            if (clean.length === 10) clean = `91${clean}`;
-                            return clean.endsWith('@c.us') ? clean : `${clean}@c.us`;
-                        };
-
-                        const patientTo = formatNum(patient.phone);
-                        const adminTo = formatNum(config.adminPhone);
-                        const doctorTo = formatNum(doctor.phone || config.adminPhone);
-
-                        console.log(`[API] Processing booking notification for ${patient.name}...`);
-
-                        // 2. Notify Patient
-                        const apptNo = appointment.no ? `\n🔢 *Appointment No: ${appointment.no}*` : '';
-                        const patientMsg = `✅ *Appointment Confirmed*\n\nDear ${patient.name},\nYour appointment with *${doctor.name}* (${doctor.speciality}) has been scheduled.\n\n🗓️ Date: *${appointment.date}*\n⏰ Time: *${appointment.time}*${apptNo}\n📍 Location: *${config.hospitalName}*\n\nThank you for choosing us!`;
-                        await client.sendMessage(patientTo, patientMsg);
-
-                        // 3. Notify Admin/Receptionist
-                        const adminMsg = `🏥 *NEW BOOKING ALERT*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nPlease ensure the slot is blocked in the manual register if required.`;
-                        await client.sendMessage(adminTo, adminMsg);
-
-                        // 4. Notify Doctor
-                        const docMsg = `👨‍⚕️ *NEW APPOINTMENT*\n\nYou have a new appointment scheduled.\n\nPatient: ${patient.name}\nDate: ${appointment.date}\nTime: ${appointment.time}\nType: Website Booking`;
-                        await client.sendMessage(doctorTo, docMsg);
-
-                        res.writeHead(200, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ success: true, message: "Notifications sent to Patient, Admin, and Doctor" }));
-                    } catch (err) {
-                        console.error('[API] Notification Error:', err);
-                        res.writeHead(500, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ success: false, error: err.message }));
-                    }
-                });
-            } else if (req.method === 'POST' && req.url === '/send-message') {
-                let body = '';
-                req.on('data', chunk => { body += chunk.toString(); });
-                req.on('end', async () => {
-                    try {
-                        let { to, message, media } = JSON.parse(body);
-
-                        // Robust number formatting
-                        let cleanNumber = to.replace(/\D/g, '');
-                        if (cleanNumber.length === 10) cleanNumber = `91${cleanNumber}`;
-                        if (!cleanNumber.endsWith('@c.us')) cleanNumber = `${cleanNumber}@c.us`;
-                        to = cleanNumber;
-
-                        console.log(`[API] Sending message to ${to}...`);
-
-                        if (media && media.startsWith('http')) {
-                            try {
-                                const mediaObj = await MessageMedia.fromUrl(media);
-                                await client.sendMessage(to, mediaObj, { caption: message });
-                            } catch (mediaErr) {
-                                console.error('[API] Media Load Error:', mediaErr);
-                                await client.sendMessage(to, message);
-                            }
-                        } else {
-                            await client.sendMessage(to, message);
-                        }
-
-                        res.writeHead(200, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ success: true }));
-                    } catch (err) {
-                        console.error('[API] Error sending message:', err);
-                        res.writeHead(500, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ success: false, error: err.message }));
-                    }
-                });
-            } else {
-                res.writeHead(404);
-                res.end();
-            }
-        });
-
-        server.listen(API_PORT, async () => {
-            console.log(`WhatsApp API Gateway is active for ${config.hospitalName}`);
-            console.log(`Local Endpoint: http://localhost:${API_PORT}`);
-
-            // Start Public Tunnel (Exposing local port 3001 to the live website)
-            // Note: Disable Ngrok on Render to save memory
-            if (process.platform !== 'linux' && config.ngrokToken) {
-                try {
-                    const listener = await ngrok.connect({
-                        addr: API_PORT,
-                        authtoken: config.ngrokToken.trim()
-                    });
-                    console.log(`\n🚀 PUBLIC API URL: ${listener.url()}`);
-                    console.log(`👉 Copy this URL into your Next.js '.env.local' as NEXT_PUBLIC_WHATSAPP_API_URL\n`);
-                } catch (err) {
-                    console.error('Error starting ngrok:', err.message);
-                }
-            } else {
-                console.log('\n🚀 Running on Render. Public URL is assigned by Render.');
-            }
-        });
+        console.log('✅ Advanced Hospital Bot is ready!');
+        botReady = true;
     });
 
     client.on('message', async (msg) => {
