@@ -117,7 +117,8 @@ async function startBot() {
                         console.log(`[API] Processing booking notification for ${patient.name}...`);
 
                         // 2. Notify Patient
-                        const patientMsg = `✅ *Appointment Confirmed*\n\nDear ${patient.name},\nYour appointment with *${doctor.name}* (${doctor.speciality}) has been scheduled.\n\n🗓️ Date: ${appointment.date}\n⏰ Time: ${appointment.time}\n📍 Location: ${config.hospitalName}\n\nThank you for choosing us!`;
+                        const apptNo = appointment.no ? `\n🔢 *Appointment No: ${appointment.no}*` : '';
+                        const patientMsg = `✅ *Appointment Confirmed*\n\nDear ${patient.name},\nYour appointment with *${doctor.name}* (${doctor.speciality}) has been scheduled.\n\n🗓️ Date: *${appointment.date}*\n⏰ Time: *${appointment.time}*${apptNo}\n📍 Location: *${config.hospitalName}*\n\nThank you for choosing us!`;
                         await client.sendMessage(patientTo, patientMsg);
 
                         // 3. Notify Admin/Receptionist

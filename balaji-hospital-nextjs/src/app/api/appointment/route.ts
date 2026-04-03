@@ -119,7 +119,12 @@ export async function POST(request: Request) {
       // 4. Trigger Unified WhatsApp Notification (Patient, Admin, Doctor)
       await notifyBooking({
         patient: { name: patientName, phone: whatsapp },
-        appointment: { date, time: slotId, id: aptId },
+        appointment: { 
+          date, 
+          time: slotId, 
+          id: aptId,
+          no: appointmentNo // Added serial number
+        } as any,
         doctor: { 
           name: doctorName, 
           speciality: department,
