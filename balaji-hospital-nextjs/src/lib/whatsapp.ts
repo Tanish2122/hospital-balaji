@@ -14,12 +14,15 @@ interface WhatsAppMessage {
 export async function sendWhatsAppMessage({ to, message, media }: WhatsAppMessage) {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_WHATSAPP_API_URL || "http://localhost:3001";
+    console.log(`[WhatsApp] Calling API at: ${baseUrl}/send-message`);
     const response = await fetch(`${baseUrl}/send-message`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ to, message, media }),
     });
-    return await response.json();
+    const result = await response.json();
+    console.log(`[WhatsApp] API Response:`, result);
+    return result;
   } catch (error) {
     console.error("WhatsApp delivery failed:", error);
     return { success: false, error };
@@ -35,12 +38,15 @@ interface BookingNotification {
 export async function notifyBooking(data: BookingNotification) {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_WHATSAPP_API_URL || "http://localhost:3001";
+    console.log(`[WhatsApp] Calling API at: ${baseUrl}/notify-booking`);
     const response = await fetch(`${baseUrl}/notify-booking`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    return await response.json();
+    const result = await response.json();
+    console.log(`[WhatsApp] API Response:`, result);
+    return result;
   } catch (error) {
     console.error("Booking notification failed:", error);
     return { success: false, error };
