@@ -56,7 +56,10 @@ async function startBot() {
                 '--disable-accelerated-2d-canvas',
                 '--no-first-run',
                 '--no-zygote',
-                '--disable-gpu'
+                '--disable-gpu',
+                '--single-process', // Saves memory but less stable
+                '--disable-extensions',
+                '--js-flags="--max-old-space-size=256"' // Crucial: Limits internal memory of the browser
             ],
             headless: 'new'
         }
