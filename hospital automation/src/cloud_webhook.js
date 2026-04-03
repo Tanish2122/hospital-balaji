@@ -9,8 +9,10 @@ const supabase = require('./supabase_client');
 const app = express();
 app.use(bodyParser.json());
 
-const PORT = 3002; // Use a different port if needed
+const PORT = process.env.PORT || 3002;
 let dynamicDepartments = {};
+let sessionManager, cloudAPI;
+const config = require('./config');
 
 async function init() {
     const db = await setupDatabase();
@@ -171,5 +173,7 @@ app.get('/webhook', (req, res) => {
 });
 
 init().then(() => {
-    app.listen(PORT, () => console.log(`Cloud API Webhook running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`Cloud API Webhook is active on port ${PORT}`));
+}).catch(err => {
+    console.error("Initialization failed:", err);
 });
