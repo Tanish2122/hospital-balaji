@@ -28,9 +28,27 @@ async function startBot() {
     const db = await setupDatabase();
     const sessionManager = new SessionManager(db);
 
+    // Dynamic Chrome path for Docker/Render
+    let executablePath = '';
+    if (process.platform === 'linux') {
+        // Try common locations in Docker
+        const possiblePaths = [
+            '/usr/bin/google-chrome',
+            '/usr/bin/chromium',
+            '/root/.cache/puppeteer/chrome/linux-140.0.7000.06/chrome-linux64/chrome'
+        ];
+        for (const p of possiblePaths) {
+            if (fs.existsSync(p)) {
+                executablePath = p;
+                break;
+            }
+        }
+    }
+
     const client = new Client({
         authStrategy: new LocalAuth(),
         puppeteer: {
+            executablePath: executablePath || undefined,
             args: [
                 '--no-sandbox', 
                 '--disable-setuid-sandbox',
