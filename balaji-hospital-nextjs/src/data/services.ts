@@ -22,7 +22,7 @@ export const services: Service[] = [
     icon: "Activity",
     image: "/images/services/spine.png",
     category: "Orthopedic",
-    url: "/departments/orthopedic/spine-treatment",
+    url: "/orthopedic/spine-treatment-in-jaipur",
   },
   {
     id: "knee-replacement",
@@ -33,7 +33,7 @@ export const services: Service[] = [
     icon: "Stethoscope",
     image: "/images/services/knee.png",
     category: "Orthopedic",
-    url: "/departments/orthopedic/knee-replacement",
+    url: "/orthopedic/best-knee-replacement-hospital-in-jaipur",
   },
   {
     id: "hip-replacement",
@@ -44,7 +44,7 @@ export const services: Service[] = [
     icon: "HeartPulse",
     image: "/images/services/hip.png",
     category: "Orthopedic",
-    url: "/departments/orthopedic/hip-replacement",
+    url: "/orthopedic/hip-replacement-hospital-in-jaipur",
   },
 
   // ─── ENT ─────────────────────────────────────────────────────────
@@ -58,7 +58,7 @@ export const services: Service[] = [
     icon: "Microscope",
     image: "/images/services/ear.png",
     category: "ENT",
-    url: "/departments/ent/ear-surgery",
+    url: "/ent/best-ear-surgery-hospital-in-jaipur",
   },
   {
     id: "nose-surgery",
@@ -70,7 +70,7 @@ export const services: Service[] = [
     icon: "Wind",
     image: "/images/services/nose.png",
     category: "ENT",
-    url: "/departments/ent/nose-surgery",
+    url: "/ent/best-nose-surgery-hospital-in-jaipur",
   },
   {
     id: "throat-surgery",
@@ -82,7 +82,7 @@ export const services: Service[] = [
     icon: "Wind",
     image: "/images/services/throat.png",
     category: "ENT",
-    url: "/departments/ent/throat-surgery",
+    url: "/ent/best-throat-surgery-hospital-in-jaipur",
   },
 
   // ─── Speciality ──────────────────────────────────────────────────
@@ -96,7 +96,7 @@ export const services: Service[] = [
     icon: "HeartPulse",
     image: "/images/services/plastic.png",
     category: "Speciality",
-    url: "/departments/speciality/plastic-vascular-surgery",
+    url: "/orthopedic/plastic-vascular-surgery-in-jaipur",
   },
   {
     id: "kidney-stones",
@@ -108,6 +108,6 @@ export const services: Service[] = [
     icon: "Flame",
     image: "/images/services/kidney.png",
     category: "Speciality",
-    url: "/departments/speciality/kidney-stones",
+    url: "/speciality/kidney-stones-treatment-in-jaipur",
   },
 ];

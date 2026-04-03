@@ -8,64 +8,64 @@ import Link from "next/link";
 
 const treatments = [
   {
-    title: "Spine Treatment",
+    title: "Spine Treatment in Jaipur",
     category: "Orthopedic",
     description:
       "Advanced spinal care for herniated discs, stenosis, and deformity correction using both surgical and non-surgical approaches.",
     image:
       "https://balajihospitaljaipur.com/uploads/gallery/5965221775reception1-small.png",
     color: "bg-amber-50 text-amber-600",
-    href: "/departments/orthopedic/spine-treatment",
+    href: "/orthopedic/spine-treatment-in-jaipur",
   },
   {
-    title: "Knee Replacement",
+    title: "Best Knee Replacement Hospital in Jaipur",
     category: "Orthopedic",
     description:
       "Total and partial knee replacement using minimally invasive techniques for faster recovery and lasting pain relief.",
     image:
       "https://balajihospitaljaipur.com/uploads/gallery/9751225657generalWard-small.png",
     color: "bg-medical-50 text-medical-600",
-    href: "/departments/orthopedic/knee-replacement",
+    href: "/orthopedic/best-knee-replacement-hospital-in-jaipur",
   },
   {
-    title: "Hip Replacement",
+    title: "Hip Replacement Hospital in Jaipur",
     category: "Orthopedic",
     description:
       "Cemented and cementless hip arthroplasty for arthritis and avascular necrosis, restoring mobility and quality of life.",
     image:
       "https://balajihospitaljaipur.com/uploads/gallery/6729552157ot2-small.png",
     color: "bg-amber-50 text-amber-600",
-    href: "/departments/orthopedic/hip-replacement",
+    href: "/orthopedic/hip-replacement-hospital-in-jaipur",
   },
   {
-    title: "Ear Surgery",
+    title: "Best Ear Surgery Hospital in Jaipur",
     category: "ENT",
     description:
       "Microscopic tympanoplasty, mastoidectomy, and stapedectomy for hearing restoration and chronic ear infection management.",
     image:
       "https://balajihospitaljaipur.com/uploads/gallery/5729652157ot-small.png",
     color: "bg-blue-50 text-blue-600",
-    href: "/departments/ent/ear-surgery",
+    href: "/ent/best-ear-surgery-hospital-in-jaipur",
   },
   {
-    title: "Physiotherapy & Rehab",
+    title: "Physiotherapy & Rehabilitation Centre in Jaipur",
     category: "Rehabilitation",
     description:
       "Comprehensive post-operative rehabilitation programs using modern physiotherapy equipment for full functional recovery.",
     image:
       "https://balajihospitaljaipur.com/uploads/gallery/6229751557physiotherapy-small.png",
     color: "bg-emerald-50 text-emerald-600",
-    href: "/departments/orthopedic/physiotherapy",
+    href: "/orthopedic/physiotherapy-and-rehabilitation-centre-in-jaipur",
   },
   {
-    title: "Kidney Stones Treatment",
+    title: "Kidney Stones Treatment in Jaipur",
     category: "Speciality",
     description:
       "Modern laser lithotripsy and ESWL for effective, non-invasive removal of urinary and kidney stones.",
     image:
       "https://balajihospitaljaipur.com/uploads/gallery/2956725571digitalXray-small.png",
     color: "bg-purple-50 text-purple-600",
-    href: "/departments/speciality/kidney-stones",
+    href: "/speciality/kidney-stones-treatment-in-jaipur",
   },
 ];
 

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { orthopedicServices } from "@/data/orthopedicServices";
 import { services as localServices } from "@/data/services";
+import { orthopedicDataToSeoSlug, entDataToSeoSlug, specialityDataToSeoSlug } from "@/data/seoSlugMap";
 import DepartmentCategoryCTA from "@/components/departments/DepartmentCategoryCTA";
 
 type CategoryParam = "orthopedic" | "ent" | "speciality";
@@ -95,7 +96,7 @@ async function getServicesForCategory(category: CategoryParam) {
           slug: s.slug,
           features: Array.isArray(s.features) ? s.features : [],
           icon: s.icon || "Activity",
-          url: `/departments/orthopedic/${s.slug}`,
+          url: `/orthopedic/${orthopedicDataToSeoSlug[s.slug] ?? s.slug}`,
         }));
       }
     } catch {
@@ -117,7 +118,7 @@ async function getServicesForCategory(category: CategoryParam) {
         slug: s.slug,
         features: s.features,
         icon: s.icon,
-        url: `/departments/orthopedic/${s.slug}`,
+        url: `/orthopedic/${orthopedicDataToSeoSlug[s.slug] ?? s.slug}`,
       }));
   }
 
@@ -132,7 +133,9 @@ async function getServicesForCategory(category: CategoryParam) {
       slug: s.id,
       features: s.features || [],
       icon: s.icon,
-      url: `/departments/${category}/${s.id}`,
+      url: category === "ent"
+        ? `/ent/${entDataToSeoSlug[s.id] ?? s.id}`
+        : `/speciality/${specialityDataToSeoSlug[s.id] ?? s.id}`,
     }));
 }
 

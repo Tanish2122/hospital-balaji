@@ -36,20 +36,20 @@ export default function Schema() {
         "department": [
           {
             "@type": "MedicalClinic",
-            "name": "Orthopedic Department Jaipur",
-            "url": "https://balajihospitaljaipur.com/departments/orthopedic",
+            "name": "Best Orthopedic Hospital in Jaipur",
+            "url": "https://balajihospitaljaipur.com/orthopedic",
             "medicalSpecialty": "Orthopedic"
           },
           {
             "@type": "MedicalClinic",
-            "name": "ENT Department Jaipur",
-            "url": "https://balajihospitaljaipur.com/departments/ent",
+            "name": "ENT Specialist in Jaipur",
+            "url": "https://balajihospitaljaipur.com/ent",
             "medicalSpecialty": "Otolaryngology"
           },
           {
             "@type": "MedicalClinic",
-            "name": "Urology Department Jaipur",
-            "url": "https://balajihospitaljaipur.com/departments/speciality/kidney-stones",
+            "name": "Kidney Stones Treatment in Jaipur",
+            "url": "https://balajihospitaljaipur.com/speciality/kidney-stones-treatment-in-jaipur",
             "medicalSpecialty": "Urology"
           }
         ]
