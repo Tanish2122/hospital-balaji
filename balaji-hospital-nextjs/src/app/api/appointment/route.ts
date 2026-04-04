@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { generateId } from "@/lib/id-generator";
-import { sendWhatsAppMessage, notifyBooking } from "@/lib/whatsapp";
+import { sendWhatsAppMessage, notifyBooking, notifyEmergency } from "@/lib/whatsapp";
 import { doctors } from "@/data/doctors";
 import { hospitals } from "@/lib/hospitals";
 
@@ -35,23 +35,19 @@ export async function POST(request: Request) {
 
       if (error) throw error;
 
-      // 2. Send WhatsApp to Doctor/Admin (Hospital Specific)
-      await sendWhatsAppMessage({
-        to: hospital.doctorPhone,
-        message: `🚨 Emergency Alert - ${hospital.name}\n\nPatient: ${patientName}\nPhone: ${phone}\nEmergency ID: ${emgId}\nReports: ${reportUrl || "No files attached"}`,
-        media: reportUrl
-      });
+      // 2. Trigger Unified Emergency Notification (Patient, Admin, Receptionist, Doctor)
+      const patientPhoneRaw = (whatsapp || phone).replace(/\D/g, "");
+      const formattedPatientPhone = patientPhoneRaw.length === 10 ? `91${patientPhoneRaw}` : patientPhoneRaw;
 
-      // 3. Send WhatsApp to Patient (Standardized Template)
-      if (whatsapp || phone) {
-        const patientPhone = (whatsapp || phone).replace(/\D/g, "");
-        const formattedPatientPhone = patientPhone.length === 10 ? `91${patientPhone}` : patientPhone;
-        
-        await sendWhatsAppMessage({
-          to: `${formattedPatientPhone}@c.us`,
-          message: `Hello ${patientName},\n\nYour emergency request has been received at ${hospital.name}.\n\nEmergency ID: *${emgId}*\nOur medical team will contact you immediately.`
-        });
-      }
+      await notifyEmergency({
+        patient: { name: patientName, phone: `${formattedPatientPhone}@c.us` },
+        id: emgId,
+        doctor: { 
+          name: "Duty Doctor", // Hospital type doesn't have doctorName
+          phone: hospital.doctorPhone 
+        },
+        reportUrl: reportUrl
+      });
 
       return NextResponse.json({ success: true, id: emgId });
 

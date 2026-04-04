@@ -35,6 +35,13 @@ interface BookingNotification {
   doctor: { name: string; speciality: string; phone?: string };
 }
 
+interface EmergencyNotification {
+  patient: { name: string; phone: string };
+  id: string;
+  doctor: { name: string; phone?: string };
+  reportUrl?: string;
+}
+
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function notifyBooking(data: BookingNotification) {
@@ -79,6 +86,51 @@ export async function notifyBooking(data: BookingNotification) {
     return { success: true };
   } catch (error) {
     console.error("Booking notification failed:", error);
+    return { success: false, error };
+  }
+}
+
+export async function notifyEmergency(data: EmergencyNotification) {
+  try {
+    const { patient, id, doctor, reportUrl } = data;
+    const adminPhone = "918290909163@c.us";
+    const recepPhone = "916377433387@c.us";
+    const testDocPhone = doctor.phone || "918949518353@c.us";
+
+    // 1. Send to Patient (Confirmation)
+    await sendWhatsAppMessage({
+      to: patient.phone,
+      message: `🚨 *Emergency Alert Received*\n\nDear ${patient.name},\nYour emergency request has been received (ID: *${id}*).\n\nOur duty doctor *${doctor.name}* has been notified and will contact you immediately.`
+    });
+
+    await sleep(3000);
+
+    // 2. Send to Admin (8290909163)
+    await sendWhatsAppMessage({
+      to: adminPhone,
+      message: `🚨 *EMERGENCY ALERT (Admin)*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nID: ${id}\nReports: ${reportUrl || "No files attached"}`
+    });
+
+    await sleep(3000);
+
+    // 3. Send to Receptionist (6377433387)
+    await sendWhatsAppMessage({
+      to: recepPhone,
+      message: `🚨 *EMERGENCY ALERT (Reception)*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nID: ${id}\nPlease alert the nursing staff immediately for ID: ${id}`
+    });
+
+    await sleep(3000);
+
+    // 4. Send to Doctor
+    await sendWhatsAppMessage({
+      to: testDocPhone,
+      message: `🚨 *URGENT EMERGENCY*\n\nYou have an urgent emergency patient.\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nID: ${id}\nReports: ${reportUrl || "None"}`,
+      media: reportUrl
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Emergency notification failed:", error);
     return { success: false, error };
   }
 }

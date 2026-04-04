@@ -44,7 +44,7 @@ async function startBot() {
         try {
             const data = await supabase.downloadSession();
             if (data) {
-                console.log("🛠️ Restoring session from Supabase...");
+                console.log("🛠️ Restoring session from Supabase Cloud...");
                 fs.writeFileSync('session.tar.gz', data);
                 await execPromise('tar -xzf session.tar.gz');
                 fs.unlinkSync('session.tar.gz');
@@ -56,38 +56,25 @@ async function startBot() {
     }
 
     async function saveSession() {
-        if (isBackupInProgress) {
-            console.log("ℹ️ Backup already in progress, skipping redundant request.");
-            return;
-        }
-
+        if (isBackupInProgress) return;
         try {
             isBackupInProgress = true;
-            console.log("💾 Preparing session for backup...");
+            console.log("💾 Saving session to Supabase Cloud...");
             if (!fs.existsSync('.wwebjs_auth')) {
                 isBackupInProgress = false;
                 return;
             }
-            
             const tempFile = `session-${Date.now()}.tar.gz`;
             try {
-                // Exclude Cache and Code Cache to avoid "file changed" errors and reduce size
                 const excludeCmd = "--exclude='.wwebjs_auth/session/Default/Cache' --exclude='.wwebjs_auth/session/Default/Code Cache'";
                 await execPromise(`tar ${excludeCmd} --ignore-failed-read -czf ${tempFile} .wwebjs_auth`);
             } catch (tarErr) {
-                // Exit code 1 means some files changed during read - this is OK for us
-                if (tarErr.code === 1) {
-                    console.log("ℹ️ Note: Some cache files changed during backup, continuing...");
-                } else {
-                    throw tarErr;
-                }
+                if (tarErr.code !== 1) throw tarErr;
             }
-
             if (fs.existsSync(tempFile)) {
-                const buffer = fs.readFileSync(tempFile);
-                await supabase.uploadSession(buffer);
+                await supabase.uploadSession(fs.readFileSync(tempFile));
                 fs.unlinkSync(tempFile);
-                console.log("✅ Session backup complete.");
+                console.log("✅ Cloud backup complete.");
             }
         } catch (err) {
             console.error("❌ Backup Error:", err.message);
@@ -98,28 +85,11 @@ async function startBot() {
 
     await restoreSession();
 
-    // Dynamic Chrome path for Docker/Render
-    let executablePath = '';
-    if (process.platform === 'linux') {
-        const possiblePaths = [
-            '/usr/bin/google-chrome',
-            '/usr/bin/google-chrome-stable',
-            '/usr/bin/chromium',
-            '/usr/bin/chromium-browser'
-        ];
-        for (const p of possiblePaths) {
-            if (fs.existsSync(p)) {
-                executablePath = p;
-                break;
-            }
-        }
-    }
-
     const client = new Client({
         authStrategy: new LocalAuth(),
         puppeteer: {
             executablePath: executablePath || undefined,
-            protocolTimeout: 60000, 
+            protocolTimeout: 120000, // 2 minutes
             args: [
                 '--no-sandbox', 
                 '--disable-setuid-sandbox',
@@ -128,10 +98,10 @@ async function startBot() {
                 '--no-first-run',
                 '--no-zygote',
                 '--disable-gpu',
-                '--single-process', 
+                // '--single-process', // Removed: causes stability issues on local machines
                 '--disable-extensions',
                 '--disable-features=IsolateOrigins,site-per-process', 
-                '--js-flags="--max-old-space-size=160"',
+                '--js-flags="--max-old-space-size=256"', // Increased for local
                 '--disable-background-networking',
                 '--disable-sync',
                 '--disable-default-apps',
@@ -237,15 +207,20 @@ async function startBot() {
 
     server.listen(API_PORT, async () => {
         console.log(`\n✅ HTTP Server Listening on Port ${API_PORT}`);
-        console.log(`👉 Status Page: https://hospital-balaji.onrender.com/ (Check here if QR is missing)`);
         
-        if (process.platform !== 'linux' && config.ngrokToken) {
+        if (config.ngrokToken) {
             try {
                 const listener = await ngrok.connect({ addr: API_PORT, authtoken: config.ngrokToken.trim() });
                 console.log(`🚀 PUBLIC API URL: ${listener.url()}`);
-            } catch (err) { console.error('Ngrok Error:', err.message); }
+                console.log(`👉 Status Page: ${listener.url()}/ (Check here if QR is missing)`);
+                console.log(`\n⚠️  IMPORTANT: COPY the PUBLIC API URL above and update your Vercel/Website settings!`);
+            } catch (err) { 
+                console.error('Ngrok Error:', err.message);
+                console.log('Running locally on http://localhost:' + API_PORT);
+            }
         } else {
-            console.log('🚀 Running on Render. Public URL is assigned by Render.');
+            console.log('Running locally on http://localhost:' + API_PORT);
+            console.log('Note: To connect to your website, you MUST provide an ngrokToken in config.js');
         }
     });
 
@@ -293,25 +268,6 @@ async function startBot() {
     });
 
     client.initialize();
-
-    // --- KEEP ALIVE MECHANISM (For Render Free Tier) ---
-    // Pings the server every 5 minutes to prevent it from sleeping
-    const keepAliveUrl = process.env.RENDER_EXTERNAL_URL || `https://hospital-balaji.onrender.com`;
-    if (keepAliveUrl) {
-        console.log(`📡 Keep-alive active. Pinging ${keepAliveUrl} every 5 mins.`);
-        const pingLib = keepAliveUrl.startsWith('https') ? https : http;
-        setInterval(() => {
-            try {
-                pingLib.get(keepAliveUrl, (res) => {
-                    // Ping success
-                }).on('error', (err) => {
-                    console.error('Keep-alive ping failed:', err.message);
-                });
-            } catch (err) {
-                console.error('Keep-alive error:', err.message);
-            }
-        }, 300000); // 5 minutes
-    }
 }
 
 async function sendMainMenu(client, phone) {
@@ -353,14 +309,21 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
                 const emgId = await sessionManager.saveEmergencyRequest(data);
                 await client.sendMessage(phone, `✅ Your emergency request has been sent (ID: *${emgId}*). Our duty doctor will contact you immediately.`);
 
-                // Notify Doctor
-                await notifyDoctor(client, config.emergencyDoctor.phone, {
-                    type: 'EMERGENCY',
-                    id: emgId,
-                    name: data.name,
-                    phone: phone,
-                    reports: data.reports
-                });
+                // 2. Trigger Unified 4-Way Notification via Website
+                try {
+                    const cleanPatientPhone = phone.replace(/\D/g, '');
+                    await axios.post(`${config.websiteUrl}/api/notify`, {
+                        type: 'emergency',
+                        data: {
+                            patient: { name: data.name, phone: `${cleanPatientPhone}@c.us` },
+                            id: emgId,
+                            doctor: { name: config.emergencyDoctor.name, phone: config.emergencyDoctor.phone },
+                            reportUrl: data.reports && data.reports.length > 0 ? data.reports[0].url : null
+                        }
+                    }, { timeout: 10000 });
+                } catch (notifyErr) {
+                    console.error("Website Notification Failed:", notifyErr.message);
+                }
 
                 await sessionManager.deleteSession(phone);
             } else if (msg.hasMedia) {
@@ -442,18 +405,22 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
             if (chosenSlot && await sessionManager.isSlotAvailable(data.date, chosenSlot, data.doctor)) {
                 data.time = chosenSlot;
                 const appId = await sessionManager.saveNormalAppointment(data);
-                await client.sendMessage(phone, `✅ *Booking Confirmed!*\nID: *${appId}*\nDate: ${data.date}\nTime: ${data.time}\nDoctor: ${data.doctor}\n\nManage your booking at: https://hospital-balaji.vercel.app/appointment`);
+                await client.sendMessage(phone, `✅ *Booking Confirmed!*\nID: *${appId}*\nDate: ${data.date}\nTime: ${data.time}\nDoctor: ${data.doctor}\n\nManage your booking at: ${config.websiteUrl}/appointment`);
 
-                // Notify Doctor
-                await notifyDoctor(client, data.doctorPhone, {
-                    type: 'NORMAL',
-                    id: appId,
-                    name: data.name,
-                    phone: phone,
-                    time: data.time,
-                    date: data.date,
-                    dept: data.department
-                });
+                // 2. Trigger Unified 4-Way Notification via Website
+                try {
+                    const cleanPatientPhone = phone.replace(/\D/g, '');
+                    await axios.post(`${config.websiteUrl}/api/notify`, {
+                        type: 'appointment',
+                        data: {
+                            patient: { name: data.name, phone: `${cleanPatientPhone}@c.us` },
+                            appointment: { date: data.date, time: data.time, id: appId },
+                            doctor: { name: data.doctor, speciality: data.department, phone: data.doctorPhone }
+                        }
+                    }, { timeout: 10000 });
+                } catch (notifyErr) {
+                    console.error("Website Notification Failed:", notifyErr.message);
+                }
 
                 await sessionManager.deleteSession(phone);
             } else {
