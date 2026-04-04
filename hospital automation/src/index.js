@@ -8,6 +8,9 @@ const { setupDatabase } = require('./database');
 const SessionManager = require('./sessionManager');
 const config = require('./config');
 const supabase = require('./supabase_client');
+const { exec } = require('child_process');
+const util = require('util');
+const execPromise = util.promisify(exec);
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -29,6 +32,39 @@ async function startBot() {
 
     const db = await setupDatabase();
     const sessionManager = new SessionManager(db);
+
+    // --- SESSION PERSISTENCE (Supabase Fix) ---
+    async function restoreSession() {
+        try {
+            const data = await supabase.downloadSession();
+            if (data) {
+                console.log("🛠️ Restoring session from Supabase...");
+                fs.writeFileSync('session.tar.gz', data);
+                await execPromise('tar -xzf session.tar.gz');
+                fs.unlinkSync('session.tar.gz');
+                console.log("✅ Session restored successfully.");
+            }
+        } catch (err) {
+            console.error("❌ Restore Error:", err.message);
+        }
+    }
+
+    async function saveSession() {
+        try {
+            console.log("💾 Preparing session for backup...");
+            if (!fs.existsSync('.wwebjs_auth')) return;
+            
+            await execPromise('tar -czf session.tar.gz .wwebjs_auth');
+            const buffer = fs.readFileSync('session.tar.gz');
+            await supabase.uploadSession(buffer);
+            fs.unlinkSync('session.tar.gz');
+            console.log("✅ Session backup complete.");
+        } catch (err) {
+            console.error("❌ Backup Error:", err.message);
+        }
+    }
+
+    await restoreSession();
 
     // Dynamic Chrome path for Docker/Render
     let executablePath = '';
@@ -194,8 +230,10 @@ async function startBot() {
         qrcode.generate(qr, { small: true });
     });
 
-    client.on('authenticated', () => {
-        console.log('✅ WhatsApp Authenticated. Starting session...');
+    client.on('authenticated', async () => {
+        console.log('✅ WhatsApp Authenticated. Saving session...');
+        await sleep(5000); // Wait for files to write to disk
+        await saveSession();
     });
 
     client.on('auth_failure', (msg) => {
@@ -203,9 +241,10 @@ async function startBot() {
         qrTime = null; // Clear old QR status
     });
 
-    client.on('ready', () => {
+    client.on('ready', async () => {
         console.log('🚀 ✅ Advanced Hospital Bot is ready!');
         botReady = true;
+        await saveSession(); // Final backup when ready
     });
 
     client.on('message', async (msg) => {

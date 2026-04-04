@@ -67,6 +67,48 @@ class SupabaseClient {
 
         return departments;
     }
+
+    async uploadSession(fileBuffer) {
+        try {
+            console.log("📤 Uploading session to Supabase Storage...");
+            const response = await axios.post(
+                `${this.url}/storage/v1/object/whatsapp-sessions/session.tar.gz`,
+                fileBuffer,
+                {
+                    headers: {
+                        ...this.headers,
+                        'Content-Type': 'application/x-gzip',
+                        'x-upsert': 'true'
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Supabase Upload Error:", error.response?.data || error.message);
+            return null;
+        }
+    }
+
+    async downloadSession() {
+        try {
+            console.log("📥 Downloading session from Supabase Storage...");
+            const response = await axios.get(
+                `${this.url}/storage/v1/object/authenticated/whatsapp-sessions/session.tar.gz`,
+                {
+                    headers: this.headers,
+                    responseType: 'arraybuffer'
+                }
+            );
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 404) {
+                console.log("ℹ️ No saved session found in Supabase.");
+            } else {
+                console.error("Supabase Download Error:", error.response?.data?.toString() || error.message);
+            }
+            return null;
+        }
+    }
 }
 
 module.exports = new SupabaseClient();

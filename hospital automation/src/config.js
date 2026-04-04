@@ -6,9 +6,9 @@ module.exports = {
     cloudPhoneNumberId: "YOUR_PHONE_NUMBER_ID",
     webhookVerifyToken: "YOUR_VERIFY_TOKEN",
     hospitalName: "Balaji Hospital & Orthopaedic Centre 🏥",
-    
+
     // Notification Recipients
-    adminPhone: "918290909163@c.us", 
+    adminPhone: "918290909163@c.us",
     receptionistPhone: "916377433387@c.us",
     testDoctorPhone: "918949518353@c.us",
 
