@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const ngrok = require('@ngrok/ngrok');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
@@ -54,7 +55,8 @@ async function startBot() {
             console.log("💾 Preparing session for backup...");
             if (!fs.existsSync('.wwebjs_auth')) return;
             
-            await execPromise('tar -czf session.tar.gz .wwebjs_auth');
+            // Added --ignore-failed-read to handle files changing during compress
+            await execPromise('tar --ignore-failed-read -czf session.tar.gz .wwebjs_auth');
             const buffer = fs.readFileSync('session.tar.gz');
             await supabase.uploadSession(buffer);
             fs.unlinkSync('session.tar.gz');
@@ -270,13 +272,18 @@ async function startBot() {
     const keepAliveUrl = process.env.RENDER_EXTERNAL_URL || `https://hospital-balaji.onrender.com`;
     if (keepAliveUrl) {
         console.log(`📡 Keep-alive active. Pinging ${keepAliveUrl} every 5 mins.`);
+        const pingLib = keepAliveUrl.startsWith('https') ? https : http;
         setInterval(() => {
-            http.get(keepAliveUrl, (res) => {
-                // Ping success
-            }).on('error', (err) => {
-                console.error('Keep-alive ping failed:', err.message);
-            });
-        }, 300000); // 5 minutes (reduced from 10)
+            try {
+                pingLib.get(keepAliveUrl, (res) => {
+                    // Ping success
+                }).on('error', (err) => {
+                    console.error('Keep-alive ping failed:', err.message);
+                });
+            } catch (err) {
+                console.error('Keep-alive error:', err.message);
+            }
+        }, 300000); // 5 minutes
     }
 }
 
