@@ -121,7 +121,9 @@ class SupabaseClient {
             });
             return response.data;
         } catch (error) {
-            console.error("Supabase Insert Appointment Error:", error.response?.data || error.message);
+            const errMsg = error.response?.data?.message || error.response?.data?.error || error.message;
+            const errDetails = error.response?.data?.details || "";
+            console.error(`❌ Supabase Insert Appointment Error: ${errMsg}`, errDetails);
             return null;
         }
     }
@@ -137,7 +139,8 @@ class SupabaseClient {
             });
             return response.data;
         } catch (error) {
-            console.error("Supabase Insert Emergency Error:", error.response?.data || error.message);
+            const errMsg = error.response?.data?.message || error.response?.data?.error || error.message;
+            console.error(`❌ Supabase Insert Emergency Error: ${errMsg}`);
             return null;
         }
     }

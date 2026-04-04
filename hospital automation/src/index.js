@@ -55,12 +55,25 @@ async function startBot() {
             console.log("💾 Preparing session for backup...");
             if (!fs.existsSync('.wwebjs_auth')) return;
             
-            // Added --ignore-failed-read to handle files changing during compress
-            await execPromise('tar --ignore-failed-read -czf session.tar.gz .wwebjs_auth');
-            const buffer = fs.readFileSync('session.tar.gz');
-            await supabase.uploadSession(buffer);
-            fs.unlinkSync('session.tar.gz');
-            console.log("✅ Session backup complete.");
+            try {
+                // Exclude Cache and Code Cache to avoid "file changed" errors and reduce size
+                const excludeCmd = "--exclude='.wwebjs_auth/session/Default/Cache' --exclude='.wwebjs_auth/session/Default/Code Cache'";
+                await execPromise(`tar ${excludeCmd} --ignore-failed-read -czf session.tar.gz .wwebjs_auth`);
+            } catch (tarErr) {
+                // Exit code 1 means some files changed during read - this is OK for us
+                if (tarErr.code === 1) {
+                    console.log("ℹ️ Note: Some cache files changed during backup, continuing...");
+                } else {
+                    throw tarErr;
+                }
+            }
+
+            if (fs.existsSync('session.tar.gz')) {
+                const buffer = fs.readFileSync('session.tar.gz');
+                await supabase.uploadSession(buffer);
+                fs.unlinkSync('session.tar.gz');
+                console.log("✅ Session backup complete.");
+            }
         } catch (err) {
             console.error("❌ Backup Error:", err.message);
         }
@@ -379,6 +392,7 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
             const doctorsList = departments[data.deptId].doctors;
             if (doctorsList[docIdx]) {
                 data.doctor = doctorsList[docIdx].name;
+                data.doctorId = doctorsList[docIdx].id; // Save the ID for Supabase!
                 data.doctorPhone = doctorsList[docIdx].phone;
                 await sessionManager.updateSession(phone, 'NORMAL_NAME', data);
                 await client.sendMessage(phone, `Doctor: ${data.doctor}\nPlease enter the *Patient Name*.`);
