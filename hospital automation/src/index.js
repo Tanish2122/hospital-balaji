@@ -46,6 +46,7 @@ async function startBot() {
     }
 
     let botReady = false;
+    let lastQr = null;
 
     const client = new Client({
         authStrategy: new LocalAuth(),
@@ -149,6 +150,26 @@ async function startBot() {
                     res.end(JSON.stringify({ success: false, error: err.message }));
                 }
             });
+        } else if (req.method === 'GET' && req.url === '/qr') {
+            if (lastQr) {
+                res.writeHead(302, { 'Location': `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(lastQr)}` });
+                res.end();
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end("QR code is not generated yet. Please wait a few seconds and refresh.");
+            }
+        } else if (req.method === 'GET' && req.url === '/') {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(`
+                <html>
+                    <body style="font-family: sans-serif; text-align: center; padding: 50px;">
+                        <h1>Balaji Hospital Bot Status</h1>
+                        <p>Status: <b>${botReady ? "✅ READY" : "⏳ INITIALIZING"}</b></p>
+                        ${!botReady && lastQr ? `<p><a href="/qr" style="background: blue; color: white; padding: 10px 20px; text-decoration: none; borderRadius: 5px;">SCAN QR CODE HERE</a></p>` : ""}
+                        ${botReady ? "<p>Bot is connected and working!</p>" : "<p>Wait a moment for the bot to load...</p>"}
+                    </body>
+                </html>
+            `);
         } else {
             res.writeHead(404);
             res.end();
@@ -157,6 +178,8 @@ async function startBot() {
 
     server.listen(API_PORT, async () => {
         console.log(`\n✅ HTTP Server Listening on Port ${API_PORT}`);
+        console.log(`👉 Status Page: https://hospital-balaji.onrender.com/ (Check here if QR is missing)`);
+        
         if (process.platform !== 'linux' && config.ngrokToken) {
             try {
                 const listener = await ngrok.connect({ addr: API_PORT, authtoken: config.ngrokToken.trim() });
@@ -170,7 +193,11 @@ async function startBot() {
     console.log('Initializing WhatsApp client...');
 
     client.on('qr', (qr) => {
-        console.log('QR Code received. Scan it with your WhatsApp:');
+        lastQr = qr;
+        console.log('\n--------------------------------------------');
+        console.log('📢 SCAN THIS QR CODE TO START THE BOT:');
+        console.log(`👉 Link: https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`);
+        console.log('--------------------------------------------\n');
         qrcode.generate(qr, { small: true });
     });
 
