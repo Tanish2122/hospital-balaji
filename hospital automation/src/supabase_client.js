@@ -109,6 +109,38 @@ class SupabaseClient {
             return null;
         }
     }
+
+    async insertAppointment(data) {
+        try {
+            console.log(`📡 Syncing appointment ${data.appointment_id_str} to Supabase...`);
+            const response = await axios.post(`${this.url}/rest/v1/appointments`, data, {
+                headers: {
+                    ...this.headers,
+                    'Prefer': 'return=representation'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Supabase Insert Appointment Error:", error.response?.data || error.message);
+            return null;
+        }
+    }
+
+    async insertEmergency(data) {
+        try {
+            console.log(`📡 Syncing emergency alert ${data.emergency_id_str} to Supabase...`);
+            const response = await axios.post(`${this.url}/rest/v1/emergencies`, data, {
+                headers: {
+                    ...this.headers,
+                    'Prefer': 'return=representation'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Supabase Insert Emergency Error:", error.response?.data || error.message);
+            return null;
+        }
+    }
 }
 
 module.exports = new SupabaseClient();
