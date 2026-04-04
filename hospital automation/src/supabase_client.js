@@ -11,12 +11,14 @@ class SupabaseClient {
             'Authorization': `Bearer ${this.key}`,
             'Content-Type': 'application/json'
         };
+        this.requestTimeout = 60000; // 60 seconds
     }
 
     async getDepartments() {
         try {
             const response = await axios.get(`${this.url}/rest/v1/departments?select=name`, {
-                headers: this.headers
+                headers: this.headers,
+                timeout: this.requestTimeout
             });
             // Convert to a flat list or the format expected by the bot
             return response.data;
@@ -30,7 +32,8 @@ class SupabaseClient {
         try {
             // Fetch doctors and their associated departments
             const response = await axios.get(`${this.url}/rest/v1/doctors?select=id,name,departments(name)`, {
-                headers: this.headers
+                headers: this.headers,
+                timeout: this.requestTimeout
             });
             return response.data;
         } catch (error) {
@@ -79,7 +82,8 @@ class SupabaseClient {
                         ...this.headers,
                         'Content-Type': 'application/x-gzip',
                         'x-upsert': 'true'
-                    }
+                    },
+                    timeout: this.requestTimeout
                 }
             );
             return response.data;
@@ -96,7 +100,8 @@ class SupabaseClient {
                 `${this.url}/storage/v1/object/authenticated/whatsapp-sessions/session.tar.gz`,
                 {
                     headers: this.headers,
-                    responseType: 'arraybuffer'
+                    responseType: 'arraybuffer',
+                    timeout: this.requestTimeout
                 }
             );
             return response.data;
@@ -117,7 +122,8 @@ class SupabaseClient {
                 headers: {
                     ...this.headers,
                     'Prefer': 'return=representation'
-                }
+                },
+                timeout: this.requestTimeout
             });
             return response.data;
         } catch (error) {
@@ -135,7 +141,8 @@ class SupabaseClient {
                 headers: {
                     ...this.headers,
                     'Prefer': 'return=representation'
-                }
+                },
+                timeout: this.requestTimeout
             });
             return response.data;
         } catch (error) {

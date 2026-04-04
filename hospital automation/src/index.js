@@ -34,6 +34,11 @@ async function startBot() {
     const db = await setupDatabase();
     const sessionManager = new SessionManager(db);
 
+    let botReady = false;
+    let lastQr = null;
+    let qrTime = null;
+    let isBackupInProgress = false;
+
     // --- SESSION PERSISTENCE (Supabase Fix) ---
     async function restoreSession() {
         try {
@@ -51,14 +56,24 @@ async function startBot() {
     }
 
     async function saveSession() {
+        if (isBackupInProgress) {
+            console.log("ℹ️ Backup already in progress, skipping redundant request.");
+            return;
+        }
+
         try {
+            isBackupInProgress = true;
             console.log("💾 Preparing session for backup...");
-            if (!fs.existsSync('.wwebjs_auth')) return;
+            if (!fs.existsSync('.wwebjs_auth')) {
+                isBackupInProgress = false;
+                return;
+            }
             
+            const tempFile = `session-${Date.now()}.tar.gz`;
             try {
                 // Exclude Cache and Code Cache to avoid "file changed" errors and reduce size
                 const excludeCmd = "--exclude='.wwebjs_auth/session/Default/Cache' --exclude='.wwebjs_auth/session/Default/Code Cache'";
-                await execPromise(`tar ${excludeCmd} --ignore-failed-read -czf session.tar.gz .wwebjs_auth`);
+                await execPromise(`tar ${excludeCmd} --ignore-failed-read -czf ${tempFile} .wwebjs_auth`);
             } catch (tarErr) {
                 // Exit code 1 means some files changed during read - this is OK for us
                 if (tarErr.code === 1) {
@@ -68,14 +83,16 @@ async function startBot() {
                 }
             }
 
-            if (fs.existsSync('session.tar.gz')) {
-                const buffer = fs.readFileSync('session.tar.gz');
+            if (fs.existsSync(tempFile)) {
+                const buffer = fs.readFileSync(tempFile);
                 await supabase.uploadSession(buffer);
-                fs.unlinkSync('session.tar.gz');
+                fs.unlinkSync(tempFile);
                 console.log("✅ Session backup complete.");
             }
         } catch (err) {
             console.error("❌ Backup Error:", err.message);
+        } finally {
+            isBackupInProgress = false;
         }
     }
 
@@ -98,14 +115,11 @@ async function startBot() {
         }
     }
 
-    let botReady = false;
-    let lastQr = null;
-    let qrTime = null;
-
     const client = new Client({
         authStrategy: new LocalAuth(),
         puppeteer: {
             executablePath: executablePath || undefined,
+            protocolTimeout: 60000, 
             args: [
                 '--no-sandbox', 
                 '--disable-setuid-sandbox',
@@ -114,7 +128,7 @@ async function startBot() {
                 '--no-first-run',
                 '--no-zygote',
                 '--disable-gpu',
-                '--single-process', // Critical for 512MB RAM
+                '--single-process', 
                 '--disable-extensions',
                 '--disable-features=IsolateOrigins,site-per-process', 
                 '--js-flags="--max-old-space-size=160"',
