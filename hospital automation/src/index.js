@@ -9,6 +9,8 @@ const SessionManager = require('./sessionManager');
 const config = require('./config');
 const supabase = require('./supabase_client');
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 const API_PORT = process.env.PORT || 3001;
 
 // Global Error Handlers to debug silent crashes
@@ -154,18 +156,28 @@ async function startBot() {
                     const apptNo = appointment.no ? `\n🔢 *Appointment No: ${appointment.no}*` : '';
                     const patientMsg = `✅ *Appointment Confirmed*\n\nDear ${patient.name},\nYour appointment with *${doctor.name}* (${doctor.speciality}) has been scheduled.\n\n🗓️ Date: *${appointment.date}*\n⏰ Time: *${appointment.time}*${apptNo}\n📍 Location: *${config.hospitalName}*\n\nThank you for choosing us!`;
                     await client.sendMessage(patientTo, patientMsg);
+                    console.log(`[API] Message 1 sent to Patient.`);
+                    
+                    await sleep(4000); // Wait 4 seconds for memory to clear
 
-                    // 2. Admin/Doctor Alert (8290909163)
+                    // 2. Admin/Doctor Alert
                     const adminMsg = `🏥 *NEW BOOKING ALERT (Admin)*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nSerial No: ${appointment.no || 'N/A'}`;
                     await client.sendMessage(adminTo, adminMsg);
+                    console.log(`[API] Message 2 sent to Admin.`);
 
-                    // 3. Receptionist Alert (6377433387)
+                    await sleep(4000);
+
+                    // 3. Receptionist Alert
                     const receptionistMsg = `🏥 *NEW BOOKING ALERT (Reception)*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nPlease update the register for No: ${appointment.no || 'N/A'}`;
                     await client.sendMessage(receptionistTo, receptionistMsg);
+                    console.log(`[API] Message 3 sent to Receptionist.`);
 
-                    // 4. Doctor Alert (Specific/Test)
+                    await sleep(4000);
+
+                    // 4. Doctor Alert
                     const docMsg = `👨‍⚕️ *NEW APPOINTMENT*\n\nYou have a new appointment scheduled.\n\nPatient: ${patient.name}\nDate: ${appointment.date}\nTime: ${appointment.time}\nSerial No: ${appointment.no || 'N/A'}`;
                     await client.sendMessage(doctorTo, docMsg);
+                    console.log(`[API] Message 4 sent to Doctor.`);
 
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ success: true, message: "4-Way Notifications Sent" }));
