@@ -239,6 +239,20 @@ async function startBot() {
     });
 
     client.initialize();
+
+    // --- KEEP ALIVE MECHANISM (For Render Free Tier) ---
+    // Pings the server every 10 minutes to prevent it from sleeping
+    const keepAliveUrl = process.env.RENDER_EXTERNAL_URL || `https://hospital-balaji.onrender.com`;
+    if (keepAliveUrl) {
+        console.log(`📡 Keep-alive active. Pinging ${keepAliveUrl} every 10 mins.`);
+        setInterval(() => {
+            http.get(keepAliveUrl, (res) => {
+                console.log(`Ping Success: ${res.statusCode}`);
+            }).on('error', (err) => {
+                console.error('Ping Error:', err.message);
+            });
+        }, 600000); // 10 minutes
+    }
 }
 
 async function sendMainMenu(client, phone) {
