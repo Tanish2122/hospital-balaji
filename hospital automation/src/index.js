@@ -47,6 +47,7 @@ async function startBot() {
 
     let botReady = false;
     let lastQr = null;
+    let qrTime = null;
 
     const client = new Client({
         authStrategy: new LocalAuth(),
@@ -63,7 +64,7 @@ async function startBot() {
                 '--single-process', // Critical for 512MB RAM
                 '--disable-extensions',
                 '--disable-features=IsolateOrigins,site-per-process', 
-                '--js-flags="--max-old-space-size=160"', // Reduced from 192 for stability
+                '--js-flags="--max-old-space-size=160"',
                 '--disable-background-networking',
                 '--disable-sync',
                 '--disable-default-apps',
@@ -71,7 +72,8 @@ async function startBot() {
                 '--no-default-browser-check',
                 '--no-pings',
                 '--disable-translate',
-                '--disable-notifications'
+                '--disable-notifications',
+                '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
             ],
             headless: 'new'
         }
@@ -97,9 +99,13 @@ async function startBot() {
                 <html>
                     <body style="font-family: sans-serif; text-align: center; padding: 50px;">
                         <h1>Balaji Hospital Bot Status</h1>
-                        <p>Status: <b>${botReady ? "✅ READY" : "⏳ INITIALIZING"}</b></p>
-                        ${!botReady && lastQr ? `<p><a href="/qr" style="background: blue; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">SCAN QR CODE HERE</a></p>` : ""}
-                        ${botReady ? "<p style='color: green;'>Bot is connected and working!</p>" : "<p>If the button above is missing, wait 10 seconds and refresh.</p>"}
+                        <p>Status: <b>${botReady ? "<span style='color:green;'>✅ READY</span>" : "<span style='color:orange;'>⏳ WAITING FOR QR</span>"}</b></p>
+                        ${qrTime ? `<p><small>Last QR received: ${qrTime}</small></p>` : ""}
+                        ${!botReady && lastQr ? `
+                            <p><a href="/qr" style="background: blue; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">SCAN QR CODE HERE</a></p>
+                            <p><i>If scan doesn't work, wait 10s and refresh this page.</i></p>
+                        ` : ""}
+                        ${botReady ? "<p style='color: green;'>Bot is connected! You can close this page.</p>" : ""}
                     </body>
                 </html>
             `);
@@ -221,23 +227,23 @@ async function startBot() {
 
     client.on('qr', (qr) => {
         lastQr = qr;
-        console.log('\n--------------------------------------------');
-        console.log('📢 SCAN THIS QR CODE TO START THE BOT:');
+        qrTime = new Date().toLocaleTimeString();
+        console.log(`\n📢 [${qrTime}] NEW QR RECEIVED. Scan now!`);
         console.log(`👉 Link: https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`);
-        console.log('--------------------------------------------\n');
         qrcode.generate(qr, { small: true });
     });
 
-    client.on('auth_failure', (msg) => {
-        console.error('AUTHENTICATION FAILURE:', msg);
+    client.on('authenticated', () => {
+        console.log('✅ WhatsApp Authenticated. Starting session...');
     });
 
-    client.on('disconnected', (reason) => {
-        console.error('Client was logged out:', reason);
+    client.on('auth_failure', (msg) => {
+        console.error('⚠️ AUTHENTICATION FAILURE:', msg);
+        qrTime = null; // Clear old QR status
     });
 
     client.on('ready', () => {
-        console.log('✅ Advanced Hospital Bot is ready!');
+        console.log('🚀 ✅ Advanced Hospital Bot is ready!');
         botReady = true;
     });
 
