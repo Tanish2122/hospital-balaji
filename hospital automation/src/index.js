@@ -94,7 +94,7 @@ async function startBot() {
             return;
         }
 
-        // Handle Public Status/QR pages first (even if not ready)
+        // 1. PUBLIC STATUS PAGES (Visible even if not logged in)
         if (req.method === 'GET' && req.url === '/') {
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(`
@@ -120,74 +120,19 @@ async function startBot() {
                 res.end();
             } else {
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.end("QR code is not generated yet. Please wait 10-20 seconds for the browser to start, then refresh.");
+                res.end("QR code is not generated yet. Please wait for the browser to start.");
             }
             return;
         }
 
-        // Only block POST API calls if bot is not ready
+        // 2. API ENDPOINTS (Require Bot Ready)
         if (!botReady) {
             res.writeHead(503, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ success: false, error: "Bot is still initializing WhatsApp. Please scan the QR code first at your homepage." }));
+            res.end(JSON.stringify({ success: false, error: "Bot still initializing. Scan QR first." }));
             return;
         }
 
-        if (req.method === 'POST' && req.url === '/notify-booking') {
-            let body = '';
-            req.on('data', chunk => { body += chunk.toString(); });
-            req.on('end', async () => {
-                try {
-                    const { patient, appointment, doctor } = JSON.parse(body);
-                    
-                    const formatNum = (num) => {
-                        let clean = num.replace(/\D/g, '');
-                        if (clean.length === 10) clean = `91${clean}`;
-                        return clean.endsWith('@c.us') ? clean : `${clean}@c.us`;
-                    };
-
-                    const patientTo = formatNum(patient.phone);
-                    const adminTo = config.adminPhone;
-                    const receptionistTo = config.receptionistPhone;
-                    const doctorTo = formatNum(doctor.phone || config.testDoctorPhone);
-
-                    console.log(`[API] Processing 4-way notification for ${patient.name}...`);
-
-                    // 1. Patient Message (Confirmation)
-                    const apptNo = appointment.no ? `\n🔢 *Appointment No: ${appointment.no}*` : '';
-                    const patientMsg = `✅ *Appointment Confirmed*\n\nDear ${patient.name},\nYour appointment with *${doctor.name}* (${doctor.speciality}) has been scheduled.\n\n🗓️ Date: *${appointment.date}*\n⏰ Time: *${appointment.time}*${apptNo}\n📍 Location: *${config.hospitalName}*\n\nThank you for choosing us!`;
-                    await client.sendMessage(patientTo, patientMsg);
-                    console.log(`[API] Message 1 sent to Patient.`);
-                    
-                    await sleep(4000); // Wait 4 seconds for memory to clear
-
-                    // 2. Admin/Doctor Alert
-                    const adminMsg = `🏥 *NEW BOOKING ALERT (Admin)*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nSerial No: ${appointment.no || 'N/A'}`;
-                    await client.sendMessage(adminTo, adminMsg);
-                    console.log(`[API] Message 2 sent to Admin.`);
-
-                    await sleep(4000);
-
-                    // 3. Receptionist Alert
-                    const receptionistMsg = `🏥 *NEW BOOKING ALERT (Reception)*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nPlease update the register for No: ${appointment.no || 'N/A'}`;
-                    await client.sendMessage(receptionistTo, receptionistMsg);
-                    console.log(`[API] Message 3 sent to Receptionist.`);
-
-                    await sleep(4000);
-
-                    // 4. Doctor Alert
-                    const docMsg = `👨‍⚕️ *NEW APPOINTMENT*\n\nYou have a new appointment scheduled.\n\nPatient: ${patient.name}\nDate: ${appointment.date}\nTime: ${appointment.time}\nSerial No: ${appointment.no || 'N/A'}`;
-                    await client.sendMessage(doctorTo, docMsg);
-                    console.log(`[API] Message 4 sent to Doctor.`);
-
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: true, message: "4-Way Notifications Sent" }));
-                } catch (err) {
-                    console.error('[API] Error:', err);
-                    res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: false, error: err.message }));
-                }
-            });
-        } else if (req.method === 'POST' && req.url === '/send-message') {
+        if (req.method === 'POST' && req.url === '/send-message') {
             let body = '';
             req.on('data', chunk => { body += chunk.toString(); });
             req.on('end', async () => {
@@ -197,11 +142,13 @@ async function startBot() {
                     if (cleanNumber.length === 10) cleanNumber = `91${cleanNumber}`;
                     if (!cleanNumber.endsWith('@c.us')) cleanNumber = `${cleanNumber}@c.us`;
                     
+                    console.log(`[API] Sending message to ${cleanNumber}...`);
+
                     if (media && media.startsWith('http')) {
                         try {
                             const mediaObj = await MessageMedia.fromUrl(media);
                             await client.sendMessage(cleanNumber, mediaObj, { caption: message });
-                        } catch (mediaErr) {
+                        } catch (e) {
                             await client.sendMessage(cleanNumber, message);
                         }
                     } else {
@@ -215,10 +162,12 @@ async function startBot() {
                     res.end(JSON.stringify({ success: false, error: err.message }));
                 }
             });
-        } else {
-            res.writeHead(404);
-            res.end();
+            return;
         }
+
+        // Fallback
+        res.writeHead(404);
+        res.end();
     });
 
     server.listen(API_PORT, async () => {

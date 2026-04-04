@@ -31,22 +31,52 @@ export async function sendWhatsAppMessage({ to, message, media }: WhatsAppMessag
 
 interface BookingNotification {
   patient: { name: string; phone: string };
-  appointment: { date: string; time: string; id?: string };
+  appointment: { date: string; time: string; id?: string; no?: number };
   doctor: { name: string; speciality: string; phone?: string };
 }
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export async function notifyBooking(data: BookingNotification) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_WHATSAPP_API_URL || "http://localhost:3001";
-    console.log(`[WhatsApp] Calling API at: ${baseUrl}/notify-booking`);
-    const response = await fetch(`${baseUrl}/notify-booking`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+    const { patient, appointment, doctor } = data;
+    const adminPhone = "918290909163@c.us";
+    const recepPhone = "916377433387@c.us";
+    const testDocPhone = doctor.phone || "918949518353@c.us";
+
+    const apptNo = appointment.no ? `\n🔢 *Appointment No: ${appointment.no}*` : '';
+
+    // 1. Send to Patient (Confirmation)
+    await sendWhatsAppMessage({
+      to: patient.phone,
+      message: `✅ *Appointment Confirmed*\n\nDear ${patient.name},\nYour appointment with *${doctor.name}* (${doctor.speciality}) has been scheduled.\n\n🗓️ Date: *${appointment.date}*\n⏰ Time: *${appointment.time}*${apptNo}\n📍 Location: Balaji Hospital & Orthopaedic Centre 🏥\n\nThank you for choosing us!`
     });
-    const result = await response.json();
-    console.log(`[WhatsApp] API Response:`, result);
-    return result;
+
+    await sleep(3000); // Wait 3s between messages to clear memory on the bot
+
+    // 2. Send to Admin (8290909163)
+    await sendWhatsAppMessage({
+      to: adminPhone,
+      message: `🏥 *NEW BOOKING ALERT (Admin)*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nSerial No: ${appointment.no || 'N/A'}`
+    });
+
+    await sleep(3000);
+
+    // 3. Send to Receptionist (6377433387)
+    await sendWhatsAppMessage({
+      to: recepPhone,
+      message: `🏥 *NEW BOOKING ALERT (Reception)*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nPlease update the register for No: ${appointment.no || 'N/A'}`
+    });
+
+    await sleep(3000);
+
+    // 4. Send to Doctor (Specific/Test)
+    await sendWhatsAppMessage({
+      to: testDocPhone,
+      message: `👨‍⚕️ *NEW APPOINTMENT*\n\nYou have a new appointment scheduled.\n\nPatient: ${patient.name}\nDate: ${appointment.date}\nTime: ${appointment.time}\nSerial No: ${appointment.no || 'N/A'}`
+    });
+
+    return { success: true };
   } catch (error) {
     console.error("Booking notification failed:", error);
     return { success: false, error };
