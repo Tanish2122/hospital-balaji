@@ -82,9 +82,37 @@ async function startBot() {
             return;
         }
 
+        // Handle Public Status/QR pages first (even if not ready)
+        if (req.method === 'GET' && req.url === '/') {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(`
+                <html>
+                    <body style="font-family: sans-serif; text-align: center; padding: 50px;">
+                        <h1>Balaji Hospital Bot Status</h1>
+                        <p>Status: <b>${botReady ? "✅ READY" : "⏳ INITIALIZING"}</b></p>
+                        ${!botReady && lastQr ? `<p><a href="/qr" style="background: blue; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">SCAN QR CODE HERE</a></p>` : ""}
+                        ${botReady ? "<p style='color: green;'>Bot is connected and working!</p>" : "<p>If the button above is missing, wait 10 seconds and refresh.</p>"}
+                    </body>
+                </html>
+            `);
+            return;
+        }
+
+        if (req.method === 'GET' && req.url === '/qr') {
+            if (lastQr) {
+                res.writeHead(302, { 'Location': `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(lastQr)}` });
+                res.end();
+            } else {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end("QR code is not generated yet. Please wait 10-20 seconds for the browser to start, then refresh.");
+            }
+            return;
+        }
+
+        // Only block POST API calls if bot is not ready
         if (!botReady) {
             res.writeHead(503, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ success: false, error: "Bot is still initializing WhatsApp. Please try again in a moment." }));
+            res.end(JSON.stringify({ success: false, error: "Bot is still initializing WhatsApp. Please scan the QR code first at your homepage." }));
             return;
         }
 
@@ -150,26 +178,6 @@ async function startBot() {
                     res.end(JSON.stringify({ success: false, error: err.message }));
                 }
             });
-        } else if (req.method === 'GET' && req.url === '/qr') {
-            if (lastQr) {
-                res.writeHead(302, { 'Location': `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(lastQr)}` });
-                res.end();
-            } else {
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.end("QR code is not generated yet. Please wait a few seconds and refresh.");
-            }
-        } else if (req.method === 'GET' && req.url === '/') {
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(`
-                <html>
-                    <body style="font-family: sans-serif; text-align: center; padding: 50px;">
-                        <h1>Balaji Hospital Bot Status</h1>
-                        <p>Status: <b>${botReady ? "✅ READY" : "⏳ INITIALIZING"}</b></p>
-                        ${!botReady && lastQr ? `<p><a href="/qr" style="background: blue; color: white; padding: 10px 20px; text-decoration: none; borderRadius: 5px;">SCAN QR CODE HERE</a></p>` : ""}
-                        ${botReady ? "<p>Bot is connected and working!</p>" : "<p>Wait a moment for the bot to load...</p>"}
-                    </body>
-                </html>
-            `);
         } else {
             res.writeHead(404);
             res.end();
