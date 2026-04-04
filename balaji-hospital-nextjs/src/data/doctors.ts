@@ -19,7 +19,7 @@ export const doctors: Doctor[] = [
   {
     id: "dr-ramesh-agarwal",
     name: "Dr. Ramesh Agarwal",
-    phone: "916377433387@c.us",
+    phone: "918949518353@c.us",
     specialty: "Chairman & Senior Orthopaedic Surgeon",
     image: "/images/doctors/Gemini_Generated_Image_8hekj68hekj68hek.png",
     experience: "30+ Years",
@@ -48,6 +48,7 @@ export const doctors: Doctor[] = [
       { days: "Sunday", hours: "Emergency Only" },
     ],
     services: ["Arthroscopy", "Joint Replacement", "Sports Medicine"],
+    phone: "918949518353@c.us",
   },
   {
     id: "dr-utkarsh-agarwal",
@@ -63,6 +64,7 @@ export const doctors: Doctor[] = [
       { days: "Monday – Saturday", hours: "11:00 AM – 05:00 PM" },
     ],
     services: ["General Orthopaedics", "Fracture Care", "Trauma"],
+    phone: "918949518353@c.us",
   },
   {
     id: "dr-saloni-agarwal",
@@ -78,6 +80,7 @@ export const doctors: Doctor[] = [
       { days: "Monday – Saturday", hours: "10:00 AM – 03:00 PM" },
     ],
     services: ["Ear Surgery", "Nose Surgery", "Throat Surgery"],
+    phone: "918949518353@c.us",
   },
   {
     id: "dr-kanika-sharma",
@@ -93,6 +96,7 @@ export const doctors: Doctor[] = [
       { days: "Monday – Saturday", hours: "11:00 AM – 04:00 PM" },
     ],
     services: ["Allergy Treatment", "Sinusitis Care", "Hearing Restoration"],
+    phone: "918949518353@c.us",
   },
   {
     id: "dr-sangeeta-agarwal",

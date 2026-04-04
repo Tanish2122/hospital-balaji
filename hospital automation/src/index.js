@@ -60,10 +60,18 @@ async function startBot() {
                 '--no-first-run',
                 '--no-zygote',
                 '--disable-gpu',
-                '--single-process', // Critical for memory
+                '--single-process', // Critical for 512MB RAM
                 '--disable-extensions',
-                '--disable-features=IsolateOrigins,site-per-process', // Memory tweak
-                '--js-flags="--max-old-space-size=192"' // Limit internal memory
+                '--disable-features=IsolateOrigins,site-per-process', 
+                '--js-flags="--max-old-space-size=160"', // Reduced from 192 for stability
+                '--disable-background-networking',
+                '--disable-sync',
+                '--disable-default-apps',
+                '--mute-audio',
+                '--no-default-browser-check',
+                '--no-pings',
+                '--disable-translate',
+                '--disable-notifications'
             ],
             headless: 'new'
         }
@@ -130,22 +138,33 @@ async function startBot() {
                     };
 
                     const patientTo = formatNum(patient.phone);
-                    const adminTo = formatNum(config.adminPhone);
-                    const doctorTo = formatNum(doctor.phone || config.hostPhone || config.adminPhone);
+                    const adminTo = config.adminPhone;
+                    const receptionistTo = config.receptionistPhone;
+                    const doctorTo = formatNum(doctor.phone || config.testDoctorPhone);
 
+                    console.log(`[API] Processing 4-way notification for ${patient.name}...`);
+
+                    // 1. Patient Message (Confirmation)
                     const apptNo = appointment.no ? `\n🔢 *Appointment No: ${appointment.no}*` : '';
                     const patientMsg = `✅ *Appointment Confirmed*\n\nDear ${patient.name},\nYour appointment with *${doctor.name}* (${doctor.speciality}) has been scheduled.\n\n🗓️ Date: *${appointment.date}*\n⏰ Time: *${appointment.time}*${apptNo}\n📍 Location: *${config.hospitalName}*\n\nThank you for choosing us!`;
                     await client.sendMessage(patientTo, patientMsg);
 
-                    const adminMsg = `🏥 *NEW BOOKING ALERT*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nPlease ensure the slot is blocked in the manual register if required.`;
+                    // 2. Admin/Doctor Alert (8290909163)
+                    const adminMsg = `🏥 *NEW BOOKING ALERT (Admin)*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nSerial No: ${appointment.no || 'N/A'}`;
                     await client.sendMessage(adminTo, adminMsg);
 
-                    const docMsg = `👨‍⚕️ *NEW APPOINTMENT*\n\nYou have a new appointment scheduled.\n\nPatient: ${patient.name}\nDate: ${appointment.date}\nTime: ${appointment.time}\nType: Website Booking`;
+                    // 3. Receptionist Alert (6377433387)
+                    const receptionistMsg = `🏥 *NEW BOOKING ALERT (Reception)*\n\nPatient: ${patient.name}\nPhone: ${patient.phone}\nDoctor: ${doctor.name}\nDept: ${doctor.speciality}\nTime: ${appointment.date} @ ${appointment.time}\n\nPlease update the register for No: ${appointment.no || 'N/A'}`;
+                    await client.sendMessage(receptionistTo, receptionistMsg);
+
+                    // 4. Doctor Alert (Specific/Test)
+                    const docMsg = `👨‍⚕️ *NEW APPOINTMENT*\n\nYou have a new appointment scheduled.\n\nPatient: ${patient.name}\nDate: ${appointment.date}\nTime: ${appointment.time}\nSerial No: ${appointment.no || 'N/A'}`;
                     await client.sendMessage(doctorTo, docMsg);
 
                     res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: true, message: "Notifications sent" }));
+                    res.end(JSON.stringify({ success: true, message: "4-Way Notifications Sent" }));
                 } catch (err) {
+                    console.error('[API] Error:', err);
                     res.writeHead(500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ success: false, error: err.message }));
                 }
@@ -241,17 +260,17 @@ async function startBot() {
     client.initialize();
 
     // --- KEEP ALIVE MECHANISM (For Render Free Tier) ---
-    // Pings the server every 10 minutes to prevent it from sleeping
+    // Pings the server every 5 minutes to prevent it from sleeping
     const keepAliveUrl = process.env.RENDER_EXTERNAL_URL || `https://hospital-balaji.onrender.com`;
     if (keepAliveUrl) {
-        console.log(`📡 Keep-alive active. Pinging ${keepAliveUrl} every 10 mins.`);
+        console.log(`📡 Keep-alive active. Pinging ${keepAliveUrl} every 5 mins.`);
         setInterval(() => {
             http.get(keepAliveUrl, (res) => {
-                console.log(`Ping Success: ${res.statusCode}`);
+                // Ping success
             }).on('error', (err) => {
-                console.error('Ping Error:', err.message);
+                console.error('Keep-alive ping failed:', err.message);
             });
-        }, 600000); // 10 minutes
+        }, 300000); // 5 minutes (reduced from 10)
     }
 }
 
