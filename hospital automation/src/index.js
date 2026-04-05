@@ -88,7 +88,6 @@ async function startBot() {
     const client = new Client({
         authStrategy: new LocalAuth(),
         puppeteer: {
-            executablePath: executablePath || undefined,
             protocolTimeout: 120000, // 2 minutes
             args: [
                 '--no-sandbox', 
