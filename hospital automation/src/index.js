@@ -34,56 +34,12 @@ async function startBot() {
     const db = await setupDatabase();
     const sessionManager = new SessionManager(db);
 
+
     let botReady = false;
     let lastQr = null;
     let qrTime = null;
-    let isBackupInProgress = false;
 
-    // --- SESSION PERSISTENCE (Supabase Fix) ---
-    async function restoreSession() {
-        try {
-            const data = await supabase.downloadSession();
-            if (data) {
-                console.log("🛠️ Restoring session from Supabase Cloud...");
-                fs.writeFileSync('session.tar.gz', data);
-                await execPromise('tar -xzf session.tar.gz');
-                fs.unlinkSync('session.tar.gz');
-                console.log("✅ Session restored successfully.");
-            }
-        } catch (err) {
-            console.error("❌ Restore Error:", err.message);
-        }
-    }
 
-    async function saveSession() {
-        if (isBackupInProgress) return;
-        try {
-            isBackupInProgress = true;
-            console.log("💾 Saving session to Supabase Cloud...");
-            if (!fs.existsSync('.wwebjs_auth')) {
-                isBackupInProgress = false;
-                return;
-            }
-            const tempFile = `session-${Date.now()}.tar.gz`;
-            try {
-                const excludeCmd = "--exclude='.wwebjs_auth/session/Default/Cache' --exclude='.wwebjs_auth/session/Default/Code Cache'";
-                await execPromise(`tar ${excludeCmd} --ignore-failed-read -czf ${tempFile} .wwebjs_auth`);
-            } catch (tarErr) {
-                if (tarErr.code !== 1) throw tarErr;
-            }
-            if (fs.existsSync(tempFile)) {
-                await supabase.uploadSession(fs.readFileSync(tempFile));
-                fs.unlinkSync(tempFile);
-                console.log("✅ Cloud backup complete.");
-            }
-        } catch (err) {
-            console.error("❌ Backup Error:", err.message);
-        } finally {
-            isBackupInProgress = false;
-        }
-    }
-
-    await restoreSession();
 
     const client = new Client({
         authStrategy: new LocalAuth(),
@@ -233,10 +189,8 @@ async function startBot() {
         qrcode.generate(qr, { small: true });
     });
 
-    client.on('authenticated', async () => {
-        console.log('✅ WhatsApp Authenticated. Saving session...');
-        await sleep(5000); // Wait for files to write to disk
-        await saveSession();
+    client.on('authenticated', () => {
+        console.log('✅ WhatsApp Authenticated!');
     });
 
     client.on('auth_failure', (msg) => {
@@ -247,7 +201,6 @@ async function startBot() {
     client.on('ready', async () => {
         console.log('🚀 ✅ Advanced Hospital Bot is ready!');
         botReady = true;
-        await saveSession(); // Final backup when ready
     });
 
     client.on('message', async (msg) => {
