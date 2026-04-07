@@ -17,32 +17,55 @@ export default function DashboardLayout({
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+
+        // If there's an auth error (e.g. invalid/expired refresh token), clear it and redirect
+        if (error) {
+          await supabase.auth.signOut()
+          router.push('/doctor/login')
+          return
+        }
+
+        if (!session) {
+          router.push('/doctor/login')
+          return
+        }
+
+        // Verify if the user is a doctor
+        const { data: doctor } = await supabase
+          .from('doctors')
+          .select('id, is_admin, status')
+          .eq('auth_id', session.user.id)
+          .maybeSingle()
+
+        if (doctor && doctor.status === 'inactive') {
+          await supabase.auth.signOut()
+          router.push('/doctor/login')
+          return
+        }
+
+        setLoading(false)
+      } catch {
+        // Catch any unexpected auth errors (e.g. AuthApiError: Refresh Token Not Found)
+        // Clear stale tokens and redirect cleanly to login
+        try { await supabase.auth.signOut() } catch { /* ignore */ }
         router.push('/doctor/login')
-        return
       }
-
-      // Verify if the user is a doctor
-      const { data: doctor, error } = await supabase
-        .from('doctors')
-        .select('id, is_admin, status')
-        .eq('auth_id', session.user.id)
-        .maybeSingle()
-
-      if (doctor && doctor.status === 'inactive') {
-        await supabase.auth.signOut()
-        router.push('/doctor/login')
-        return
-      }
-
-      // If we found a doctor OR if it's potentially an RLS lag, we allow entry.
-      // The Sidebar and other components also have their own checks.
-      setLoading(false)
     }
 
     checkAuth()
+
+    // Listen for mid-session auth events (token expiry, sign-out from another tab)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        if (event === 'SIGNED_OUT') {
+          router.push('/doctor/login')
+        }
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [router])
 
   if (loading) {

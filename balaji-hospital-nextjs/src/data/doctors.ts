@@ -54,7 +54,7 @@ export const doctors: Doctor[] = [
     id: "dr-utkarsh-agarwal",
     name: "Dr. Utkarsh Agarwal",
     specialty: "Consultant Orthopaedic Surgeon",
-    image: "/images/dr utkarsh.png",
+    image: "/images/gallery/dr utkarsh.png",
     experience: "8+ Years",
     department: "Orthopedic",
     description:
