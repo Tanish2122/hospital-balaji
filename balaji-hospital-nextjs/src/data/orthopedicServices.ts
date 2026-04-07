@@ -30,7 +30,7 @@ export const orthopedicServices: OrthopedicService[] = [
       "Comprehensive pre- and post-surgery rehabilitation",
     ],
     icon: "Stethoscope",
-    image: "/images/gallery/ot.png",
+    image: "/images/gallery/knee replacement.jpeg",
     keywords: ["knee replacement jaipur", "best knee replacement doctor jaipur", "total knee replacement jaipur", "knee arthroplasty jaipur"],
     metaDescription:
       "Best Knee Replacement Hospital in Jaipur: Balaji Hospital offers expert total and partial knee replacement by Dr. Ramesh Agarwal. Call +91 7276229049.",
@@ -76,7 +76,7 @@ export const orthopedicServices: OrthopedicService[] = [
       "Back and Neck Pain management",
     ],
     icon: "Activity",
-    image: "/images/gallery/ot.png",
+    image: "/images/services/spine.png",
     keywords: ["spine treatment jaipur", "best spine surgeon jaipur", "back pain specialist jaipur", "slip disc treatment jaipur"],
     metaDescription:
       "Best Spine Hospital in Jaipur: Complete care for back pain, slip disc, and spinal conditions. Expert diagnosis and ethical treatment by Dr. Ramesh Agarwal.",
@@ -99,7 +99,7 @@ export const orthopedicServices: OrthopedicService[] = [
       "Injury prevention assessment and biomechanics analysis",
     ],
     icon: "Activity",
-    image: "/images/gallery/ot.png",
+    image: "/images/gallery/sports medicine.jpeg",
     keywords: ["sports medicine jaipur", "ACL reconstruction jaipur", "sports injury specialist", "knee arthroscopy jaipur"],
     metaDescription:
       "Premier Sports Medicine Hospital in Jaipur. Expert treatment for ACL tears, ligament injuries, and sports fractures. Get back to the game faster.",
@@ -122,7 +122,7 @@ export const orthopedicServices: OrthopedicService[] = [
       "Pediatric Fracture Management",
     ],
     icon: "Bone",
-    image: "/images/gallery/ot.png",
+    image: "/images/gallery/ot2.png",
     keywords: ["fracture treatment jaipur", "trauma surgery jaipur", "bone injury specialist", "emergency orthopedic jaipur"],
     metaDescription:
       "Best Fracture Treatment in Jaipur: 24/7 Emergency Trauma care. Expert orthopedic surgeons for simple to complex fractures and bone injuries.",
@@ -145,7 +145,7 @@ export const orthopedicServices: OrthopedicService[] = [
       "Shoulder Arthritis management",
     ],
     icon: "Activity",
-    image: "/images/gallery/ot.png",
+    image: "/images/gallery/best orthopedic.jpeg",
     keywords: ["shoulder arthroscopy jaipur", "best shoulder surgeon jaipur", "rotator cuff repair jaipur", "frozen shoulder treatment jaipur"],
     metaDescription:
       "Expert Shoulder Arthroscopy in Jaipur. Advanced treatment for frozen shoulder and rotator cuff tears by Dr. Ramesh Agarwal. Faster recovery.",

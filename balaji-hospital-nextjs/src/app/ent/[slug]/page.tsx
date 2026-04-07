@@ -7,6 +7,7 @@ import Link from "next/link";
 import { entSeoSlugs } from "@/data/seoSlugMap";
 import { services as localServices } from "@/data/services";
 import ServiceBookingCTA from "@/components/departments/ServiceBookingCTA";
+import { getDepartmentImageFromDB } from "@/lib/getDepartmentImage";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -61,7 +62,10 @@ export default async function ENTServicePage({ params }: { params: Promise<{ slu
   const { slug } = await params;
   const data = getServiceData(slug);
   if (!data) notFound();
-  const { seoEntry, title, summary, content, features, image, category } = data;
+  const { seoEntry, title, summary, content, features, category } = data;
+  // Prefer the image set via admin panel (Supabase), fall back to local data
+  const dbImage = await getDepartmentImageFromDB(data.seoEntry.dataSlug);
+  const image = dbImage || data.image;
 
   const siblings = Object.entries(entSeoSlugs)
     .filter(([s]) => s !== slug)

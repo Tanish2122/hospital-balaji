@@ -98,7 +98,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <link rel="dns-prefetch" href="https://balajihospitaljaipur.com" />
         <link rel="preconnect" href="https://balajihospitaljaipur.com" crossOrigin="anonymous" />

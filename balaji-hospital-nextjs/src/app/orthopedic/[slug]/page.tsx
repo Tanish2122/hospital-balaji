@@ -8,6 +8,7 @@ import { orthopedicSeoSlugs } from "@/data/seoSlugMap";
 import { orthopedicServices } from "@/data/orthopedicServices";
 import { services as localServices } from "@/data/services";
 import ServiceBookingCTA from "@/components/departments/ServiceBookingCTA";
+import { getDepartmentImageFromDB } from "@/lib/getDepartmentImage";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -97,7 +98,10 @@ export default async function OrthopedicServicePage({
   const data = getServiceData(slug);
   if (!data) notFound();
 
-  const { seoEntry, title, summary, content, features, image, keywords, category } = data;
+  const { seoEntry, title, summary, content, features, keywords, category } = data;
+  // Prefer the image set via admin panel (Supabase), fall back to local data
+  const dbImage = await getDepartmentImageFromDB(seoEntry.dataSlug);
+  const image = dbImage || data.image;
 
   // Sibling services (other orthopedic pages for sidebar)
   const siblings = Object.entries(orthopedicSeoSlugs)
