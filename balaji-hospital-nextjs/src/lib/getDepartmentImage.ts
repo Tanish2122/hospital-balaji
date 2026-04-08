@@ -9,16 +9,31 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
  * This is called server-side (in Server Components / generateStaticParams).
  */
 export async function getDepartmentImageFromDB(slug: string): Promise<string | null> {
+  const data = await getDepartmentDataFromDB(slug);
+  return data?.image || null;
+}
+
+/**
+ * Fetches the full data for a department from Supabase by its slug.
+ * This is used to sync admin-managed content (images, overview, etc.) with the website.
+ */
+export async function getDepartmentDataFromDB(slug: string): Promise<{
+  image: string | null;
+  overview: string | null;
+} | null> {
   try {
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { data, error } = await supabase
       .from("departments")
-      .select("image")
+      .select("image, overview")
       .eq("slug", slug)
       .single();
 
-    if (error || !data?.image) return null;
-    return data.image as string;
+    if (error || !data) return null;
+    return {
+      image: data.image as string | null,
+      overview: data.overview as string | null,
+    };
   } catch {
     return null;
   }

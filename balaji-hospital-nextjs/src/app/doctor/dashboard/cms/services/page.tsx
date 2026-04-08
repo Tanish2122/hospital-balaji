@@ -24,6 +24,7 @@ interface Service {
   name: string
   slug: string
   description: string
+  overview: string | null
   image: string | null
   category: string | null
   is_active: boolean
@@ -410,6 +411,18 @@ export default function ServicesCMS() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Overview */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Detailed Overview</label>
+                <textarea
+                  rows={6}
+                  value={currentService?.overview || ''}
+                  onChange={(e) => setCurrentService({ ...currentService, overview: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium resize-none"
+                  placeholder="Detailed overview for the department page... (Multiple lines allowed)"
+                />
               </div>
 
               {/* Description */}
