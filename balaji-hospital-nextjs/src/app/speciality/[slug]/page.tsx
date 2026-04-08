@@ -37,8 +37,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const data = getServiceData(slug);
   if (!data) return {};
   const { seoEntry } = data;
+  
+  const dbData = await getDepartmentDataFromDB(seoEntry.dataSlug);
+  const title = dbData?.name || seoEntry.metaTitle;
+
   return {
-    title: seoEntry.metaTitle,
+    title: title,
     description: seoEntry.metaDescription,
     keywords: [seoEntry.primaryKeyword, ...seoEntry.secondaryKeywords],
     alternates: { canonical: `https://balajihospitaljaipur.com/speciality/${slug}` },
@@ -62,11 +66,13 @@ export default async function SpecialityServicePage({ params }: { params: Promis
   const { slug } = await params;
   const data = getServiceData(slug);
   if (!data) notFound();
-  const { seoEntry, title, summary, features, category } = data;
+  const { seoEntry, summary, features, category } = data;
   // Prefer the content set via admin panel (Supabase), fall back to local data
   const dbData = await getDepartmentDataFromDB(data.seoEntry.dataSlug);
   const image = dbData?.image || data.image;
   const content = dbData?.overview || data.content;
+  const title = dbData?.name || data.title;
+  const h1 = dbData?.name || seoEntry.h1;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -127,7 +133,9 @@ export default async function SpecialityServicePage({ params }: { params: Promis
             <Link href="/speciality" className="inline-flex items-center gap-2 text-purple-600 font-bold mb-6 hover:gap-3 transition-all text-sm">
               <ArrowLeft className="w-4 h-4" /> Back to Speciality Services
             </Link>
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-poppins leading-tight">{seoEntry.h1}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-poppins leading-tight">
+              {h1}
+            </h1>
             <p className="text-lg text-slate-600 leading-relaxed font-medium">{summary}</p>
             <div className="flex flex-wrap gap-2 mt-6">
               <span className="px-3 py-1 bg-purple-50 border border-purple-100 rounded-full text-xs font-semibold text-purple-700">{seoEntry.primaryKeyword}</span>
@@ -153,15 +161,27 @@ export default async function SpecialityServicePage({ params }: { params: Promis
               </div>
             </div>
 
+            {/* Overview */}
             <section>
               <h2 className="text-3xl font-bold text-slate-900 mb-6 font-poppins">Overview</h2>
               <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed space-y-6">
-                {content.split("\n\n").map((chunk, i) => {
-                  if (chunk.startsWith("### "))
-                    return <h3 key={i} className="text-xl font-bold text-slate-900 mt-8 mb-4 font-poppins border-l-4 border-purple-600 pl-4">{parseInline(chunk.replace("### ", ""))}</h3>;
-                  if (chunk.startsWith("- "))
-                    return <ul key={i} className="list-disc pl-5 space-y-2">{chunk.split("\n").map((li, li_i) => <li key={li_i}>{parseInline(li.replace("- ", ""))}</li>)}</ul>;
-                  return <p key={i}>{parseInline(chunk)}</p>;
+                {content.split("\n\n").filter(chunk => chunk.trim().length > 0).map((chunk, i) => {
+                  const cleanChunk = chunk.trim();
+                  if (cleanChunk.startsWith("### "))
+                    return (
+                      <h3 key={i} className="text-xl font-bold text-slate-900 mt-8 mb-4 font-poppins border-l-4 border-purple-600 pl-4">
+                        {parseInline(cleanChunk.replace("### ", ""))}
+                      </h3>
+                    );
+                  if (cleanChunk.startsWith("- "))
+                    return (
+                      <ul key={i} className="list-disc pl-5 space-y-2">
+                        {cleanChunk.split("\n").filter(li => li.trim().length > 0).map((li, li_i) => (
+                          <li key={li_i}>{parseInline(li.trim().replace("- ", ""))}</li>
+                        ))}
+                      </ul>
+                    );
+                  return <p key={i}>{parseInline(cleanChunk)}</p>;
                 })}
               </div>
             </section>

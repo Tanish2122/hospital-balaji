@@ -15,6 +15,9 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { orthopedicDataToSeoSlug, entDataToSeoSlug, specialityDataToSeoSlug } from "@/data/seoSlugMap";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { Loader2 } from "lucide-react";
 
 // ── Static keyword-rich fallback data ────────────────────────────────────────
 // Titles and hrefs use exact keywords from the SEO sheet
@@ -134,9 +137,47 @@ function DepartmentSkeleton() {
 }
 
 export default function Departments() {
-  // Always render the static, keyword-rich, SEO-optimised list
-  // (Supabase data is fetched client-side only for CMS updates — not needed for SEO)
-  const services = staticServices;
+  const [items, setItems] = useState<any[]>(staticServices);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchLiveServices() {
+      try {
+        const { data, error } = await supabase
+          .from("departments")
+          .select("*")
+          .eq("is_active", true)
+          .order('name')
+          .limit(6);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          // Merge Supabase data into the static list or replace it
+          // We'll replace it but keep the static icons/colors
+          const mapped = data.map((d: any) => {
+            const staticMatch = staticServices.find(s => s.slug === d.slug);
+            return {
+              id: d.id,
+              slug: d.slug,
+              title: d.name, // Real name from CMS
+              description: d.description || staticMatch?.description || "Expert medical care at Balaji Hospital.",
+              category: d.category || staticMatch?.category || "Speciality",
+              url: resolveUrl(d.slug, d.category),
+            };
+          });
+          setItems(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to sync departments:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchLiveServices();
+  }, []);
+
+  const services = items;
 
   return (
     <section id="departments" className="py-24 bg-white relative overflow-hidden">

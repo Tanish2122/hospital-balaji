@@ -60,8 +60,12 @@ export async function generateMetadata({
   const data = getServiceData(slug);
   if (!data) return {};
   const { seoEntry } = data;
+  
+  const dbData = await getDepartmentDataFromDB(seoEntry.dataSlug);
+  const title = dbData?.name || seoEntry.metaTitle;
+
   return {
-    title: seoEntry.metaTitle,
+    title: title,
     description: seoEntry.metaDescription,
     keywords: [seoEntry.primaryKeyword, ...seoEntry.secondaryKeywords],
     alternates: {
@@ -98,11 +102,13 @@ export default async function OrthopedicServicePage({
   const data = getServiceData(slug);
   if (!data) notFound();
 
-  const { seoEntry, title, summary, features, keywords, category } = data;
+  const { seoEntry, summary, features, keywords, category } = data;
   // Prefer the content set via admin panel (Supabase), fall back to local data
   const dbData = await getDepartmentDataFromDB(seoEntry.dataSlug);
   const image = dbData?.image || data.image;
   const content = dbData?.overview || data.content;
+  const title = dbData?.name || data.title; // Dynamic name from CMS
+  const h1 = dbData?.name || seoEntry.h1;    // Dynamic H1 from CMS
 
   // Sibling services (other orthopedic pages for sidebar)
   const siblings = Object.entries(orthopedicSeoSlugs)
@@ -199,7 +205,7 @@ export default async function OrthopedicServicePage({
             </Link>
 
             <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-poppins leading-tight">
-              {seoEntry.h1}
+              {h1}
             </h1>
             <p className="text-lg text-slate-600 leading-relaxed font-medium">{summary}</p>
 
@@ -238,22 +244,23 @@ export default async function OrthopedicServicePage({
             <section>
               <h2 className="text-3xl font-bold text-slate-900 mb-6 font-poppins">Overview</h2>
               <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed space-y-6">
-                {content.split("\n\n").map((chunk, i) => {
-                  if (chunk.startsWith("### "))
+                {content.split("\n\n").filter(chunk => chunk.trim().length > 0).map((chunk, i) => {
+                  const cleanChunk = chunk.trim();
+                  if (cleanChunk.startsWith("### "))
                     return (
                       <h3 key={i} className="text-xl font-bold text-slate-900 mt-8 mb-4 font-poppins border-l-4 border-medical-600 pl-4">
-                        {parseInline(chunk.replace("### ", ""))}
+                        {parseInline(cleanChunk.replace("### ", ""))}
                       </h3>
                     );
-                  if (chunk.startsWith("- "))
+                  if (cleanChunk.startsWith("- "))
                     return (
                       <ul key={i} className="list-disc pl-5 space-y-2">
-                        {chunk.split("\n").map((li, li_i) => (
-                          <li key={li_i}>{parseInline(li.replace("- ", ""))}</li>
+                        {cleanChunk.split("\n").filter(li => li.trim().length > 0).map((li, li_i) => (
+                          <li key={li_i}>{parseInline(li.trim().replace("- ", ""))}</li>
                         ))}
                       </ul>
                     );
-                  return <p key={i}>{parseInline(chunk)}</p>;
+                  return <p key={i}>{parseInline(cleanChunk)}</p>;
                 })}
               </div>
             </section>
