@@ -107,17 +107,49 @@ export default function ServicesCMS() {
     e.preventDefault()
     setSaving(true)
     
-    const serviceData = {
-      ...currentService,
-      slug: currentService?.name?.toLowerCase().replace(/\s+/g, '-'),
+    // 1. Prepare data - don't overwrite slug for existing records to preserve SEO
+    const isEditing = !!currentService?.id
+    const name = currentService?.name || ''
+    const generatedSlug = name.toLowerCase().replace(/\s+/g, '-')
+    
+    // Clean data for Supabase (extract only columns we want to save)
+    const { 
+      id, 
+      created_at, 
+      slug, 
+      ...editableFields 
+    } = currentService as any;
+
+    const dataToSave = {
+      ...editableFields,
+      name,
+      slug: isEditing ? (slug || generatedSlug) : generatedSlug,
       is_active: currentService?.is_active ?? true,
+      // Safety: if overview is repeated exactly (due to save error), collapse it
+      overview: currentService?.overview?.includes(currentService?.overview?.substring(0, 20)) 
+        ? currentService.overview.split(currentService.overview.substring(0, 20))[0] + currentService.overview.substring(0, 20) // Simple de-dupe logic attempt
+        : currentService?.overview
+    }
+
+    // Actually, simple de-dupe logic above is risky. Let's just strip known repetition patterns if found
+    // or better yet, just trust the current state if we are fixing the source.
+    const cleanOverview = currentService?.overview || '';
+    
+    const finalData = {
+      name: dataToSave.name,
+      slug: dataToSave.slug,
+      description: dataToSave.description,
+      overview: cleanOverview,
+      image: dataToSave.image,
+      category: dataToSave.category,
+      is_active: dataToSave.is_active
     }
 
     let error
-    if (currentService?.id) {
-      ({ error } = await supabase.from('departments').update(serviceData).eq('id', currentService.id))
+    if (isEditing) {
+      ({ error } = await supabase.from('departments').update(finalData).eq('id', id))
     } else {
-      ({ error } = await supabase.from('departments').insert([serviceData]))
+      ({ error } = await supabase.from('departments').insert([finalData]))
     }
 
     if (!error) {
