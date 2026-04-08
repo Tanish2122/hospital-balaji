@@ -10,7 +10,7 @@ import ServiceBookingCTA from "@/components/departments/ServiceBookingCTA";
 import { getDepartmentDataFromDB } from "@/lib/getDepartmentImage";
 import type { Metadata } from "next";
 
-export const revalidate = 3600;
+export const revalidate = 0; // Ensure fresh data from Supabase on every request
 
 function getServiceData(slug: string) {
   const seoEntry = entSeoSlugs[slug];

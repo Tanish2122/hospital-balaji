@@ -22,6 +22,7 @@ export async function getDepartmentDataFromDB(slug: string): Promise<{
   overview: string | null;
 } | null> {
   try {
+    console.log('[DB Sync] Fetching data for slug:', slug);
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { data, error } = await supabase
       .from("departments")
@@ -29,12 +30,23 @@ export async function getDepartmentDataFromDB(slug: string): Promise<{
       .eq("slug", slug)
       .single();
 
-    if (error || !data) return null;
+    if (error) {
+      console.error('[DB Sync] Error fetching department:', error.message);
+      return null;
+    }
+    
+    if (!data) {
+      console.warn('[DB Sync] No data found for slug:', slug);
+      return null;
+    }
+
+    console.log('[DB Sync] Success! Found overview:', data.overview ? (data.overview.substring(0, 50) + '...') : 'NULL');
     return {
       image: data.image as string | null,
       overview: data.overview as string | null,
     };
-  } catch {
+  } catch (err) {
+    console.error('[DB Sync] Exception:', err);
     return null;
   }
 }
