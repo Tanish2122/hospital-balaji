@@ -237,25 +237,29 @@ export default async function OrthopedicServicePage({
             {/* Overview */}
             <section>
               <h2 className="text-3xl font-bold text-slate-900 mb-6 font-poppins">Overview</h2>
-              <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed space-y-6">
-                {content.split("\n\n").filter(chunk => chunk.trim().length > 0).map((chunk, i) => {
-                  const cleanChunk = chunk.trim();
-                  if (cleanChunk.startsWith("### "))
-                    return (
-                      <h3 key={i} className="text-xl font-bold text-slate-900 mt-8 mb-4 font-poppins border-l-4 border-medical-600 pl-4">
-                        {parseMarkdownInline(cleanChunk.replace("### ", ""))}
-                      </h3>
-                    );
-                  if (cleanChunk.startsWith("- "))
-                    return (
-                      <ul key={i} className="list-disc pl-5 space-y-2">
-                        {cleanChunk.split("\n").filter(li => li.trim().length > 0).map((li, li_i) => (
-                          <li key={li_i}>{parseMarkdownInline(li.trim().replace("- ", ""))}</li>
-                        ))}
-                      </ul>
-                    );
-                  return <p key={i}>{parseMarkdownInline(cleanChunk)}</p>;
-                })}
+              <div className="prose prose-slate prose-medical max-w-none prose-p:leading-relaxed prose-p:text-slate-600 prose-headings:text-slate-900 prose-headings:font-bold prose-a:text-medical-600 prose-a:font-bold prose-strong:text-slate-900 prose-em:text-slate-700">
+                {content.trim().startsWith("<") ? (
+                  <div dangerouslySetInnerHTML={{ __html: content }} />
+                ) : (
+                  content.split("\n\n").filter(chunk => chunk.trim().length > 0).map((chunk, i) => {
+                    const cleanChunk = chunk.trim();
+                    if (cleanChunk.startsWith("### "))
+                      return (
+                        <h3 key={i} className="text-xl font-bold text-slate-900 mt-8 mb-4 font-poppins border-l-4 border-medical-600 pl-4">
+                          {parseMarkdownInline(cleanChunk.replace("### ", ""))}
+                        </h3>
+                      );
+                    if (cleanChunk.startsWith("- "))
+                      return (
+                        <ul key={i} className="list-disc pl-5 space-y-2">
+                          {cleanChunk.split("\n").filter(li => li.trim().length > 0).map((li, li_i) => (
+                            <li key={li_i}>{parseMarkdownInline(li.trim().replace("- ", ""))}</li>
+                          ))}
+                        </ul>
+                      );
+                    return <p key={i}>{parseMarkdownInline(cleanChunk)}</p>;
+                  })
+                )}
               </div>
             </section>
 

@@ -20,6 +20,7 @@ import {
   Link2
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import RichTextEditor from '@/components/cms/RichTextEditor'
 
 interface Service {
   id: string
@@ -452,14 +453,11 @@ export default function ServicesCMS() {
               </div>
 
               {/* Overview */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Detailed Overview</label>
-                <textarea
-                  rows={6}
-                  value={currentService?.overview || ''}
-                  onChange={(e) => setCurrentService({ ...currentService, overview: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium resize-none"
-                  placeholder="Detailed overview for the department page... (Multiple lines allowed)"
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] pl-1">Detailed Overview</label>
+                <RichTextEditor 
+                  content={currentService?.overview || ''} 
+                  onChange={(html) => setCurrentService({ ...currentService, overview: html })}
                 />
               </div>
 
