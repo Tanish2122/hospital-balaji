@@ -8,6 +8,7 @@ import { entSeoSlugs } from "@/data/seoSlugMap";
 import { services as localServices } from "@/data/services";
 import ServiceBookingCTA from "@/components/departments/ServiceBookingCTA";
 import { getDepartmentDataFromDB } from "@/lib/getDepartmentImage";
+import { parseMarkdownInline } from "@/lib/markdown";
 import type { Metadata } from "next";
 
 export const revalidate = 0; // Ensure fresh data from Supabase on every request
@@ -54,12 +55,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-const parseInline = (text: string) =>
-  text.split(/(\*\*.*?\*\*)/).map((p, i) =>
-    p.startsWith("**") && p.endsWith("**")
-      ? <strong key={i} className="text-slate-900 font-bold">{p.slice(2, -2)}</strong>
-      : p
-  );
 
 export default async function ENTServicePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -172,18 +167,18 @@ export default async function ENTServicePage({ params }: { params: Promise<{ slu
                   if (cleanChunk.startsWith("### "))
                     return (
                       <h3 key={i} className="text-xl font-bold text-slate-900 mt-8 mb-4 font-poppins border-l-4 border-blue-600 pl-4">
-                        {parseInline(cleanChunk.replace("### ", ""))}
+                        {parseMarkdownInline(cleanChunk.replace("### ", ""))}
                       </h3>
                     );
                   if (cleanChunk.startsWith("- "))
                     return (
                       <ul key={i} className="list-disc pl-5 space-y-2">
                         {cleanChunk.split("\n").filter(li => li.trim().length > 0).map((li, li_i) => (
-                          <li key={li_i}>{parseInline(li.trim().replace("- ", ""))}</li>
+                          <li key={li_i}>{parseMarkdownInline(li.trim().replace("- ", ""))}</li>
                         ))}
                       </ul>
                     );
-                  return <p key={i}>{parseInline(cleanChunk)}</p>;
+                  return <p key={i}>{parseMarkdownInline(cleanChunk)}</p>;
                 })}
               </div>
             </section>

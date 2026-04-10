@@ -9,6 +9,7 @@ import { orthopedicServices } from "@/data/orthopedicServices";
 import { services as localServices } from "@/data/services";
 import ServiceBookingCTA from "@/components/departments/ServiceBookingCTA";
 import { getDepartmentDataFromDB } from "@/lib/getDepartmentImage";
+import { parseMarkdownInline } from "@/lib/markdown";
 import type { Metadata } from "next";
 
 export const revalidate = 0; // Ensure fresh data from Supabase on every request
@@ -84,14 +85,6 @@ export async function generateMetadata({
   };
 }
 
-const parseInline = (text: string) => {
-  const parts = text.split(/(\*\*.*?\*\*)/);
-  return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**"))
-      return <strong key={i} className="text-slate-900 font-bold">{part.slice(2, -2)}</strong>;
-    return part;
-  });
-};
 
 export default async function OrthopedicServicePage({
   params,
@@ -249,18 +242,18 @@ export default async function OrthopedicServicePage({
                   if (cleanChunk.startsWith("### "))
                     return (
                       <h3 key={i} className="text-xl font-bold text-slate-900 mt-8 mb-4 font-poppins border-l-4 border-medical-600 pl-4">
-                        {parseInline(cleanChunk.replace("### ", ""))}
+                        {parseMarkdownInline(cleanChunk.replace("### ", ""))}
                       </h3>
                     );
                   if (cleanChunk.startsWith("- "))
                     return (
                       <ul key={i} className="list-disc pl-5 space-y-2">
                         {cleanChunk.split("\n").filter(li => li.trim().length > 0).map((li, li_i) => (
-                          <li key={li_i}>{parseInline(li.trim().replace("- ", ""))}</li>
+                          <li key={li_i}>{parseMarkdownInline(li.trim().replace("- ", ""))}</li>
                         ))}
                       </ul>
                     );
-                  return <p key={i}>{parseInline(cleanChunk)}</p>;
+                  return <p key={i}>{parseMarkdownInline(cleanChunk)}</p>;
                 })}
               </div>
             </section>
