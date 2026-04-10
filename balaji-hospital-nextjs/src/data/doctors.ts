@@ -21,7 +21,7 @@ export const doctors: Doctor[] = [
     name: "Dr. Ramesh Agarwal",
     phone: "918949518353@c.us",
     specialty: "Chairman & Senior Orthopaedic Surgeon",
-    image: "/images/doctors/Gemini_Generated_Image_8hekj68hekj68hek.png",
+    image: "/images/doctors/ramesh-agarwal.png",
     experience: "30+ Years",
     department: "Orthopedic",
     description:
