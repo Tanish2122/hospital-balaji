@@ -54,7 +54,7 @@ export const doctors: Doctor[] = [
     id: "dr-utkarsh-agarwal",
     name: "Dr. Utkarsh Agarwal",
     specialty: "Consultant Orthopaedic Surgeon",
-    image: "/images/gallery/dr utkarsh.png",
+    image: "/images/doctors/dr-utkarsh.jpeg",
     experience: "8+ Years",
     department: "Orthopedic",
     description:
@@ -70,7 +70,7 @@ export const doctors: Doctor[] = [
     id: "dr-saloni-agarwal",
     name: "Dr. Saloni Agarwal",
     specialty: "ENT, Head & Neck Surgeon",
-    image: "/images/doctors/saloni agarwal.png",
+    image: "/images/doctors/saloni-agarwal.jpg",
     experience: "10+ Years",
     department: "ENT",
     description:
@@ -86,7 +86,7 @@ export const doctors: Doctor[] = [
     id: "dr-kanika-sharma",
     name: "Dr. Kanika Sharma",
     specialty: "ENT & Allergy Specialist",
-    image: "/images/doctors/kanika sharma.jpg",
+    image: "/images/doctors/kanika-sharma.jpg",
     experience: "10+ Years",
     department: "ENT",
     description:

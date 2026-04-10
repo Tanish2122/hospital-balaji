@@ -102,7 +102,7 @@ export default function Facilities() {
                   className="relative aspect-square rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="https://balajihospitaljaipur.com/uploads/gallery/5729652157ot-small.png"
+                    src="/images/gallery/ot.png"
                     alt="Balaji Hospital Operation Theatre"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -118,7 +118,7 @@ export default function Facilities() {
                   className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="https://balajihospitaljaipur.com/uploads/gallery/6229751557physiotherapy-small.png"
+                    src="/images/gallery/physiotherapy.png"
                     alt="Balaji Hospital Physiotherapy Centre"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -136,7 +136,7 @@ export default function Facilities() {
                   className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="https://balajihospitaljaipur.com/uploads/gallery/5965221775reception1-small.png"
+                    src="/images/gallery/reception.png"
                     alt="Balaji Hospital Reception Area"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -152,7 +152,7 @@ export default function Facilities() {
                   className="relative aspect-square rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="https://balajihospitaljaipur.com/uploads/gallery/2956725571digitalXray-small.png"
+                    src="/images/gallery/digital-xray.png"
                     alt="Balaji Hospital Digital X-Ray"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
