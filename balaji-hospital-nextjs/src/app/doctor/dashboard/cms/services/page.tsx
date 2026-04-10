@@ -15,7 +15,9 @@ import {
   EyeOff,
   Activity,
   LayoutGrid,
-  ChevronRight
+  ChevronRight,
+  Globe,
+  Link2
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -29,6 +31,8 @@ interface Service {
   category: string | null
   is_active: boolean
   created_at: string
+  meta_title: string | null
+  meta_description: string | null
 }
 
 type CategoryFilter = 'all' | 'orthopedic' | 'ent' | 'speciality'
@@ -142,7 +146,9 @@ export default function ServicesCMS() {
       overview: cleanOverview,
       image: dataToSave.image,
       category: dataToSave.category,
-      is_active: dataToSave.is_active
+      is_active: dataToSave.is_active,
+      meta_title: currentService?.meta_title || null,
+      meta_description: currentService?.meta_description || null
     }
 
     let error
@@ -507,6 +513,66 @@ export default function ServicesCMS() {
                     <img src={currentService.image} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
+              </div>
+
+              {/* SEO Settings */}
+              <div className="space-y-4 pt-6 border-t border-slate-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <Globe className="w-4 h-4 text-blue-600" />
+                  <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">SEO & Search Discovery</h3>
+                </div>
+                
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center px-1">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Page Title (SEO)</label>
+                    <span className={cn(
+                      "text-[9px] font-black px-1.5 py-0.5 rounded", 
+                      (currentService?.meta_title?.length || 0) > 60 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
+                    )}>
+                      {currentService?.meta_title?.length || 0} / 60
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    value={currentService?.meta_title || ''}
+                    onChange={(e) => setCurrentService({ ...currentService, meta_title: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all text-sm font-medium"
+                    placeholder="e.g. Best Knee Replacement Hospital in Jaipur"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center px-1">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Meta Description</label>
+                    <span className={cn(
+                      "text-[9px] font-black px-1.5 py-0.5 rounded", 
+                      (currentService?.meta_description?.length || 0) > 160 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
+                    )}>
+                      {currentService?.meta_description?.length || 0} / 160
+                    </span>
+                  </div>
+                  <textarea
+                    rows={3}
+                    value={currentService?.meta_description || ''}
+                    onChange={(e) => setCurrentService({ ...currentService, meta_description: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all text-sm font-medium resize-none leading-relaxed"
+                    placeholder="Expert total and partial knee replacement in Jaipur by Dr. Vivek Sharma..."
+                  />
+                </div>
+
+                {/* Search Result Preview Mockup */}
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 overflow-hidden">
+                  <p className="text-[9px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Google Preview</p>
+                  <div className="space-y-1">
+                    <p className="text-[#1a0dab] text-base font-medium truncate leading-tight">
+                      {currentService?.meta_title || currentService?.name || 'Service Title'}
+                    </p>
+                    <p className="text-[#006621] text-xs truncate">balajihospitaljaipur.com › {currentService?.category?.toLowerCase() || 'service'} › {currentService?.slug || '...'}</p>
+                    <p className="text-[#4d5156] text-xs line-clamp-2 leading-snug">
+                      {currentService?.meta_description || 'Please provide a meta description to see how your service will appear in search results...'}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Active Toggle */}

@@ -21,12 +21,14 @@ export async function getDepartmentDataFromDB(slug: string): Promise<{
   image: string | null;
   overview: string | null;
   name: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
 } | null> {
   try {
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { data, error } = await supabase
       .from("departments")
-      .select("image, overview, name")
+      .select("image, overview, name, meta_title, meta_description")
       .eq("slug", slug)
       .single();
 
@@ -36,6 +38,8 @@ export async function getDepartmentDataFromDB(slug: string): Promise<{
       image: data.image as string | null,
       overview: data.overview as string | null,
       name: data.name as string | null,
+      meta_title: data.meta_title as string | null,
+      meta_description: data.meta_description as string | null,
     };
   } catch {
     return null;

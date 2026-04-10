@@ -39,11 +39,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!data) return {};
   const { seoEntry } = data;
   const dbData = await getDepartmentDataFromDB(seoEntry.dataSlug);
-  const title = dbData?.name || seoEntry.metaTitle;
+  const title = dbData?.meta_title || dbData?.name || seoEntry.metaTitle;
+  const description = dbData?.meta_description || seoEntry.metaDescription;
 
   return {
     title: title,
-    description: seoEntry.metaDescription,
+    description: description,
     keywords: [seoEntry.primaryKeyword, ...seoEntry.secondaryKeywords],
     alternates: { canonical: `https://balajihospitaljaipur.com/ent/${slug}` },
     openGraph: {
