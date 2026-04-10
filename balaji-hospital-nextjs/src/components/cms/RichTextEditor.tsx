@@ -23,7 +23,10 @@ import {
   Undo,
   Redo,
   Highlighter,
-  Type
+  Type,
+  Heading1,
+  Heading2,
+  Heading3
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -156,6 +159,30 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
           title="Underline (Ctrl+U)"
         >
           <UnderlineIcon className="w-4 h-4" />
+        </MenuButton>
+
+        <div className="w-px h-5 bg-slate-200 mx-1.5" />
+
+        <MenuButton 
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} 
+          active={editor.isActive('heading', { level: 1 })}
+          title="Heading 1"
+        >
+          <Heading1 className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton 
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} 
+          active={editor.isActive('heading', { level: 2 })}
+          title="Heading 2"
+        >
+          <Heading2 className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton 
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} 
+          active={editor.isActive('heading', { level: 3 })}
+          title="Heading 3"
+        >
+          <Heading3 className="w-4 h-4" />
         </MenuButton>
 
         <div className="w-px h-5 bg-slate-200 mx-1.5" />
