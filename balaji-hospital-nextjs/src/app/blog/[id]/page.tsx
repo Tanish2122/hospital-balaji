@@ -136,10 +136,15 @@ const BlogDetailPage = async ({ params }: { params: Promise<{ id: string }> }) =
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-16">
               <div className="lg:col-span-3">
-                <div
-                  className="prose prose-lg prose-slate max-w-none text-slate-600 prose-headings:font-poppins prose-headings:text-slate-900 prose-strong:text-slate-900 prose-a:text-medical-600 prose-li:marker:text-medical-500"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+                <div className="prose prose-lg prose-slate max-w-none text-slate-600 prose-headings:font-poppins prose-headings:text-slate-900 prose-strong:text-slate-900 prose-a:text-medical-600 prose-li:marker:text-medical-500 prose-p:leading-relaxed">
+                  {post.content.trim().startsWith("<") ? (
+                    <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                  ) : (
+                    post.content.split("\n\n").filter(chunk => chunk.trim().length > 0).map((chunk, i) => (
+                      <p key={i} className="mb-6">{chunk}</p>
+                    ))
+                  )}
+                </div>
 
                 <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
                   <div className="flex items-center gap-4">

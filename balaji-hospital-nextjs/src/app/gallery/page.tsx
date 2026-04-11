@@ -191,9 +191,13 @@ export default function GalleryPage() {
                         {new Date(item.created_at).toLocaleDateString()}
                     </div>
                     <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight leading-tight group-hover:text-blue-600 transition-colors">{item.title}</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed line-clamp-3">
-                        {item.description || 'Stay informed about the latest developments and specialized medical updates at Balaji Hospital.'}
-                    </p>
+                    <div className="text-slate-500 text-sm leading-relaxed line-clamp-3 prose prose-sm prose-slate max-w-none">
+                      {item.description?.trim().startsWith("<") ? (
+                        <div dangerouslySetInnerHTML={{ __html: item.description }} />
+                      ) : (
+                        <p>{item.description || 'Stay informed about the latest developments and specialized medical updates at Balaji Hospital.'}</p>
+                      )}
+                    </div>
                  </div>
               </div>
             ))}
@@ -222,9 +226,13 @@ export default function GalleryPage() {
                     <h3 className="text-2xl font-black text-white leading-tight uppercase tracking-tight">{selectedImage.title || 'Gallery View'}</h3>
                 </div>
                 <hr className="border-white/10" />
-                <p className="text-slate-400 text-sm leading-relaxed italic">
-                    {selectedImage.description || 'No additional description provided for this item.'}
-                </p>
+                <div className="text-slate-400 text-sm leading-relaxed prose prose-sm prose-invert max-w-none">
+                    {selectedImage.description?.trim().startsWith("<") ? (
+                      <div dangerouslySetInnerHTML={{ __html: selectedImage.description }} />
+                    ) : (
+                      <p className="italic">{selectedImage.description || 'No additional description provided for this item.'}</p>
+                    )}
+                </div>
                 <div className="pt-4 flex items-center gap-3">
                     <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-blue-400">
                         <CheckCircle2 className="w-5 h-5" />

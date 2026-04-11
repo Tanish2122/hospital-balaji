@@ -19,6 +19,7 @@ import {
   Tag
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import RichTextEditor from '@/components/cms/RichTextEditor'
 
 interface GalleryItem {
   id: string
@@ -251,7 +252,7 @@ export default function GalleryManagement() {
               </div>
               <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight line-clamp-1">{item.title || 'Untitled Item'}</h3>
               <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-                  {item.description || 'No description provided.'}
+                  {item.description?.replace(/<[^>]*>/g, '') || 'No description provided.'}
               </p>
               
               <div className="pt-4 flex gap-2">
@@ -407,14 +408,13 @@ export default function GalleryManagement() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Description (Optional)</label>
-                <textarea
-                  rows={3}
-                  value={currentItem?.description || ''}
-                  onChange={(e) => setCurrentItem({ ...currentItem, description: e.target.value })}
-                  className="w-full px-5 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-bold resize-none"
-                  placeholder="Provide more context for this gallery item..."
-                />
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Description (Rich Text)</label>
+                <div className="rounded-[2rem] overflow-hidden border border-slate-100 min-h-[300px]">
+                  <RichTextEditor 
+                    content={currentItem?.description || ''}
+                    onChange={(html) => setCurrentItem({ ...currentItem, description: html })}
+                  />
+                </div>
               </div>
 
               <button

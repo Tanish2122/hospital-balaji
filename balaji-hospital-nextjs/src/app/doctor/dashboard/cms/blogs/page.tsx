@@ -16,6 +16,7 @@ import {
   Eye
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import RichTextEditor from '@/components/cms/RichTextEditor'
 
 interface Blog {
   id: string
@@ -211,7 +212,7 @@ export default function BlogsCMS() {
               </div>
 
               <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed italic">
-                 {blog.content.substring(0, 200)}...
+                 {blog.content.replace(/<[^>]*>/g, '').substring(0, 200)}...
               </p>
             </div>
           </div>
@@ -269,15 +270,13 @@ export default function BlogsCMS() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Content (Markdown supported)</label>
-                <textarea
-                  rows={8}
-                  required
-                  value={currentBlog?.content || ''}
-                  onChange={(e) => setCurrentBlog({ ...currentBlog, content: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500 transition-all font-medium resize-none"
-                  placeholder="Share your expert knowledge..."
-                />
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Content (Rich Text)</label>
+                <div className="rounded-xl overflow-hidden border border-slate-100 min-h-[400px]">
+                   <RichTextEditor 
+                      content={currentBlog?.content || ''}
+                      onChange={(html) => setCurrentBlog({ ...currentBlog, content: html })}
+                   />
+                </div>
               </div>
 
               <div className="space-y-1">
