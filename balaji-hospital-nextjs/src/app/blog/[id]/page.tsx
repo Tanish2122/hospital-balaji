@@ -140,7 +140,7 @@ const BlogDetailPage = async ({ params }: { params: Promise<{ id: string }> }) =
                   {post.content.trim().startsWith("<") ? (
                     <div dangerouslySetInnerHTML={{ __html: post.content }} />
                   ) : (
-                    post.content.split("\n\n").filter(chunk => chunk.trim().length > 0).map((chunk, i) => (
+                    post.content.split("\n\n").filter((chunk: string) => chunk.trim().length > 0).map((chunk: string, i: number) => (
                       <p key={i} className="mb-6">{chunk}</p>
                     ))
                   )}

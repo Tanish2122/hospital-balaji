@@ -164,7 +164,7 @@ export default async function SpecialityServicePage({ params }: { params: Promis
                 {content.trim().startsWith("<") ? (
                   <div dangerouslySetInnerHTML={{ __html: content }} />
                 ) : (
-                  content.split("\n\n").filter(chunk => chunk.trim().length > 0).map((chunk, i) => {
+                  content.split("\n\n").filter((chunk: string) => chunk.trim().length > 0).map((chunk: string, i: number) => {
                     const cleanChunk = chunk.trim();
                     if (cleanChunk.startsWith("### "))
                       return (
@@ -175,7 +175,7 @@ export default async function SpecialityServicePage({ params }: { params: Promis
                     if (cleanChunk.startsWith("- "))
                       return (
                         <ul key={i} className="list-disc pl-5 space-y-2">
-                          {cleanChunk.split("\n").filter(li => li.trim().length > 0).map((li, li_i) => (
+                          {cleanChunk.split("\n").filter((li: string) => li.trim().length > 0).map((li: string, li_i: number) => (
                             <li key={li_i}>{parseMarkdownInline(li.trim().replace("- ", ""))}</li>
                           ))}
                         </ul>
