@@ -5,17 +5,14 @@ module.exports = {
     cloudApiAccessToken: "YOUR_ACCESS_TOKEN",
     cloudPhoneNumberId: "YOUR_PHONE_NUMBER_ID",
     webhookVerifyToken: "YOUR_VERIFY_TOKEN",
-    hospitalName: "Balaji Hospital", // Fallback name
+    hospitalName: "Balaji Hospital & Orthopaedic Centre 🏥",
 
-    // --- DYNAMIC SETTINGS ---
-    // The following numbers are now fetched dynamically from the Supabase 'site_settings' table.
-    // To change the Master Notification Number, go to the Doctor Dashboard -> Settings.
-    adminPhone: "918290909163@c.us", // Initial fallback
-    receptionistPhone: "916377433387@c.us", // Initial fallback
+    // Notification Recipients
+    adminPhone: "918290909163@c.us",
+    receptionistPhone: "916377433387@c.us",
     testDoctorPhone: "918949518353@c.us",
 
     // Real departments and doctors from balajihospitaljaipur.com
-    // These are also fetched dynamically, but 'fallbackDepartments' is used if DB is offline.
     fallbackDepartments: {
         "1": {
             name: "Orthopedic",

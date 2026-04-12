@@ -5,7 +5,6 @@ const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
 const { setupDatabase } = require('./database');
 const SessionManager = require('./sessionManager');
 const config = require('./config');
@@ -29,30 +28,7 @@ process.on('uncaughtException', (err) => {
 
 async function startBot() {
     console.log("Fetching live hospital data from website...");
-    const botData = await supabase.getBotData();
-    const dynamicDepartments = botData?.departments || config.fallbackDepartments;
-    const settings = botData?.settings;
-
-    if (settings) {
-        console.log(`✅ Loaded dynamic settings for: ${settings.hospital_name}`);
-        if (settings.hospital_name) config.hospitalName = settings.hospital_name;
-        
-        // Helper to format phone for WhatsApp
-        const formatPhone = (num) => {
-            if (!num) return null;
-            let clean = num.toString().replace(/\D/g, '');
-            if (clean.length === 10) clean = `91${clean}`;
-            return clean.endsWith('@c.us') ? clean : `${clean}@c.us`;
-        };
-
-        if (settings.whatsapp_number) {
-            const masterPhone = formatPhone(settings.whatsapp_number);
-            config.adminPhone = masterPhone;
-            config.receptionistPhone = masterPhone; // Syncing both to master for now
-            console.log(`📱 Master Notification Number: ${masterPhone}`);
-        }
-    }
-
+    const dynamicDepartments = await supabase.getBotData() || config.fallbackDepartments;
     console.log(`Loaded ${Object.keys(dynamicDepartments).length} departments from Balaji Hospital.`);
 
     const db = await setupDatabase();
@@ -247,8 +223,7 @@ async function startBot() {
 }
 
 async function sendMainMenu(client, phone) {
-    const hospitalName = config.hospitalName || "Balaji Hospital";
-    const menu = `Welcome to *${hospitalName}*! 🏥\n\nPlease choose an option:\n1️⃣ *Emergency 🚨*\n2️⃣ *Book Appointment 🏥*\n\nWebsite: https://hospital-balaji.vercel.app/appointment`;
+    const menu = `Welcome to *${config.hospitalName}*! 🏥\n\nPlease choose an option:\n1️⃣ *Emergency 🚨*\n2️⃣ *Book Appointment 🏥*\n\nWebsite: https://hospital-balaji.vercel.app/appointment`;
     await client.sendMessage(phone, menu).catch(err => console.error("Send Error:", err));
 }
 
