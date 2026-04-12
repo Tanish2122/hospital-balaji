@@ -30,8 +30,8 @@ class SupabaseClient {
 
     async getDoctors() {
         try {
-            // Fetch doctors and their associated departments
-            const response = await axios.get(`${this.url}/rest/v1/doctors?select=id,name,departments(name)`, {
+            // Fetch doctors and their associated departments, including phone numbers
+            const response = await axios.get(`${this.url}/rest/v1/doctors?select=id,name,phone,departments(name)`, {
                 headers: this.headers,
                 timeout: this.requestTimeout
             });
@@ -42,14 +42,38 @@ class SupabaseClient {
         }
     }
 
+    async getSettings() {
+        try {
+            const response = await axios.get(`${this.url}/rest/v1/site_settings?id=eq.1&select=*`, {
+                headers: this.headers,
+                timeout: this.requestTimeout
+            });
+            return response.data?.[0] || null;
+        } catch (error) {
+            console.error("Supabase Get Settings Error:", error.message);
+            return null;
+        }
+    }
+
     /**
      * Helper to get structured data for the bot
      */
     async getBotData() {
         const departmentsData = await this.getDepartments();
         const doctorsData = await this.getDoctors();
+        const settings = await this.getSettings();
 
         if (!departmentsData || !doctorsData) return null;
+
+        // Helper to format phone for WhatsApp
+        const formatPhone = (num) => {
+            if (!num) return null;
+            let clean = num.toString().replace(/\D/g, '');
+            if (clean.length === 10) clean = `91${clean}`;
+            return clean.endsWith('@c.us') ? clean : `${clean}@c.us`;
+        };
+
+        const defaultAdminPhone = formatPhone(settings?.whatsapp_number || config.adminPhone);
 
         // Map doctors to departments for the bot's conversational flow
         const departments = {};
@@ -63,12 +87,12 @@ class SupabaseClient {
                     .map(doc => ({
                         id: doc.id,
                         name: doc.name,
-                        phone: config.adminPhone // Fallback phone for notifications
+                        phone: formatPhone(doc.phone) || defaultAdminPhone
                     }))
             };
         });
 
-        return departments;
+        return { departments, settings };
     }
 
     async uploadSession(fileBuffer) {
