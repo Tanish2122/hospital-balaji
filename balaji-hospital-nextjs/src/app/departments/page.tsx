@@ -14,7 +14,7 @@ import {
 export const metadata = {
   title: "Best Hospital Departments in Jaipur | Balaji Hospital",
   description:
-    "Explore all departments at Balaji Hospital Jaipur — Best Orthopedic Hospital, ENT Specialist & Speciality care since 1996. Knee replacement, spine surgery, kidney stones & more.",
+    "Explore all departments at Balaji Hospital Jaipur — Best Orthopedic Hospital, ENT Specialist & Other Specialised Departments since 1996. Kidney stones, spine surgery, vascular & more.",
   keywords: [
     "best orthopedic hospital in jaipur",
     "ent specialist in jaipur",
@@ -118,7 +118,7 @@ const categoryHubs = [
     stats: "Advanced Endoscopic Care",
   },
   {
-    label: "Speciality Hospital in Jaipur",
+    label: "Other Specialised Departments",
     subtitle: "Kidney Stones & Vascular Surgery",
     href: "/speciality",
     color: "bg-purple-50 border-purple-200 text-purple-700",

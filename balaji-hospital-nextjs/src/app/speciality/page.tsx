@@ -7,9 +7,9 @@ import { specialityDataToSeoSlug } from "@/data/seoSlugMap";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Speciality Hospital in Jaipur | Urology & Surgery | Balaji Hospital",
+  title: "Other Specialised Departments in Jaipur | Urology & Surgery | Balaji Hospital",
   description:
-    "Multi-speciality care in Jaipur — expert kidney stone treatment, plastic & vascular surgery. Advanced urology & surgical solutions at Balaji Hospital since 1996.",
+    "Other specialised care in Jaipur — expert kidney stone treatment, plastic & vascular surgery. Advanced urology & surgical solutions at Balaji Hospital since 1996.",
   keywords: [
     "speciality hospital jaipur",
     "kidney stone treatment jaipur",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "https://balajihospitaljaipur.com/speciality" },
   openGraph: {
-    title: "Speciality Hospital in Jaipur | Balaji Hospital",
+    title: "Other Specialised Departments in Jaipur | Balaji Hospital",
     description: "Expert urology, plastic & vascular surgery in Jaipur. Advanced care since 1996.",
     url: "https://balajihospitaljaipur.com/speciality",
   },
@@ -34,10 +34,10 @@ export default function SpecialityPage() {
         <Container>
           <div className="max-w-3xl">
             <span className="inline-flex px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border bg-purple-50 border-purple-200 text-purple-700 mb-6">
-              Speciality Department
+              Other Specialised Services
             </span>
             <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-poppins">
-              Speciality Hospital in Jaipur
+              Other Specialised Departments
             </h1>
             <p className="text-lg text-slate-600 leading-relaxed">
               Balaji Hospital offers expert multi-speciality care in Jaipur including advanced urology (kidney stones),
@@ -63,7 +63,7 @@ export default function SpecialityPage() {
       </section>
 
       <Container>
-        <h2 className="text-2xl font-bold text-slate-900 mb-8 font-poppins">Our Speciality Services</h2>
+        <h2 className="text-2xl font-bold text-slate-900 mb-8 font-poppins">Our Specialised Services</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           {specialityServices.map((svc) => {
             const seoSlug = specialityDataToSeoSlug[svc.id];

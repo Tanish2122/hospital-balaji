@@ -98,7 +98,7 @@ export default function Header() {
                           <span className="text-purple-600 text-base">🔬</span>
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">Speciality Hospital Jaipur</div>
+                          <div className="text-sm font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">Other Specialised Departments</div>
                           <div className="text-xs text-slate-400">Kidney Stones & Vascular</div>
                         </div>
                       </Link>
@@ -193,7 +193,7 @@ export default function Header() {
                 👂 ENT Specialist in Jaipur <ChevronRight className="w-4 h-4 ml-auto text-slate-300" />
               </Link>
               <Link href="/speciality" onClick={closeMobileMenu} className="flex items-center gap-3 py-2.5 text-sm font-semibold text-slate-700 hover:text-purple-600 transition-colors">
-                🔬 Speciality Hospital Jaipur <ChevronRight className="w-4 h-4 ml-auto text-slate-300" />
+                🔬 Other Specialised Departments <ChevronRight className="w-4 h-4 ml-auto text-slate-300" />
               </Link>
             </div>
 
