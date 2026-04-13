@@ -33,6 +33,8 @@ interface BookingNotification {
   patient: { name: string; phone: string };
   appointment: { date: string; time: string; id?: string; no?: number };
   doctor: { name: string; speciality: string; phone?: string };
+  adminPhone?: string; // Dynamic admin recipient
+  recepPhone?: string; // Dynamic receptionist recipient
 }
 
 interface EmergencyNotification {
@@ -40,16 +42,18 @@ interface EmergencyNotification {
   id: string;
   doctor: { name: string; phone?: string };
   reportUrl?: string;
+  adminPhone?: string; // Dynamic admin recipient
+  recepPhone?: string; // Dynamic receptionist recipient
 }
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function notifyBooking(data: BookingNotification) {
   try {
-    const { patient, appointment, doctor } = data;
-    const adminPhone = "918290909163@c.us";
-    const recepPhone = "916377433387@c.us";
-    const testDocPhone = doctor.phone || "918949518353@c.us";
+    const { patient, appointment, doctor, adminPhone: dynamicAdmin, recepPhone: dynamicRecep } = data;
+    const adminPhone = dynamicAdmin || "917276229049@c.us";
+    const recepPhone = dynamicRecep || "919521430632@c.us";
+    const testDocPhone = doctor.phone || "917276229049@c.us";
 
     const apptNo = appointment.no ? `\n🔢 *Appointment No: ${appointment.no}*` : '';
 
@@ -92,10 +96,10 @@ export async function notifyBooking(data: BookingNotification) {
 
 export async function notifyEmergency(data: EmergencyNotification) {
   try {
-    const { patient, id, doctor, reportUrl } = data;
-    const adminPhone = "918290909163@c.us";
-    const recepPhone = "916377433387@c.us";
-    const testDocPhone = doctor.phone || "918949518353@c.us";
+    const { patient, id, doctor, reportUrl, adminPhone: dynamicAdmin, recepPhone: dynamicRecep } = data;
+    const adminPhone = dynamicAdmin || "917276229049@c.us";
+    const recepPhone = dynamicRecep || "919521430632@c.us";
+    const testDocPhone = doctor.phone || "917276229049@c.us";
 
     // 1. Send to Patient (Confirmation)
     await sendWhatsAppMessage({

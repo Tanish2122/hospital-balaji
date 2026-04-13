@@ -270,7 +270,9 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
                             patient: { name: data.name, phone: `${cleanPatientPhone}@c.us` },
                             id: emgId,
                             doctor: { name: config.emergencyDoctor.name, phone: config.emergencyDoctor.phone },
-                            reportUrl: data.reports && data.reports.length > 0 ? data.reports[0].url : null
+                            reportUrl: data.reports && data.reports.length > 0 ? data.reports[0].url : null,
+                            adminPhone: config.adminPhone,
+                            recepPhone: config.receptionistPhone
                         }
                     }, { timeout: 10000 });
                 } catch (notifyErr) {
@@ -367,7 +369,9 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
                         data: {
                             patient: { name: data.name, phone: `${cleanPatientPhone}@c.us` },
                             appointment: { date: data.date, time: data.time, id: appId },
-                            doctor: { name: data.doctor, speciality: data.department, phone: data.doctorPhone }
+                            doctor: { name: data.doctor, speciality: data.department, phone: data.doctorPhone },
+                            adminPhone: config.adminPhone,
+                            recepPhone: config.receptionistPhone
                         }
                     }, { timeout: 10000 });
                 } catch (notifyErr) {
