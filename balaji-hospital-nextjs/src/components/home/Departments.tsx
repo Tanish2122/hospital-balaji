@@ -189,7 +189,7 @@ export default function Departments() {
             <span className="w-8 h-0.5 bg-medical-600"></span>
           </div>
           <h2 className="text-4xl lg:text-5xl font-display font-bold text-slate-900 mb-6 underline decoration-medical-100 decoration-8 underline-offset-4">
-            Centers of <span className="text-gradient">Excellence</span>
+            Centers of <span className="text-gradient">Excellence</span> in Orthopaedic & ENT
           </h2>
           <p className="text-lg text-slate-600 leading-relaxed">
             Comprehensive medical care across 15+ specialties with state-of-the-art equipment and experienced specialists.
@@ -213,7 +213,7 @@ export default function Departments() {
                   <Icon className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-medical-600 transition-colors leading-snug">
-                  {service.title}
+                  {service.title.replace(/\s+in\s+jaipur/gi, "").trim()}
                 </h3>
                 <p className="text-slate-600 text-sm mb-6 leading-relaxed line-clamp-3">
                   {service.description}
