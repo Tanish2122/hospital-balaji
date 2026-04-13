@@ -70,7 +70,7 @@ export default function AnatomyExplorer() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight font-poppins">
-            Explore Your <span className="text-blue-600">Recovery</span>
+            Find Your <span className="text-blue-600">Diseases</span>
           </h2>
           <p className="mt-4 text-slate-500 max-w-2xl mx-auto text-lg leading-relaxed">
             Click on the markers to learn about our specialized treatments and view real clinical case studies from Balaji Hospital.
