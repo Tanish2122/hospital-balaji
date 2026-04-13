@@ -192,7 +192,7 @@ export default function Departments() {
             Centers of <span className="text-gradient">Excellence</span> in Orthopaedic & ENT
           </h2>
           <p className="text-lg text-slate-600 leading-relaxed">
-            Comprehensive medical care across 15+ specialties with state-of-the-art equipment and experienced specialists.
+            Expert medical care specializing in Orthopaedic & ENT, with state-of-the-art equipment and experienced specialists.
           </p>
         </div>
 
