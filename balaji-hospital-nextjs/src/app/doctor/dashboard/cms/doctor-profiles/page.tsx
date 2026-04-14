@@ -10,7 +10,8 @@ import {
   AlertCircle,
   Stethoscope,
   ArrowRight,
-  Loader2
+  Loader2,
+  Clock
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
