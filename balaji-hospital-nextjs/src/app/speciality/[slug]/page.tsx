@@ -4,7 +4,7 @@ import Container from "@/components/ui/Container";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, Clock, ShieldCheck, ArrowLeft, Phone } from "lucide-react";
 import Link from "next/link";
-import { specialitySeoSlugs } from "@/data/seoSlugMap";
+import { otherSeoSlugs } from "@/data/seoSlugMap";
 import { services as localServices } from "@/data/services";
 import ServiceBookingCTA from "@/components/departments/ServiceBookingCTA";
 import { getDepartmentDataFromDB } from "@/lib/getDepartmentImage";
@@ -14,7 +14,7 @@ import type { Metadata } from "next";
 export const revalidate = 0; // Ensure fresh data from Supabase on every request
 
 function getServiceData(slug: string) {
-  const seoEntry = specialitySeoSlugs[slug];
+  const seoEntry = otherSeoSlugs[slug];
   if (!seoEntry) return null;
   const s = localServices.find((x) => x.id === seoEntry.dataSlug);
   if (!s) return null;
@@ -30,7 +30,7 @@ function getServiceData(slug: string) {
 }
 
 export async function generateStaticParams() {
-  return Object.keys(specialitySeoSlugs).map((slug) => ({ slug }));
+  return Object.keys(otherSeoSlugs).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -106,7 +106,7 @@ export default async function SpecialityServicePage({ params }: { params: Promis
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: "https://balajihospitaljaipur.com" },
-        { "@type": "ListItem", position: 2, name: "Speciality", item: "https://balajihospitaljaipur.com/speciality" },
+        { "@type": "ListItem", position: 2, name: "Other", item: "https://balajihospitaljaipur.com/speciality" },
         { "@type": "ListItem", position: 3, name: seoEntry.h1, item: `https://balajihospitaljaipur.com/speciality/${slug}` },
       ],
     },
@@ -122,12 +122,12 @@ export default async function SpecialityServicePage({ params }: { params: Promis
             <nav className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-6 uppercase tracking-widest flex-wrap">
               <Link href="/" className="hover:text-purple-600 transition-colors">Home</Link>
               <span>/</span>
-              <Link href="/speciality" className="hover:text-purple-600 transition-colors">Speciality</Link>
+              <Link href="/speciality" className="hover:text-purple-600 transition-colors">Other</Link>
               <span>/</span>
               <span className="text-purple-600">{seoEntry.h1}</span>
             </nav>
             <Link href="/speciality" className="inline-flex items-center gap-2 text-purple-600 font-bold mb-6 hover:gap-3 transition-all text-sm">
-              <ArrowLeft className="w-4 h-4" /> Back to Speciality Services
+              <ArrowLeft className="w-4 h-4" /> Back to Other Services
             </Link>
             <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-poppins leading-tight">
               {h1}

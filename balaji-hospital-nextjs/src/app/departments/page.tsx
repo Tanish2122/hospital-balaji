@@ -8,7 +8,7 @@ import { services as localServices } from "@/data/services";
 import {
   orthopedicDataToSeoSlug,
   entDataToSeoSlug,
-  specialityDataToSeoSlug,
+  otherDataToSeoSlug,
 } from "@/data/seoSlugMap";
 
 export const metadata = {
@@ -44,8 +44,8 @@ function toSeoUrl(dataSlug: string, rawCategory: string): string {
     const seoSlug = entDataToSeoSlug[dataSlug];
     return seoSlug ? `/ent/${seoSlug}` : `/ent`;
   }
-  if (rawCategory === "speciality") {
-    const seoSlug = specialityDataToSeoSlug[dataSlug];
+  if (rawCategory === "other" || rawCategory === "speciality") {
+    const seoSlug = otherDataToSeoSlug[dataSlug];
     return seoSlug ? `/speciality/${seoSlug}` : `/speciality`;
   }
   return `/departments/${rawCategory}/${dataSlug}`;
@@ -87,13 +87,13 @@ async function getDepartments() {
       category: "orthopedic",
     })),
     ...localServices
-      .filter((s) => s.category === "ENT" || s.category === "Speciality")
+      .filter((s) => s.category === "ENT" || s.category === "Other")
       .map((s) => ({
         id: s.id,
         name: s.title,
         slug: s.id,
         description: s.description,
-        category: s.category === "ENT" ? "ent" : "speciality",
+        category: s.category === "ENT" ? "ent" : "other",
       })),
   ];
 }

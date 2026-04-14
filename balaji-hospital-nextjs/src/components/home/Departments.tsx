@@ -14,7 +14,7 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
-import { orthopedicDataToSeoSlug, entDataToSeoSlug, specialityDataToSeoSlug } from "@/data/seoSlugMap";
+import { orthopedicDataToSeoSlug, entDataToSeoSlug, otherDataToSeoSlug } from "@/data/seoSlugMap";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Loader2 } from "lucide-react";
@@ -73,7 +73,7 @@ const staticServices = [
     title: "Kidney Stones Treatment in Jaipur",
     description:
       "Modern laser lithotripsy and non-invasive ESWL for effective removal of kidney and urinary stones with minimal recovery time.",
-    category: "Speciality",
+    category: "Other",
     url: "/speciality/kidney-stones-treatment-in-jaipur",
   },
 ];
@@ -162,7 +162,7 @@ export default function Departments() {
               slug: d.slug,
               title: d.name, // Real name from CMS
               description: d.description || staticMatch?.description || "Expert medical care at Balaji Hospital.",
-              category: d.category || staticMatch?.category || "Speciality",
+              category: d.category || staticMatch?.category || "Other",
               url: resolveUrl(d.slug, d.category),
             };
           });

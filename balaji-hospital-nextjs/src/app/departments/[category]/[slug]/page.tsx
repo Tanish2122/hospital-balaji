@@ -113,7 +113,7 @@ async function getSiblingServices(category: string, currentSlug: string) {
       .slice(0, 5)
       .map((s) => ({ id: s.slug, name: s.title, slug: s.slug }));
   }
-  const catValue = category === "ent" ? "ENT" : "Speciality";
+  const catValue = category === "ent" ? "ENT" : "Other";
   return localServices
     .filter((s) => s.category === catValue && s.id !== currentSlug)
     .slice(0, 5)
@@ -134,7 +134,7 @@ export async function generateStaticParams(): Promise<{ category: string; slug: 
 
   // ENT + Speciality from local services
   localServices.forEach((s) => {
-    const cat = s.category === "ENT" ? "ent" : s.category === "Speciality" ? "speciality" : null;
+    const cat = s.category === "ENT" ? "ent" : s.category === "Other" ? "other" : null;
     if (cat) params.push({ category: cat, slug: s.id });
   });
 

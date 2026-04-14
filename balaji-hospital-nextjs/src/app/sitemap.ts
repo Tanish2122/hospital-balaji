@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { blogPosts } from "@/data/blog";
 import { doctors } from "@/data/doctors";
-import { orthopedicSeoSlugs, entSeoSlugs, specialitySeoSlugs } from "@/data/seoSlugMap";
+import { orthopedicSeoSlugs, entSeoSlugs, otherSeoSlugs } from "@/data/seoSlugMap";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://balajihospitaljaipur.com";
@@ -43,8 +43,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  // ── Speciality service pages (/speciality/[seo-slug]) ─────────────────
-  const specialityRoutes: MetadataRoute.Sitemap = Object.keys(specialitySeoSlugs).map((slug) => ({
+  // ── Other service pages (/speciality/[seo-slug]) ─────────────────
+  const specialityRoutes: MetadataRoute.Sitemap = Object.keys(otherSeoSlugs).map((slug) => ({
     url: `${baseUrl}/speciality/${slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,

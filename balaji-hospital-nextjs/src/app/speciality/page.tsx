@@ -3,7 +3,7 @@ import Container from "@/components/ui/Container";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { services as localServices } from "@/data/services";
-import { specialityDataToSeoSlug } from "@/data/seoSlugMap";
+import { otherDataToSeoSlug } from "@/data/seoSlugMap";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
 };
 
-const specialityServices = localServices.filter((s) => s.category === "Speciality");
+const specialityServices = localServices.filter((s) => s.category === "Other");
 
 export default function SpecialityPage() {
   return (
@@ -66,8 +66,8 @@ export default function SpecialityPage() {
         <h2 className="text-2xl font-bold text-slate-900 mb-8 font-poppins">Our Specialised Services</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           {specialityServices.map((svc) => {
-            const seoSlug = specialityDataToSeoSlug[svc.id];
-            const href = seoSlug ? `/speciality/${seoSlug}` : `/departments/speciality/${svc.id}`;
+            const seoSlug = otherDataToSeoSlug[svc.id];
+            const href = seoSlug ? `/speciality/${seoSlug}` : `/departments/other/${svc.id}`;
             return (
               <Link
                 key={svc.id}

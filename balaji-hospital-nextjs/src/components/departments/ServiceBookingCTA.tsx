@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 
 interface ServiceBookingCTAProps {
   serviceName: string;
-  category: string; // e.g. "Orthopedic", "ENT", "Speciality"
+  category: string; // e.g. "Orthopedic", "ENT", "Other"
 }
 
 const DEPARTMENTS = [

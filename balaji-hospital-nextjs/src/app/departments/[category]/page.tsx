@@ -6,10 +6,10 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { orthopedicServices } from "@/data/orthopedicServices";
 import { services as localServices } from "@/data/services";
-import { orthopedicDataToSeoSlug, entDataToSeoSlug, specialityDataToSeoSlug } from "@/data/seoSlugMap";
+import { orthopedicDataToSeoSlug, entDataToSeoSlug, otherDataToSeoSlug } from "@/data/seoSlugMap";
 import DepartmentCategoryCTA from "@/components/departments/DepartmentCategoryCTA";
 
-type CategoryParam = "orthopedic" | "ent" | "speciality";
+type CategoryParam = "orthopedic" | "ent" | "other";
 
 const categoryMeta: Record<
   CategoryParam,
@@ -32,9 +32,9 @@ const categoryMeta: Record<
     keywords: ["ent specialist in jaipur", "best ent hospital jaipur", "sinus surgery jaipur", "ear surgery jaipur", "throat specialist jaipur"],
     color: "bg-blue-50 border-blue-200 text-blue-700",
   },
-  speciality: {
-    label: "Speciality Department",
-    value: "Speciality",
+  other: {
+    label: "Other Specialised Departments",
+    value: "Other",
     description:
       "Multi-specialty care in Jaipur including advanced urology (kidney stones), plastic surgery, and vascular surgery. Expert surgical solutions for complex medical needs.",
     keywords: ["urologist in jaipur", "kidney stone treatment jaipur", "plastic surgery jaipur", "vascular surgeon jaipur"],
@@ -122,8 +122,8 @@ async function getServicesForCategory(category: CategoryParam) {
       }));
   }
 
-  // ENT / Speciality — use local services data
-  const catValue = category === "ent" ? "ENT" : "Speciality";
+  // ENT / Other — use local services data
+  const catValue = category === "ent" ? "ENT" : "Other";
   return localServices
     .filter((s) => s.category === catValue)
     .map((s) => ({
@@ -135,7 +135,7 @@ async function getServicesForCategory(category: CategoryParam) {
       icon: s.icon,
       url: category === "ent"
         ? `/ent/${entDataToSeoSlug[s.id] ?? s.id}`
-        : `/speciality/${specialityDataToSeoSlug[s.id] ?? s.id}`,
+        : `/speciality/${otherDataToSeoSlug[s.id] ?? s.id}`,
     }));
 }
 
