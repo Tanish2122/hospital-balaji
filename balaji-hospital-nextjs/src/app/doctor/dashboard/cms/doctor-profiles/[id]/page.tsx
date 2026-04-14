@@ -35,6 +35,7 @@ interface Doctor {
   status: string
   bio: string
   qualification: string
+  slug: string
   department_id: string
   on_leave: boolean
   schedule: ScheduleSlot[]
