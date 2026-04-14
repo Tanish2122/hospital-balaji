@@ -13,6 +13,7 @@ export interface Doctor {
   specialization?: string;
   status?: 'active' | 'inactive';
   auth_id?: string;
+  on_leave?: boolean;
 }
 
 export const doctors: Doctor[] = [
