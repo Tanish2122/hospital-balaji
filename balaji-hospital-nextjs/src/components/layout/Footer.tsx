@@ -71,18 +71,19 @@ export default function Footer() {
 
           {/* Our Services */}
           <div>
-            <h4 className="text-white font-bold mb-6 text-lg">Specialties</h4>
+            <h4 className="text-white font-bold mb-6 text-lg">Departments</h4>
             <ul className="space-y-4 text-sm">
               {[
+                { name: "Best Orthopedic Hospital",             href: "/orthopedic" },
+                { name: "ENT Specialist in Jaipur",            href: "/ent" },
+                { name: "Other Specialised Treatments",        href: "/departments" },
                 { name: "Spine Treatment in Jaipur",            href: "/orthopedic/spine-treatment-in-jaipur" },
                 { name: "Knee Replacement in Jaipur",           href: "/orthopedic/best-knee-replacement-hospital-in-jaipur" },
                 { name: "Hip Replacement in Jaipur",            href: "/orthopedic/hip-replacement-hospital-in-jaipur" },
-                { name: "Best Ear Surgery Hospital in Jaipur",  href: "/ent/best-ear-surgery-hospital-in-jaipur" },
-                { name: "Kidney Stones Treatment in Jaipur",    href: "/speciality/kidney-stones-treatment-in-jaipur" },
-                { name: "Physiotherapy & Rehabilitation",        href: "/orthopedic/physiotherapy-and-rehabilitation-centre-in-jaipur" },
-                { name: "Joint Pain Treatment in Jaipur",       href: "/orthopedic/joint-pain-treatment-in-jaipur" },
-                { name: "Sports Medicine Hospital in Jaipur",   href: "/orthopedic/best-sports-medicine-hospital-in-jaipur" },
+                { name: "Ear Surgery in Jaipur",               href: "/ent/best-ear-surgery-hospital-in-jaipur" },
+                { name: "Kidney Stones Treatment",             href: "/speciality/kidney-stones-treatment-in-jaipur" },
               ].map((item) => (
+
                 <li key={item.name}>
                   <Link href={item.href} className="hover:text-medical-400 transition-colors inline-block">
                     {item.name}

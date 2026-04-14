@@ -1,17 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, Calendar, User, Phone, Mail, FileText, Send, Stethoscope } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Calendar, User, Phone, Mail, FileText, Send, Stethoscope, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-const DEPARTMENTS = [
-  "Orthopedic",
-  "ENT",
-  "Plastic & Vascular Surgery",
-  "Physiotherapy",
-  "General Surgery",
-  "Emergency / Trauma",
-];
+const DEPARTMENTS = ["Orthopedic", "ENT", "Other"];
+
+interface Doctor {
+  id: string;
+  name: string;
+  on_leave: boolean;
+}
 
 interface AppointmentModalProps {
   isOpen: boolean;
@@ -25,19 +24,80 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
     phone: "",
     email: "",
     department: defaultDepartment,
+    doctorId: "",
     appointmentDate: "",
+    appointmentTime: "",
     reason: "",
   });
+  
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const fetchDoctors = async () => {
+      setLoadingDoctors(true);
+      try {
+        const { data, error } = await supabase
+          .from("doctors")
+          .select("id, name, on_leave, departments(name)")
+          .eq("is_active", true)
+          .eq("on_leave", false); // Filter out doctors on leave
+
+        if (error) throw error;
+
+        if (data) {
+          const filtered = data.filter((d: any) => d.departments?.name === formData.department);
+          setDoctors(filtered);
+          if (filtered.length > 0) {
+            setFormData(prev => ({ ...prev, doctorId: filtered[0].id }));
+          } else {
+            setFormData(prev => ({ ...prev, doctorId: "" }));
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching doctors:", err);
+      } finally {
+        setLoadingDoctors(false);
+      }
+    };
+    fetchDoctors();
+  }, [formData.department, isOpen]);
+
+  useEffect(() => {
+    if (!formData.appointmentDate) {
+      setAvailableSlots([]);
+      return;
+    }
+
+    const date = new Date(formData.appointmentDate);
+    const day = date.getDay(); // 0 is Sunday
+    
+    // 10am to 2pm slots
+    const slots = ["10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM"];
+    
+    // 6pm to 8pm except Sunday
+    if (day !== 0) {
+      slots.push("06:00 PM", "07:00 PM", "08:00 PM");
+    }
+    
+    setAvailableSlots(slots);
+    if (slots.length > 0) {
+       setFormData(prev => ({ ...prev, appointmentTime: slots[0] }));
+    } else {
+       setFormData(prev => ({ ...prev, appointmentTime: "" }));
+    }
+  }, [formData.appointmentDate]);
 
   if (!isOpen) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
-    // Strict phone validation: only digits, max 10
     if (name === "phone") {
       const numericValue = value.replace(/\D/g, "").slice(0, 10);
       setFormData((prev) => ({ ...prev, [name]: numericValue }));
@@ -54,19 +114,27 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
     setErrorMessage("");
 
     try {
+      // Get department ID
+      const { data: deptData } = await supabase
+        .from('departments')
+        .select('id')
+        .eq('name', formData.department)
+        .single();
+
       const { error } = await supabase.from("appointments").insert([
         {
           patient_name: formData.patientName,
           phone: formData.phone,
           email: formData.email || null,
+          department_id: deptData?.id || null,
+          doctor_id: formData.doctorId || null,
           appointment_date: formData.appointmentDate,
+          appointment_time: formData.appointmentTime,
           reason: formData.reason || null,
         },
       ]);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       setStatus("success");
       setFormData({
@@ -74,10 +142,12 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
         phone: "",
         email: "",
         department: defaultDepartment,
+        doctorId: "",
         appointmentDate: "",
+        appointmentTime: "",
         reason: "",
       });
-      // Auto close after 3 seconds on success
+      
       setTimeout(() => {
         onClose();
         setStatus("idle");
@@ -93,23 +163,15 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 text-left">
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
-      {/* Modal Content */}
       <div className="relative bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
         <div className="sticky top-0 bg-white/90 backdrop-blur-md px-8 py-6 border-b border-slate-100 flex items-center justify-between z-10">
           <div>
             <h2 className="text-2xl font-bold text-slate-900 font-poppins">Book an Appointment</h2>
             <p className="text-slate-500 text-sm mt-1">Schedule a consultation with our specialists</p>
           </div>
-          <button 
-            onClick={onClose}
-            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-          >
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -117,12 +179,10 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
         <div className="p-8">
           {status === "success" && (
             <div className="p-4 mb-6 text-sm text-green-800 rounded-2xl bg-green-50 border border-green-100 flex items-center gap-3">
-              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 shrink-0">
-                ✓
-              </span>
+              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 shrink-0">✓</span>
               <div>
                 <span className="font-bold block">Appointment Request Sent!</span> 
-                Our team will contact you shortly to confirm the exact time.
+                Our team will contact you shortly to confirm.
               </div>
             </div>
           )}
@@ -138,106 +198,63 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
                   <User className="w-3 h-3" /> Patient Name *
                 </label>
-                <input 
-                  type="text" 
-                  name="patientName"
-                  value={formData.patientName}
-                  onChange={handleChange}
-                  required 
-                  className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900 placeholder:text-slate-400" 
-                  placeholder="Full Name" 
-                />
+                <input type="text" name="patientName" value={formData.patientName} onChange={handleChange} required className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900" placeholder="Full Name" />
               </div>
 
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
                   <Phone className="w-3 h-3" /> Phone Number *
                 </label>
-                <input 
-                  type="tel" 
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required 
-                  pattern="[0-9]{10}"
-                  maxLength={10}
-                  className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900 placeholder:text-slate-400" 
-                  placeholder="10-digit Phone Number" 
-                />
-                {formData.phone && formData.phone.length < 10 && (
-                  <p className="text-[10px] text-red-500 font-bold ml-2">Must be exactly 10 digits</p>
-                )}
+                <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required pattern="[0-9]{10}" maxLength={10} className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900" placeholder="10-digit Phone" />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-                  <Mail className="w-3 h-3" /> Email Address
+                  <Stethoscope className="w-3 h-3" /> Department
                 </label>
-                <input 
-                  type="email" 
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900 placeholder:text-slate-400" 
-                  placeholder="Optional" 
-                />
+                <select name="department" value={formData.department} onChange={handleChange} className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900 font-poppins">
+                  {DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
+                </select>
               </div>
 
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-                  <Stethoscope className="w-3 h-3" /> Department
+                  <User className="w-3 h-3" /> Select Doctor
                 </label>
-                <select
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900"
-                >
-                  {DEPARTMENTS.map((d) => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
+                <select name="doctorId" value={formData.doctorId} onChange={handleChange} disabled={loadingDoctors || doctors.length === 0} className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900 disabled:opacity-50">
+                  {doctors.length === 0 ? <option value="">No doctors available</option> : doctors.map((doc) => <option key={doc.id} value={doc.id}>{doc.name}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+                  <Calendar className="w-3 h-3" /> Preferred Date *
+                </label>
+                <input type="date" name="appointmentDate" value={formData.appointmentDate} onChange={handleChange} required className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900" min={new Date().toISOString().split('T')[0]} />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+                  <Clock className="w-3 h-3" /> Preferred Time Slot *
+                </label>
+                <select name="appointmentTime" value={formData.appointmentTime} onChange={handleChange} required className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900 disabled:opacity-50" disabled={!formData.appointmentDate}>
+                  {availableSlots.length === 0 ? <option value="">Select date first</option> : availableSlots.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
                 </select>
               </div>
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-                <Calendar className="w-3 h-3" /> Preferred Date *
-              </label>
-              <input 
-                type="date"
-                name="appointmentDate"
-                value={formData.appointmentDate}
-                onChange={handleChange}
-                required 
-                className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900" 
-                min={new Date().toISOString().split('T')[0]}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
                 <FileText className="w-3 h-3" /> Reason for Visit
               </label>
-              <textarea 
-                rows={3} 
-                name="reason"
-                value={formData.reason}
-                onChange={handleChange}
-                className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900 placeholder:text-slate-400 resize-none" 
-                placeholder="Briefly describe your symptoms or reason for appointment"
-              ></textarea>
+              <textarea rows={3} name="reason" value={formData.reason} onChange={handleChange} className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 transition-all font-medium text-slate-900 resize-none" placeholder="Briefly describe your symptoms" />
             </div>
 
-            <button 
-              type="submit" 
-              disabled={isSubmitting}
-              className={`w-full bg-medical-600 text-white font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-medical-500/20 ${
-                isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-medical-700 active:scale-[0.98]"
-              }`}
-            >
+            <button type="submit" disabled={isSubmitting} className={`w-full bg-medical-600 text-white font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-medical-500/20 ${isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-medical-700 active:scale-[0.98]"}`}>
               <span>{isSubmitting ? "Submitting..." : "Confirm Appointment"}</span>
               {!isSubmitting && <Send className="w-5 h-5" />}
             </button>

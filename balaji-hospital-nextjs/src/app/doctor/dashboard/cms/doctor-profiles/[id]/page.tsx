@@ -103,6 +103,7 @@ export default function DoctorProfileEditor() {
         image_url: doctor.image_url || '',
         designation: doctor.designation || '',
         slug: doctor.slug || '',
+        on_leave: doctor.on_leave || false,
         department_id: doctor.department_id || '',
         bio: doctor.bio || '',
         qualification: doctor.qualification || '',

@@ -30,8 +30,8 @@ class SupabaseClient {
 
     async getDoctors() {
         try {
-            // Fetch doctors and their associated departments
-            const response = await axios.get(`${this.url}/rest/v1/doctors?select=id,name,departments(name)`, {
+            // Fetch doctors and their associated departments, include on_leave field
+            const response = await axios.get(`${this.url}/rest/v1/doctors?select=id,name,on_leave,departments(name)`, {
                 headers: this.headers,
                 timeout: this.requestTimeout
             });
@@ -59,7 +59,7 @@ class SupabaseClient {
             departments[id] = {
                 name: dept.name,
                 doctors: doctorsData
-                    .filter(doc => doc.departments && doc.departments.name === dept.name)
+                    .filter(doc => doc.departments && doc.departments.name === dept.name && !doc.on_leave)
                     .map(doc => ({
                         id: doc.id,
                         name: doc.name,

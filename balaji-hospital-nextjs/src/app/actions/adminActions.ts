@@ -87,6 +87,7 @@ export async function updateDoctorProfile(id: string, updates: {
   department_id: string
   bio?: string
   qualification?: string
+  on_leave?: boolean
   schedule?: any
   services?: string[]
 }) {

@@ -93,12 +93,12 @@ export default function Header() {
                           <div className="text-xs text-slate-400">Ear, Nose & Throat Surgery</div>
                         </div>
                       </Link>
-                      <Link href="/speciality" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-purple-50 transition-colors group/item">
+                      <Link href="/departments" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-purple-50 transition-colors group/item">
                         <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center shrink-0">
                           <span className="text-purple-600 text-base">🔬</span>
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">Other Specialised Departments</div>
+                          <div className="text-sm font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">Other Departments</div>
                           <div className="text-xs text-slate-400">Kidney Stones & Vascular</div>
                         </div>
                       </Link>

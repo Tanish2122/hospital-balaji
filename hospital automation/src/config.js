@@ -28,19 +28,13 @@ module.exports = {
             ]
         },
         "3": {
-            name: "Pediatrics",
+            name: "Other",
             doctors: [
                 { id: "dr_utkarsh_gen", name: "Dr. Utkarsh", phone: "917276229049@c.us" }
             ]
-        },
-        "4": {
-            name: "General Medicine",
-            doctors: [
-                { id: "dr_utkarsh_med", name: "Dr. Utkarsh", phone: "917276229049@c.us" }
-            ]
         }
     },
-    slots: ["10:00 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"],
+    slots: ["10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "06:00 PM", "07:00 PM", "08:00 PM"],
     emergencyDoctor: { name: "Dr. Ramesh Agarwal", phone: "917276229049@c.us" },
     ngrokToken: "3Bd332vlf0YDT5MSvsXlX0RTB3q_6aQhgNFB5EyncXNT8DTXe"
 };

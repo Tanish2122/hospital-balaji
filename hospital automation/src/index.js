@@ -340,22 +340,38 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
 
         case 'NORMAL_DATE':
             data.date = text === 'Tomorrow' ? new Date(Date.now() + 86400000).toISOString().split('T')[0] : text;
+            const selectedDate = new Date(data.date);
+            const isSunday = selectedDate.getDay() === 0;
+
             let slotMsg = `Available slots for ${data.date}:\n`;
-            for (let i = 0; i < config.slots.length; i++) {
-                const slot = config.slots[i];
+            
+            // Filter slots: 6pm-8pm not available on Sunday
+            const daySlots = config.slots.filter(slot => {
+                if (isSunday) {
+                    const hour = parseInt(slot.split(':')[0]);
+                    const isPm = slot.includes('PM');
+                    if (isPm && hour >= 6 && hour < 9) return false;
+                }
+                return true;
+            });
+
+            for (let i = 0; i < daySlots.length; i++) {
+                const slot = daySlots[i];
                 if (await sessionManager.isSlotAvailable(data.date, slot, data.doctor)) {
                     slotMsg += `${i + 1}️⃣ ${slot}\n`;
                 } else {
                     slotMsg += `${i + 1}️⃣ ~~${slot} (Booked)~~ \n`;
                 }
             }
+            data.currentDaySlots = daySlots; // Save filtered slots for the next step
             await sessionManager.updateSession(phone, 'NORMAL_TIME', data);
             await client.sendMessage(phone, slotMsg).catch(err => console.error("Send Error:", err));
             break;
 
         case 'NORMAL_TIME':
             const sIdx = parseInt(text) - 1;
-            const chosenSlot = config.slots[sIdx];
+            const currentSlots = data.currentDaySlots || config.slots;
+            const chosenSlot = currentSlots[sIdx];
             if (chosenSlot && await sessionManager.isSlotAvailable(data.date, chosenSlot, data.doctor)) {
                 data.time = chosenSlot;
                 const appId = await sessionManager.saveNormalAppointment(data);

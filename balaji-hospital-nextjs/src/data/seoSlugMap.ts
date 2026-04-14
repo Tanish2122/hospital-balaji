@@ -1,5 +1,5 @@
 export interface SeoSlugEntry {
-  dataCategory: "orthopedic" | "ent" | "speciality";
+  dataCategory: "orthopedic" | "ent" | "other";
   dataSlug: string;
   metaTitle: string;
   metaDescription: string;
@@ -100,7 +100,7 @@ export const orthopedicSeoSlugs: Record<string, SeoSlugEntry> = {
     secondaryKeywords: ["Paediatric Orthopaedics surgery in jaipur", "Paediatric Orthopaedics Treatment in jaipur"],
   },
   "plastic-vascular-surgery-in-jaipur": {
-    dataCategory: "speciality",
+    dataCategory: "other",
     dataSlug: "plastic-vascular-surgery",
     h1: "Plastic & Vascular Surgery in Jaipur",
     metaTitle: "Plastic & Vascular Surgery in Jaipur | Balaji Hospital",
@@ -174,9 +174,9 @@ export const entSeoSlugs: Record<string, SeoSlugEntry> = {
   },
 };
 
-export const specialitySeoSlugs: Record<string, SeoSlugEntry> = {
+export const otherSeoSlugs: Record<string, SeoSlugEntry> = {
   "kidney-stones-treatment-in-jaipur": {
-    dataCategory: "speciality",
+    dataCategory: "other",
     dataSlug: "kidney-stones",
     h1: "Kidney Stones Treatment in Jaipur",
     metaTitle: "Kidney Stones Treatment in Jaipur | Balaji Hospital",
@@ -194,6 +194,6 @@ export const orthopedicDataToSeoSlug: Record<string, string> = Object.fromEntrie
 export const entDataToSeoSlug: Record<string, string> = Object.fromEntries(
   Object.entries(entSeoSlugs).map(([seoSlug, e]) => [e.dataSlug, seoSlug])
 );
-export const specialityDataToSeoSlug: Record<string, string> = Object.fromEntries(
-  Object.entries(specialitySeoSlugs).map(([seoSlug, e]) => [e.dataSlug, seoSlug])
+export const otherDataToSeoSlug: Record<string, string> = Object.fromEntries(
+  Object.entries(otherSeoSlugs).map(([seoSlug, e]) => [e.dataSlug, seoSlug])
 );

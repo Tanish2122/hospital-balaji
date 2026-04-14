@@ -97,7 +97,7 @@ const getColor = (category: string) => {
   switch (category) {
     case "Orthopedic":  return "bg-amber-100 text-amber-600";
     case "ENT":         return "bg-blue-100 text-blue-600";
-    case "Speciality":  return "bg-purple-100 text-purple-600";
+    case "Other":       return "bg-purple-100 text-purple-600";
     default:            return "bg-slate-100 text-slate-600";
   }
 };
@@ -113,8 +113,8 @@ function resolveUrl(slug: string, category: string): string {
     const seoSlug = entDataToSeoSlug[slug];
     return seoSlug ? `/ent/${seoSlug}` : `/ent`;
   }
-  if (cat === "speciality") {
-    const seoSlug = specialityDataToSeoSlug[slug];
+  if (cat === "other" || cat === "speciality") {
+    const seoSlug = otherDataToSeoSlug[slug];
     return seoSlug ? `/speciality/${seoSlug}` : `/speciality`;
   }
   return `/departments`;

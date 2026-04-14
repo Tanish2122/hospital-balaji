@@ -6,7 +6,7 @@ export interface Service {
   features?: string[];
   icon: string;
   image: string;
-  category: "Orthopedic" | "ENT" | "Speciality" | "General";
+  category: "Orthopedic" | "ENT" | "Other" | "General";
   url: string;
 }
 
@@ -85,7 +85,7 @@ export const services: Service[] = [
     url: "/ent/best-throat-surgery-hospital-in-jaipur",
   },
 
-  // ─── Speciality ──────────────────────────────────────────────────
+  // ─── Other ──────────────────────────────────────────────────
   {
     id: "plastic-vascular-surgery",
     title: "Plastic & Vascular Surgery",
@@ -95,7 +95,7 @@ export const services: Service[] = [
     features: ["Reconstructive Plastic Surgery", "Skin Grafting & Wound Care", "Varicose Vein Treatment (Laser/Surgical)", "Peripheral Vascular Disease management", "Diabetic Foot Salvage", "AV Fistula for Dialysis"],
     icon: "HeartPulse",
     image: "/images/services/plastic.png",
-    category: "Speciality",
+    category: "Other",
     url: "/orthopedic/plastic-vascular-surgery-in-jaipur",
   },
   {
@@ -107,7 +107,8 @@ export const services: Service[] = [
     features: ["Laser Lithotripsy (Mini-PCNL)", "URS / RIRS for Ureteric Stones", "ESWL (Non-Surgical Fragmentation)", "Diagnostic Ultrasound & IVP", "Stone Recurrence Prevention guidance", "Painless Stone Removal protocols"],
     icon: "Flame",
     image: "/images/gallery/kidney stones.jpeg",
-    category: "Speciality",
+    category: "Other",
     url: "/speciality/kidney-stones-treatment-in-jaipur",
   },
+
 ];
