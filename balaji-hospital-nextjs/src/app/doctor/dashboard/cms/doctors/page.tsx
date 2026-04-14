@@ -50,6 +50,7 @@ interface Doctor {
   bio?: string
   schedule?: any
   services?: string[]
+  on_leave?: boolean
   created_at: string
 }
 

@@ -24,6 +24,7 @@ interface Doctor {
   status: string
   bio: string
   qualification: string
+  on_leave?: boolean
 }
 
 export default function DoctorProfilesCMS() {
