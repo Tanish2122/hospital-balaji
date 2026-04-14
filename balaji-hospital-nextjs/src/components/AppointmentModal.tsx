@@ -69,29 +69,82 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
   }, [formData.department, isOpen]);
 
   useEffect(() => {
-    if (!formData.appointmentDate) {
+    if (!formData.appointmentDate || !formData.doctorId) {
       setAvailableSlots([]);
       return;
     }
 
-    const date = new Date(formData.appointmentDate);
-    const day = date.getDay(); // 0 is Sunday
-    
-    // 10am to 2pm slots
-    const slots = ["10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM"];
-    
-    // 6pm to 8pm except Sunday
-    if (day !== 0) {
-      slots.push("06:00 PM", "07:00 PM", "08:00 PM");
-    }
-    
-    setAvailableSlots(slots);
-    if (slots.length > 0) {
-       setFormData(prev => ({ ...prev, appointmentTime: slots[0] }));
-    } else {
-       setFormData(prev => ({ ...prev, appointmentTime: "" }));
-    }
-  }, [formData.appointmentDate]);
+    const fetchSlots = async () => {
+      try {
+        const date = new Date(formData.appointmentDate);
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayName = dayNames[date.getDay()];
+        
+        // 1. Check for specific date leaves
+        const { data: specificDates } = await supabase
+          .from("availability")
+          .select("*")
+          .eq("doctor_id", formData.doctorId)
+          .eq("day_of_week", "SpecificDate")
+          .eq("specific_date", formData.appointmentDate);
+
+        if (specificDates && specificDates.some(d => !d.is_available)) {
+          setAvailableSlots([]);
+          return;
+        }
+
+        // 2. Fetch weekly recurring slots
+        const { data: weeklySlots } = await supabase
+          .from("availability")
+          .select("*")
+          .eq("doctor_id", formData.doctorId)
+          .eq("day_of_week", dayName)
+          .eq("is_available", true);
+
+        let finalSlots: string[] = [];
+
+        if (weeklySlots && weeklySlots.length > 0) {
+          // Generate slots from individual ranges
+          weeklySlots.forEach(slot => {
+            const startHour = parseInt(slot.start_time.split(':')[0]);
+            const endHour = parseInt(slot.end_time.split(':')[0]);
+            
+            for (let h = startHour; h <= endHour; h++) {
+              const hour = h % 24;
+              const ampm = hour >= 12 ? "PM" : "AM";
+              const h12 = hour % 12 || 12;
+              finalSlots.push(`${h12.toString().padStart(2, '0')}:00 ${ampm}`);
+            }
+          });
+          // Sort unique slots
+          finalSlots = Array.from(new Set(finalSlots)).sort((a, b) => {
+            const timeA = new Date(`2000/01/01 ${a}`).getTime();
+            const timeB = new Date(`2000/01/01 ${b}`).getTime();
+            return timeA - timeB;
+          });
+        } else {
+          // FALLBACK to default rules if no database entries found
+          const day = date.getDay();
+          const slots = ["10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM"];
+          if (day !== 0) {
+            slots.push("06:00 PM", "07:00 PM", "08:00 PM");
+          }
+          finalSlots = slots;
+        }
+
+        setAvailableSlots(finalSlots);
+        if (finalSlots.length > 0) {
+          setFormData(prev => ({ ...prev, appointmentTime: finalSlots[0] }));
+        } else {
+          setFormData(prev => ({ ...prev, appointmentTime: "" }));
+        }
+      } catch (err) {
+        console.error("Error generating slots:", err);
+      }
+    };
+
+    fetchSlots();
+  }, [formData.appointmentDate, formData.doctorId]);
 
   if (!isOpen) return null;
 

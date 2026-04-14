@@ -151,6 +151,27 @@ class SupabaseClient {
             return null;
         }
     }
+
+    async getAvailability(doctorId, dayOfWeek, specificDate) {
+        try {
+            // 1. Check for specific date (leaves)
+            const leaveUrl = `${this.url}/rest/v1/availability?doctor_id=eq.${doctorId}&day_of_week=eq.SpecificDate&specific_date=eq.${specificDate}`;
+            const leaveResp = await axios.get(leaveUrl, { headers: this.headers });
+            
+            if (leaveResp.data && leaveResp.data.some(d => !d.is_available)) {
+                return []; // On leave
+            }
+
+            // 2. Get weekly recurring slots
+            const weeklyUrl = `${this.url}/rest/v1/availability?doctor_id=eq.${doctorId}&day_of_week=eq.${dayOfWeek}&is_available=eq.true`;
+            const weeklyResp = await axios.get(weeklyUrl, { headers: this.headers });
+            
+            return weeklyResp.data;
+        } catch (error) {
+            console.error("Supabase Get Availability Error:", error.message);
+            return null;
+        }
+    }
 }
 
 module.exports = new SupabaseClient();

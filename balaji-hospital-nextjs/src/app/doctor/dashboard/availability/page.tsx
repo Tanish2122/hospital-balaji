@@ -1,6 +1,5 @@
-'use client'
-
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { 
   Plus, 
@@ -11,7 +10,8 @@ import {
   Loader2,
   AlertCircle,
   XCircle,
-  CheckCircle2
+  CheckCircle2,
+  User as UserIcon
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -26,12 +26,14 @@ interface AvailabilitySlot {
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
-export default function AvailabilityPage() {
+function AvailabilityContent() {
+  const searchParams = useSearchParams()
   const [weeklySlots, setWeeklySlots] = useState<AvailabilitySlot[]>([])
   const [leaves, setLeaves] = useState<AvailabilitySlot[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [doctorId, setDoctorId] = useState('')
+  const [doctorName, setDoctorName] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
   // Form states for adding new weekly slot
@@ -44,22 +46,44 @@ export default function AvailabilityPage() {
 
   useEffect(() => {
     const fetchDoctorAndAvailability = async () => {
+      const docIdParam = searchParams.get('docId')
+      
+      if (docIdParam) {
+        // Admin mode: Fetch specific doctor by ID
+        const { data: doctor } = await supabase
+          .from('doctors')
+          .select('id, name')
+          .eq('id', docIdParam)
+          .single()
+
+        if (doctor) {
+          setDoctorId(doctor.id)
+          setDoctorName(doctor.name)
+          fetchAvailability(doctor.id)
+        } else {
+          setLoading(false)
+        }
+        return
+      }
+
+      // Default mode: Fetch logged in doctor
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
       const { data: doctor } = await supabase
         .from('doctors')
-        .select('id')
+        .select('id, name')
         .eq('auth_id', user.id)
         .single()
 
       if (!doctor) return
       setDoctorId(doctor.id)
+      setDoctorName(doctor.name)
       fetchAvailability(doctor.id)
     }
 
     fetchDoctorAndAvailability()
-  }, [])
+  }, [searchParams])
 
   const fetchAvailability = async (docId: string) => {
     setLoading(true)
@@ -147,8 +171,10 @@ export default function AvailabilityPage() {
   return (
     <div className="max-w-4xl space-y-8 pb-12">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Manage Availability</h1>
-        <p className="text-slate-500">Set your weekly schedule and mark leaves.</p>
+        <h1 className="text-2xl font-bold text-slate-800">
+          {doctorName ? `Manage Availability: ${doctorName}` : 'Manage Availability'}
+        </h1>
+        <p className="text-slate-500">Set recurring schedule and mark leaves for patients to book.</p>
       </div>
 
       {message && (
@@ -294,5 +320,17 @@ export default function AvailabilityPage() {
         </div>
       </section>
     </div>
+  )
+}
+
+export default function AvailabilityPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center p-20">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    }>
+      <AvailabilityContent />
+    </Suspense>
   )
 }

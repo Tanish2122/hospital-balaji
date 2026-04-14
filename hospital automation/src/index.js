@@ -341,29 +341,57 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
         case 'NORMAL_DATE':
             data.date = text === 'Tomorrow' ? new Date(Date.now() + 86400000).toISOString().split('T')[0] : text;
             const selectedDate = new Date(data.date);
-            const isSunday = selectedDate.getDay() === 0;
+            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const dayName = dayNames[selectedDate.getDay()];
+
+            let finalSlots = [];
+            const availability = await supabase.getAvailability(data.doctorId, dayName, data.date);
+
+            if (availability === null) {
+                // Fallback to hardcoded defaults if DB query fails or no record exists
+                const day = selectedDate.getDay();
+                finalSlots = ["10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM"];
+                if (day !== 0) {
+                    finalSlots.push("06:00 PM", "07:00 PM", "08:00 PM");
+                }
+            } else if (availability.length > 0) {
+                // Generate slots from DB ranges
+                availability.forEach(slot => {
+                    const startHour = parseInt(slot.start_time.split(':')[0]);
+                    const endHour = parseInt(slot.end_time.split(':')[0]);
+                    
+                    for (let h = startHour; h <= endHour; h++) {
+                        const hour = h % 24;
+                        const ampm = hour >= 12 ? "PM" : "AM";
+                        const h12 = hour % 12 || 12;
+                        finalSlots.push(`${h12.toString().padStart(2, '0')}:00 ${ampm}`);
+                    }
+                });
+                finalSlots = [...new Set(finalSlots)].sort((a,b) => {
+                    return new Date(`2000/01/01 ${a}`) - new Date(`2000/01/01 ${b}`);
+                });
+            } else {
+                // On leave or no slots for this day
+                finalSlots = [];
+            }
+
+            if (finalSlots.length === 0) {
+                await client.sendMessage(phone, `Sorry, no available slots for ${data.date}. Please choose another date.`);
+                // Keep state at NORMAL_DATE to let them retry
+                return;
+            }
 
             let slotMsg = `Available slots for ${data.date}:\n`;
-            
-            // Filter slots: 6pm-8pm not available on Sunday
-            const daySlots = config.slots.filter(slot => {
-                if (isSunday) {
-                    const hour = parseInt(slot.split(':')[0]);
-                    const isPm = slot.includes('PM');
-                    if (isPm && hour >= 6 && hour < 9) return false;
-                }
-                return true;
-            });
-
-            for (let i = 0; i < daySlots.length; i++) {
-                const slot = daySlots[i];
+            for (let i = 0; i < finalSlots.length; i++) {
+                const slot = finalSlots[i];
                 if (await sessionManager.isSlotAvailable(data.date, slot, data.doctor)) {
                     slotMsg += `${i + 1}️⃣ ${slot}\n`;
                 } else {
                     slotMsg += `${i + 1}️⃣ ~~${slot} (Booked)~~ \n`;
                 }
             }
-            data.currentDaySlots = daySlots; // Save filtered slots for the next step
+            
+            data.currentDaySlots = finalSlots;
             await sessionManager.updateSession(phone, 'NORMAL_TIME', data);
             await client.sendMessage(phone, slotMsg).catch(err => console.error("Send Error:", err));
             break;

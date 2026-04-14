@@ -134,13 +134,23 @@ export default function DoctorProfilesCMS() {
                    </div>
                 </div>
 
-                <Link 
-                  href={`/doctor/dashboard/cms/doctor-profiles/${doc.id}`}
-                  className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-[0.98]"
-                >
-                  Manage Profile
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="flex flex-col gap-2">
+                  <Link 
+                    href={`/doctor/dashboard/availability?docId=${doc.id}`}
+                    className="w-full py-3 bg-slate-100 text-slate-700 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-200 transition-all active:scale-[0.98]"
+                  >
+                    <Clock className="w-4 h-4" />
+                    Availability
+                  </Link>
+
+                  <Link 
+                    href={`/doctor/dashboard/cms/doctor-profiles/${doc.id}`}
+                    className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-[0.98]"
+                  >
+                    Manage Profile
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
               </div>
             )
           })}
