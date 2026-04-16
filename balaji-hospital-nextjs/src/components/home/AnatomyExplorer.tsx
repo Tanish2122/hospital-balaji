@@ -66,24 +66,27 @@ export default function AnatomyExplorer() {
   }
 
   return (
-    <section className="py-24 bg-[#FDFFFF] relative overflow-hidden">
+    <section className="py-24 bg-[#0A1128] relative overflow-hidden">
+      {/* Background radial glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight font-poppins">
-            Find Your <span className="text-blue-600">Diseases</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight font-poppins">
+            Find Your <span className="text-blue-400">Diseases</span>
           </h2>
-          <p className="mt-4 text-slate-500 max-w-2xl mx-auto text-lg leading-relaxed">
+          <p className="mt-4 text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
             Click on the markers to learn about our specialized treatments and view real clinical case studies from Balaji Hospital.
           </p>
         </div>
 
         <div className="relative flex flex-col lg:flex-row items-center justify-center gap-12">
           {/* Skeleton Interactive Area */}
-          <div className="relative w-full max-w-[500px] aspect-[4/5] bg-white rounded-[3rem] shadow-2xl shadow-blue-50 border border-blue-50/50 p-8 flex items-center justify-center">
+          <div className="relative w-full max-w-[500px] aspect-square rounded-[3rem] shadow-2xl shadow-blue-900/10 border border-white/5 flex items-center justify-center overflow-hidden">
             <div className="relative w-full h-full">
               {/* The Skeleton Image */}
               <img 
-                src="/images/anatomy-skeleton.png" 
+                src="/images/anatomy-muscle-dark.png" 
                 alt="Human Anatomy Skeleton"
                 className="w-full h-full object-contain pointer-events-none opacity-90 transition-all duration-700"
               />
@@ -103,8 +106,8 @@ export default function AnatomyExplorer() {
                   <div className={cn(
                     "w-full h-full rounded-full flex items-center justify-center shadow-lg transition-all border-2",
                     selectedPart?.id === part.id 
-                      ? "bg-blue-600 border-white text-white rotate-45" 
-                      : "bg-white border-blue-500 text-blue-600"
+                      ? "bg-blue-500 border-white text-white rotate-45" 
+                      : "bg-slate-900/80 border-blue-400 text-blue-400"
                   )}>
                     <Plus className="w-4 h-4" />
                   </div>
@@ -120,16 +123,16 @@ export default function AnatomyExplorer() {
 
           {/* Side Info Panel / Desktop */}
           <div className={cn(
-            "lg:w-1/3 w-full bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm transition-all duration-500",
+            "lg:w-1/3 w-full bg-slate-900/60 backdrop-blur-md rounded-[2.5rem] border border-white/5 p-8 shadow-2xl transition-all duration-500",
             !selectedPart && "opacity-50 pointer-events-none grayscale"
           )}>
             {!selectedPart ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-20">
-                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
+                <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-6">
                   <Maximize2 className="w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 uppercase tracking-tight">Select a Part</h3>
-                <p className="text-slate-400 text-sm mt-2 max-w-[200px]">Click any marker on the skeleton to explore clinical data.</p>
+                <h3 className="text-xl font-bold text-white uppercase tracking-tight">Select a Part</h3>
+                <p className="text-slate-500 text-sm mt-2 max-w-[200px]">Click any marker on the skeleton to explore clinical data.</p>
               </div>
             ) : (
               <motion.div 
@@ -139,15 +142,15 @@ export default function AnatomyExplorer() {
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em] mb-2 block">Clinical Spotlight</span>
-                    <h3 className="text-3xl font-bold text-slate-900">{selectedPart.name}</h3>
+                    <span className="text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-2 block">Clinical Spotlight</span>
+                    <h3 className="text-3xl font-bold text-white">{selectedPart.name}</h3>
                   </div>
-                  <div className="p-3 bg-blue-50 rounded-2xl text-blue-600">
+                  <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-400">
                     <Stethoscope className="w-6 h-6" />
                   </div>
                 </div>
 
-                <p className="text-slate-600 leading-relaxed text-sm">
+                <p className="text-slate-400 leading-relaxed text-sm">
                   {selectedPart.description}
                 </p>
 
@@ -170,8 +173,8 @@ export default function AnatomyExplorer() {
                                 <Maximize2 className="text-white w-8 h-8" />
                              </div>
                           </div>
-                          <h5 className="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors uppercase tracking-tight">{cs.title}</h5>
-                          <p className="text-xs text-slate-400 line-clamp-2 mt-1">{cs.description}</p>
+                          <h5 className="font-bold text-white text-sm group-hover:text-blue-400 transition-colors uppercase tracking-tight">{cs.title}</h5>
+                          <p className="text-xs text-slate-500 line-clamp-2 mt-1">{cs.description}</p>
                         </div>
                       ))}
                     </div>
@@ -182,7 +185,7 @@ export default function AnatomyExplorer() {
                   )}
                 </div>
 
-                <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm tracking-widest uppercase hover:bg-slate-800 transition-all flex items-center justify-center gap-3">
+                <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm tracking-widest uppercase hover:bg-blue-500 transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-900/20">
                    BOOK APPOINTMENT
                    <ChevronRight className="w-4 h-4" />
                 </button>
@@ -200,14 +203,14 @@ export default function AnatomyExplorer() {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[60] lg:hidden bg-white p-6 overflow-y-auto"
+            className="fixed inset-0 z-[60] lg:hidden bg-[#0A1128] p-6 overflow-y-auto"
           >
              {/* Content similar to desktop panel but optimized for mobile scrolling */}
-             <div className="flex items-center justify-between mb-8 sticky top-0 bg-white/80 backdrop-blur-md py-2 border-b border-slate-100">
-                <h3 className="text-2xl font-bold text-slate-900">{selectedPart?.name}</h3>
+             <div className="flex items-center justify-between mb-8 sticky top-0 bg-[#0A1128]/80 backdrop-blur-md py-2 border-b border-white/5">
+                <h3 className="text-2xl font-bold text-white">{selectedPart?.name}</h3>
                 <button 
                   onClick={() => setIsSidebarOpen(false)}
-                  className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200"
+                  className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-700"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -215,7 +218,7 @@ export default function AnatomyExplorer() {
              
              {/* ... and so on for mobile content ... */}
              <div className="space-y-8 pb-20">
-                <p className="text-slate-600 leading-relaxed">
+                <p className="text-slate-400 leading-relaxed">
                   {selectedPart?.description}
                 </p>
 
@@ -226,13 +229,13 @@ export default function AnatomyExplorer() {
                   {loadingCases ? (
                     <div className="py-12 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-blue-600" /></div>
                   ) : cases.map((cs) => (
-                    <div key={cs.id} className="space-y-3">
-                       <div className="aspect-square rounded-3xl overflow-hidden shadow-xl border border-slate-100">
-                          <img src={cs.xray_image_url} alt={cs.title} className="w-full h-full object-cover" />
-                       </div>
-                       <h5 className="font-bold text-slate-800 uppercase tracking-tight">{cs.title}</h5>
-                       <p className="text-sm text-slate-500">{cs.description}</p>
-                    </div>
+                     <div key={cs.id} className="space-y-3">
+                        <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl border border-white/5">
+                           <img src={cs.xray_image_url} alt={cs.title} className="w-full h-full object-cover" />
+                        </div>
+                        <h5 className="font-bold text-white uppercase tracking-tight">{cs.title}</h5>
+                        <p className="text-sm text-slate-400">{cs.description}</p>
+                     </div>
                   ))}
                 </div>
              </div>
