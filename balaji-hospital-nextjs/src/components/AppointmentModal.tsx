@@ -212,7 +212,7 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 text-left">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 text-left" role="dialog" aria-modal="true" aria-label="Book an Appointment">
       <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
       <div className="relative bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
@@ -221,7 +221,7 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
             <h2 className="text-2xl font-bold text-slate-900 font-poppins">Book an Appointment</h2>
             <p className="text-slate-500 text-sm mt-1">Schedule a consultation with our specialists</p>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors">
+          <button onClick={onClose} aria-label="Close appointment modal" className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors">
             <X className="w-6 h-6" />
           </button>
         </div>

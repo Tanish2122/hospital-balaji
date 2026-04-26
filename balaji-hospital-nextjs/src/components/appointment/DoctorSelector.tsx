@@ -14,14 +14,20 @@ export default function DoctorSelector({ onSelect, selectedDoctorId, selectedDep
   const [departments, setDepartments] = useState<string[]>([]);
   const [allDoctors, setAllDoctors] = useState<any[]>([]);
   const [filteredDoctors, setFilteredDoctors] = useState<any[]>([]);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     async function loadData() {
-      const { data: depts } = await supabase.from('departments').select('name');
-      if (depts) setDepartments(depts.map((d: any) => d.name));
+      try {
+        const { data: depts } = await supabase.from('departments').select('name');
+        if (depts) setDepartments(depts.map((d: any) => d.name));
 
-      const { data: docs } = await supabase.from('doctors').select('id, name, departments(name)');
-      if (docs) setAllDoctors(docs);
+        const { data: docs } = await supabase.from('doctors').select('id, name, departments(name)').eq('is_active', true).eq('on_leave', false);
+        if (docs) setAllDoctors(docs);
+      } catch (err) {
+        console.error('Failed to load doctor data:', err);
+        setLoadError(true);
+      }
     }
     loadData();
   }, []);

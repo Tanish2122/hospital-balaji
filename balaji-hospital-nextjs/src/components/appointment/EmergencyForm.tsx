@@ -56,6 +56,7 @@ export default function EmergencyForm() {
     e.preventDefault();
     setIsSubmitting(true);
     setStatus("idle");
+    setErrorMessage(null); // Clear previous error on re-submit
     
     try {
       let reportUrl: string | null = null;
@@ -123,7 +124,7 @@ export default function EmergencyForm() {
         </div>
         <h3 className="text-3xl font-bold text-slate-900 mb-4 font-poppins">Emergency Request Sent!</h3>
         <p className="text-red-700 text-lg max-w-md mx-auto leading-relaxed font-medium">
-          Your emergency request has been received. Our medical team will contact you **immediately** on the provided number.
+          Your emergency request has been received. Our medical team will contact you <strong>immediately</strong> on the provided number.
         </p>
         <button 
           onClick={() => setStatus("idle")}

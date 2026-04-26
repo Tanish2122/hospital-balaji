@@ -14,7 +14,7 @@ const navLinks = [
   { name: "Facilities", href: "/facilities" },
   { name: "Gallery", href: "/gallery" },
   { name: "Blog", href: "/blog" },
-  { name: "Contact", href: "/appointment" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export default function Header() {
@@ -32,6 +32,11 @@ export default function Header() {
   }, []);
 
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
+
+  // Close mobile menu when navigating to a new page
+  useEffect(() => {
+    closeMobileMenu();
+  }, [pathname, closeMobileMenu]);
 
   if (pathname === '/doctor' || pathname?.startsWith('/doctor/')) return null;
 

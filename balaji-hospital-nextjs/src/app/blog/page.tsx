@@ -43,11 +43,12 @@ export default async function BlogPage() {
     return {
       id: post.slug || post.id,
       title: post.title,
-      category: 'Health & Wellness', // Fallback since category isn't in simple schema
+      category: 'Health & Wellness',
       date: formattedDate,
-      author: 'Balaji Desk', // Fallback author
+      author: 'Balaji Desk',
       image: post.featured_image_url || '/images/gallery/building.png',
-      excerpt: post.excerpt || `${post.title} - Read more about this health topic in our complete article.`,
+      // Strip HTML tags from TipTap-generated content for plain text preview
+      excerpt: post.excerpt || post.content?.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 200) + '...' || `${post.title} - Read more about this health topic in our complete article.`,
     };
   });
 
@@ -130,7 +131,10 @@ export default async function BlogPage() {
               Get the latest health tips and hospital news delivered directly to
               your inbox.
             </p>
-            <form className="max-w-md mx-auto flex gap-4 flex-col sm:flex-row">
+            <form 
+              className="max-w-md mx-auto flex gap-4 flex-col sm:flex-row"
+              onSubmit={(e) => { e.preventDefault(); alert('Thank you! We will keep you updated.'); }}
+            >
               <input
                 type="email"
                 placeholder="Your email address"

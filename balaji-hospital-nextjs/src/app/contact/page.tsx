@@ -46,7 +46,7 @@ const ContactPage = () => {
             </div>
 
             <div className="flex gap-6 p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
-              <div className="w-12 h-12 bg-accent-50 rounded-2xl flex items-center justify-center flex-shrink-0 text-accent-600">
+              <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center flex-shrink-0 text-emerald-600">
                 <Mail className="w-6 h-6" />
               </div>
               <div>

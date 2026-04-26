@@ -19,6 +19,7 @@ export default function NonEmergencyForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -50,6 +51,7 @@ export default function NonEmergencyForm() {
     
     setIsSubmitting(true);
     setStatus("idle");
+    setErrorMessage("");
     
     try {
       // Call Backend API
@@ -87,6 +89,7 @@ export default function NonEmergencyForm() {
     } catch (error: any) {
       console.error("Error booking appointment:", error);
       setStatus("error");
+      setErrorMessage(error.message || "Failed to book appointment. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -116,6 +119,12 @@ export default function NonEmergencyForm() {
     <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 md:p-12 shadow-2xl shadow-slate-100 relative overflow-hidden">
       {/* Decorative indicator */}
       <div className="absolute top-0 left-0 w-full h-2 bg-medical-500" />
+
+      {status === "error" && (
+        <div className="mx-8 mt-8 p-4 text-sm text-red-800 rounded-2xl bg-red-50 border border-red-100">
+          <span className="font-bold">Error!</span> {errorMessage}
+        </div>
+      )}
 
       <div className="flex items-center gap-4 mb-10">
         <div className="w-12 h-12 bg-medical-50 rounded-2xl flex items-center justify-center text-medical-600">
@@ -262,8 +271,6 @@ export default function NonEmergencyForm() {
             />
           </div>
           
-          <div className="md:col-span-1 hidden md:block" /> {/* Column offset */}
-
           <div className="md:col-span-2">
             <TimeSlotPicker 
               selectedDate={formData.date}

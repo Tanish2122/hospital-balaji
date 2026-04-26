@@ -47,7 +47,7 @@ export default function Hero() {
               <div className="flex flex-col sm:flex-row gap-4 pt-6">
                 <Link
                   href="/appointment"
-                  className="w-full sm:w-auto bg-medical-600 hover:bg-medical-700 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all hover:scale-105 shadow-xl shadow-medical-500/20 group text-decoration-none"
+                  className="w-full sm:w-auto bg-medical-600 hover:bg-medical-700 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all hover:scale-105 shadow-xl shadow-medical-500/20 group no-underline"
                 >
                   Book Appointment <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>

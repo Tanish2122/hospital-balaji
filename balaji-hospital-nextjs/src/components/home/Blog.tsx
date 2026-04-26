@@ -42,7 +42,8 @@ export default function Blog() {
             category: "Health & Wellness",
             author: "Balaji Desk",
             date: dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-            content: post.excerpt || post.content.substring(0, 150) + "...",
+            // Strip HTML tags from TipTap-generated content for plain text preview
+            content: post.excerpt || post.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 150) + "...",
             image: post.featured_image_url || "/images/gallery/img1.jpg",
           } as BlogData;
         });
@@ -84,7 +85,7 @@ export default function Blog() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
             {blogs.map((blog, index) => (
-              <motion.div
+              <motion.article
                 key={blog.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -132,7 +133,7 @@ export default function Blog() {
                     </Link>
                   </div>
                 </div>
-              </motion.div>
+              </motion.article>
             ))}
           </div>
         )}

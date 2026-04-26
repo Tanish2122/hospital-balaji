@@ -100,10 +100,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        <link rel="dns-prefetch" href="https://balajihospitaljaipur.com" />
-        <link rel="preconnect" href="https://balajihospitaljaipur.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
+        {/* Preconnect to Supabase and Google Fonts CDN for faster loads */}
+        <link rel="preconnect" href="https://yroieafhxcorwitzwyjj.supabase.co" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://yroieafhxcorwitzwyjj.supabase.co" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <Schema />
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased text-slate-900`}>

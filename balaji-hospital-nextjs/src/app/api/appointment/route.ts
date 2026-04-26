@@ -5,8 +5,6 @@ import { sendWhatsAppMessage, notifyBooking, notifyEmergency } from "@/lib/whats
 import { doctors } from "@/data/doctors";
 import { hospitals } from "@/lib/hospitals";
 
-// Replace with actual emergency/admin contact (matched with hospital automation bot config)
-const ADMIN_WHATSAPP = "916377433387@c.us";
 
 export async function POST(request: Request) {
   try {
@@ -138,4 +136,9 @@ export async function POST(request: Request) {
     console.error("API Error:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
+}
+
+// Prevent 405 on accidental GET requests
+export async function GET() {
+  return new Response("Method Not Allowed", { status: 405 });
 }
