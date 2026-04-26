@@ -167,27 +167,24 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
     setErrorMessage("");
 
     try {
-      // Get department ID
-      const { data: deptData } = await supabase
-        .from('departments')
-        .select('id')
-        .eq('name', formData.department)
-        .single();
-
-      const { error } = await supabase.from("appointments").insert([
-        {
-          patient_name: formData.patientName,
+      const response = await fetch("/api/appointment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "non-emergency",
+          patientName: formData.patientName,
           phone: formData.phone,
-          email: formData.email || null,
-          department_id: deptData?.id || null,
-          doctor_id: formData.doctorId || null,
-          appointment_date: formData.appointmentDate,
-          appointment_time: formData.appointmentTime,
-          reason: formData.reason || null,
-        },
-      ]);
+          email: formData.email,
+          department: formData.department,
+          doctorId: formData.doctorId,
+          date: formData.appointmentDate,
+          slotId: formData.appointmentTime,
+          reason: formData.reason,
+        }),
+      });
 
-      if (error) throw error;
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || "Failed to book appointment");
 
       setStatus("success");
       setFormData({

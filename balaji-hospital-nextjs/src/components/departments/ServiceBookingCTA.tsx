@@ -48,16 +48,21 @@ export default function ServiceBookingCTA({ serviceName, category }: ServiceBook
     setErrorMsg("");
 
     try {
-      const { error } = await supabase.from("appointments").insert([
-        {
-          patient_name: formData.patientName,
+      const response = await fetch("/api/appointment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "non-emergency",
+          patientName: formData.patientName,
           phone: formData.phone,
-          appointment_date: formData.appointmentDate,
+          department: formData.department,
+          date: formData.appointmentDate,
           reason: `${formData.department} consultation — ${serviceName}`,
-        },
-      ]);
+        }),
+      });
 
-      if (error) throw error;
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || "Failed to submit. Please call us directly.");
 
       setStatus("success");
       setFormData((p) => ({

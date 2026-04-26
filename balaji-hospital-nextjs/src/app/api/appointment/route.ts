@@ -53,10 +53,11 @@ export async function POST(request: Request) {
 
     } else if (type === "non-emergency") {
       const { 
-        patientName, whatsapp, doctorId, department, date, slotId, hospitalId,
-        appointmentType, previousVisitDate 
+        patientName, whatsapp, phone, doctorId, department, date, slotId, hospitalId,
+        appointmentType, previousVisitDate, email, reason: customReason 
       } = body;
       const aptId = generateId("APT");
+      const cleanPhone = whatsapp || phone;
 
       // Select hospital (Standardized)
       const hospital = hospitals.find(h => h.id === hospitalId) || hospitals[0];
@@ -78,13 +79,12 @@ export async function POST(request: Request) {
         }
       }
 
-      // 1. Get next serial number for this doctor, date, AND time slot
+      // 1. Get next serial number for this doctor on this specific date
       const { count: existingCount } = await supabase
         .from("appointments")
         .select("*", { count: "exact", head: true })
         .eq("doctor_id", doctorId)
         .eq("appointment_date", date)
-        .eq("appointment_time", slotId)
         .not("status", "eq", "CANCELLED");
 
       const appointmentNo = (existingCount || 0) + 1;
@@ -96,8 +96,9 @@ export async function POST(request: Request) {
         .insert([{
           appointment_id_str: aptId,
           patient_name: patientName,
-          phone: whatsapp,
-          whatsapp: whatsapp,
+          phone: cleanPhone,
+          email: email || null,
+          whatsapp: cleanPhone,
           doctor_id: doctorId,
           doctor_name: doctorName,
           department: department,
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
           appointment_no: appointmentNo,
           appointment_type: appointmentType || 'new',
           previous_visit_date: previousVisitDate || null,
-          reason: appointmentType === 'followup' ? `Follow-up (Last visit: ${previousVisitDate})` : "General Consultation",
+          reason: customReason || (appointmentType === 'followup' ? `Follow-up (Last visit: ${previousVisitDate})` : "General Consultation"),
           status: "CONFIRMED"
         }]);
 
@@ -114,7 +115,7 @@ export async function POST(request: Request) {
 
       // 4. Trigger Unified WhatsApp Notification (Patient, Admin, Doctor)
       await notifyBooking({
-        patient: { name: patientName, phone: whatsapp },
+        patient: { name: patientName, phone: cleanPhone },
         appointment: { 
           date, 
           time: slotId, 
