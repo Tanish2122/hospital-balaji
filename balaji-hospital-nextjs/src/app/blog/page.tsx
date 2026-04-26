@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, User, ArrowRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import SubscribeForm from "@/components/blog/SubscribeForm";
 
 export const metadata = {
   title: "Health Articles & Blog | Balaji Hospital Jaipur",
@@ -131,22 +132,7 @@ export default async function BlogPage() {
               Get the latest health tips and hospital news delivered directly to
               your inbox.
             </p>
-            <form 
-              className="max-w-md mx-auto flex gap-4 flex-col sm:flex-row"
-              onSubmit={(e) => { e.preventDefault(); alert('Thank you! We will keep you updated.'); }}
-            >
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="flex-grow px-6 py-4 bg-white/10 border border-white/20 rounded-2xl outline-none focus:bg-white/20 transition-all placeholder:text-white/50 text-white"
-              />
-              <button
-                type="submit"
-                className="px-8 py-4 bg-medical-600 text-white rounded-2xl font-bold hover:bg-medical-700 transition-all"
-              >
-                Subscribe
-              </button>
-            </form>
+            <SubscribeForm />
           </div>
           <div className="absolute top-0 right-0 w-64 h-64 bg-medical-500/10 rounded-full -mr-32 -mt-32 blur-3xl" />
         </section>
