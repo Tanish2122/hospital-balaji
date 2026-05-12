@@ -87,6 +87,9 @@ export const metadata: Metadata = {
     creator: "@balajihospital",
   },
   category: "medical",
+  verification: {
+    google: "f7QrUWFnixHGMb6BEGMU1kDN0_92byk2zSGcNraVqrU",
+  },
 };
 
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
