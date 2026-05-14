@@ -46,7 +46,7 @@ export default function DoctorSelector({ onSelect, selectedDoctorId, selectedDep
       setFilteredDoctors(allDoctors.filter((d) => {
         const docDept = d.departments?.name;
         if (selectedDepartment === "ENT department") {
-          return docDept === "ENT" || docDept === "ENT department";
+          return ["ENT", "ENT department", "Ear Surgery", "Nose Surgery Hospital in Jaipur", "Throat Surgery Hospital in Jaipur"].includes(docDept || "");
         }
         return docDept === selectedDepartment;
       }));

@@ -54,7 +54,7 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
           const filtered = data.filter((d: any) => {
             const docDept = d.departments?.name;
             if (formData.department === "ENT department") {
-              return docDept === "ENT" || docDept === "ENT department";
+              return ["ENT", "ENT department", "Ear Surgery", "Nose Surgery Hospital in Jaipur", "Throat Surgery Hospital in Jaipur"].includes(docDept || "");
             }
             return docDept === formData.department;
           });
