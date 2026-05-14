@@ -20,7 +20,16 @@ export default function DoctorSelector({ onSelect, selectedDoctorId, selectedDep
     async function loadData() {
       try {
         const { data: depts } = await supabase.from('departments').select('name');
-        if (depts) setDepartments(depts.map((d: any) => d.name));
+        if (depts) {
+          const fetchedDepts = depts.map((d: any) => d.name);
+          const orthoIndex = fetchedDepts.indexOf("Orthopedic");
+          if (orthoIndex !== -1) {
+            fetchedDepts.splice(orthoIndex + 1, 0, "ENT department");
+          } else {
+            fetchedDepts.unshift("ENT department");
+          }
+          setDepartments(fetchedDepts);
+        }
 
         const { data: docs } = await supabase.from('doctors').select('id, name, departments(name)').eq('is_active', true).eq('on_leave', false);
         if (docs) setAllDoctors(docs);
@@ -34,7 +43,13 @@ export default function DoctorSelector({ onSelect, selectedDoctorId, selectedDep
 
   useEffect(() => {
     if (selectedDepartment) {
-      setFilteredDoctors(allDoctors.filter((d) => d.departments?.name === selectedDepartment));
+      setFilteredDoctors(allDoctors.filter((d) => {
+        const docDept = d.departments?.name;
+        if (selectedDepartment === "ENT department") {
+          return docDept === "ENT" || docDept === "ENT department";
+        }
+        return docDept === selectedDepartment;
+      }));
     } else {
       setFilteredDoctors([]);
     }

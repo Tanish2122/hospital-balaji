@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { X, Calendar, User, Phone, Mail, FileText, Send, Stethoscope, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-const DEPARTMENTS = ["Orthopedic", "ENT", "Other"];
+const DEPARTMENTS = ["Orthopedic", "ENT department", "ENT", "Other"];
 
 interface Doctor {
   id: string;
@@ -51,7 +51,13 @@ export default function AppointmentModal({ isOpen, onClose, defaultDepartment = 
         if (error) throw error;
 
         if (data) {
-          const filtered = data.filter((d: any) => d.departments?.name === formData.department);
+          const filtered = data.filter((d: any) => {
+            const docDept = d.departments?.name;
+            if (formData.department === "ENT department") {
+              return docDept === "ENT" || docDept === "ENT department";
+            }
+            return docDept === formData.department;
+          });
           setDoctors(filtered);
           if (filtered.length > 0) {
             setFormData(prev => ({ ...prev, doctorId: filtered[0].id }));
