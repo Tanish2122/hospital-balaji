@@ -46,7 +46,7 @@ async function startBot() {
         puppeteer: {
             protocolTimeout: 120000, // 2 minutes
             args: [
-                '--no-sandbox', 
+                '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
                 '--disable-accelerated-2d-canvas',
@@ -55,7 +55,7 @@ async function startBot() {
                 '--disable-gpu',
                 // '--single-process', // Removed: causes stability issues on local machines
                 '--disable-extensions',
-                '--disable-features=IsolateOrigins,site-per-process', 
+                '--disable-features=IsolateOrigins,site-per-process',
                 '--js-flags="--max-old-space-size=256"', // Increased for local
                 '--disable-background-networking',
                 '--disable-sync',
@@ -131,7 +131,7 @@ async function startBot() {
                     let cleanNumber = to.replace(/\D/g, '');
                     if (cleanNumber.length === 10) cleanNumber = `91${cleanNumber}`;
                     if (!cleanNumber.endsWith('@c.us')) cleanNumber = `${cleanNumber}@c.us`;
-                    
+
                     console.log(`[API] Sending message to ${cleanNumber}...`);
 
                     if (media && media.startsWith('http')) {
@@ -162,14 +162,14 @@ async function startBot() {
 
     server.listen(API_PORT, async () => {
         console.log(`\n✅ HTTP Server Listening on Port ${API_PORT}`);
-        
+
         if (config.ngrokToken) {
             try {
                 const listener = await ngrok.connect({ addr: API_PORT, authtoken: config.ngrokToken.trim() });
                 console.log(`🚀 PUBLIC API URL: ${listener.url()}`);
                 console.log(`👉 Status Page: ${listener.url()}/ (Check here if QR is missing)`);
                 console.log(`\n⚠️  IMPORTANT: COPY the PUBLIC API URL above and update your Vercel/Website settings!`);
-            } catch (err) { 
+            } catch (err) {
                 console.error('Ngrok Error:', err.message);
                 console.log('Running locally on http://localhost:' + API_PORT);
             }
@@ -245,7 +245,7 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
                 }
                 await client.sendMessage(phone, deptMsg).catch(err => console.error("Send Error:", err));
             } else {
-                await client.sendMessage(phone, "❌ Invalid option. Please reply with 1 or 2.");
+                await client.sendMessage(phone, "");
             }
             break;
 
@@ -359,7 +359,7 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
                 availability.forEach(slot => {
                     const startHour = parseInt(slot.start_time.split(':')[0]);
                     const endHour = parseInt(slot.end_time.split(':')[0]);
-                    
+
                     for (let h = startHour; h <= endHour; h++) {
                         const hour = h % 24;
                         const ampm = hour >= 12 ? "PM" : "AM";
@@ -367,7 +367,7 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
                         finalSlots.push(`${h12.toString().padStart(2, '0')}:00 ${ampm}`);
                     }
                 });
-                finalSlots = [...new Set(finalSlots)].sort((a,b) => {
+                finalSlots = [...new Set(finalSlots)].sort((a, b) => {
                     return new Date(`2000/01/01 ${a}`) - new Date(`2000/01/01 ${b}`);
                 });
             } else {
@@ -390,7 +390,7 @@ async function handleConversationalFlow(client, phone, msg, session, sessionMana
                     slotMsg += `${i + 1}️⃣ ~~${slot} (Booked)~~ \n`;
                 }
             }
-            
+
             data.currentDaySlots = finalSlots;
             await sessionManager.updateSession(phone, 'NORMAL_TIME', data);
             await client.sendMessage(phone, slotMsg).catch(err => console.error("Send Error:", err));

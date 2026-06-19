@@ -95,6 +95,7 @@ export const metadata: Metadata = {
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import ConsultationPopup from "@/components/ConsultationPopup";
 
 export default function RootLayout({
   children,
@@ -129,6 +130,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <MobileBottomNav />
+        <ConsultationPopup />
       </body>
     </html>
   );
