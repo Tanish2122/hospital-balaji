@@ -12,7 +12,7 @@ import { getDepartmentDataFromDB } from "@/lib/getDepartmentImage";
 import { parseMarkdownInline } from "@/lib/markdown";
 import type { Metadata } from "next";
 
-export const revalidate = 0; // Ensure fresh data from Supabase on every request
+export const revalidate = 60; // Revalidate every 60s to pick up new DB services
 
 function getServiceData(slug: string) {
   const seoEntry = orthopedicSeoSlugs[slug];
@@ -48,8 +48,58 @@ function getServiceData(slug: string) {
   return null;
 }
 
+/** Fetch a service directly from Supabase DB (for admin-created services not in seoSlugMap) */
+async function getDbServiceBySlug(slug: string) {
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const { data, error } = await supabase
+      .from("departments")
+      .select("id, slug, name, description, overview, image, category, meta_title, meta_description, is_active")
+      .eq("slug", slug)
+      .eq("is_active", true)
+      .single();
+    if (error || !data) return null;
+    return data as {
+      id: string;
+      slug: string;
+      name: string;
+      description: string | null;
+      overview: string | null;
+      image: string | null;
+      category: string | null;
+      meta_title: string | null;
+      meta_description: string | null;
+      is_active: boolean;
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function generateStaticParams() {
-  return Object.keys(orthopedicSeoSlugs).map((slug) => ({ slug }));
+  // Include both static SEO slugs AND any DB-sourced orthopedic slugs
+  const staticSlugs = Object.keys(orthopedicSeoSlugs).map((slug) => ({ slug }));
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const { data } = await supabase
+      .from("departments")
+      .select("slug")
+      .eq("is_active", true)
+      .or("category.eq.orthopedic,category.eq.Orthopedic");
+    const dbSlugs = (data || []).map((d: { slug: string }) => ({ slug: d.slug }));
+    const allSlugs = [...staticSlugs, ...dbSlugs.filter((d) => !orthopedicSeoSlugs[d.slug])];
+    return allSlugs;
+  } catch {
+    return staticSlugs;
+  }
 }
 
 export async function generateMetadata({
@@ -59,31 +109,37 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const data = getServiceData(slug);
-  if (!data) return {};
-  const { seoEntry } = data;
   
-  const dbData = await getDepartmentDataFromDB(seoEntry.dataSlug);
-  const title = dbData?.meta_title || dbData?.name || seoEntry.metaTitle;
-  const description = dbData?.meta_description || seoEntry.metaDescription;
+  // For static SEO slugs
+  if (data) {
+    const { seoEntry } = data;
+    const dbData = await getDepartmentDataFromDB(seoEntry.dataSlug);
+    const title = dbData?.meta_title || dbData?.name || seoEntry.metaTitle;
+    const description = dbData?.meta_description || seoEntry.metaDescription;
+    return {
+      title,
+      description,
+      keywords: [seoEntry.primaryKeyword, ...seoEntry.secondaryKeywords],
+      alternates: { canonical: `https://balajihospitaljaipur.com/orthopedic/${slug}` },
+      openGraph: { title: seoEntry.metaTitle, description: seoEntry.metaDescription, url: `https://balajihospitaljaipur.com/orthopedic/${slug}` },
+      twitter: { card: "summary_large_image", title: seoEntry.metaTitle, description: seoEntry.metaDescription },
+    };
+  }
 
-  return {
-    title: title,
-    description: description,
-    keywords: [seoEntry.primaryKeyword, ...seoEntry.secondaryKeywords],
-    alternates: {
-      canonical: `https://balajihospitaljaipur.com/orthopedic/${slug}`,
-    },
-    openGraph: {
-      title: seoEntry.metaTitle,
-      description: seoEntry.metaDescription,
-      url: `https://balajihospitaljaipur.com/orthopedic/${slug}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: seoEntry.metaTitle,
-      description: seoEntry.metaDescription,
-    },
-  };
+  // For DB-only slugs (admin-created)
+  const dbService = await getDbServiceBySlug(slug);
+  if (dbService) {
+    const title = dbService.meta_title || `${dbService.name} | Balaji Hospital Jaipur`;
+    const description = dbService.meta_description || dbService.description || `Expert ${dbService.name} treatment at Balaji Hospital Jaipur since 1996.`;
+    return {
+      title,
+      description,
+      alternates: { canonical: `https://balajihospitaljaipur.com/orthopedic/${slug}` },
+      openGraph: { title, description, url: `https://balajihospitaljaipur.com/orthopedic/${slug}` },
+    };
+  }
+
+  return {};
 }
 
 
@@ -94,7 +150,114 @@ export default async function OrthopedicServicePage({
 }) {
   const { slug } = await params;
   const data = getServiceData(slug);
-  if (!data) notFound();
+
+  // ── DB-only service (admin-created, not in seoSlugMap) ──
+  if (!data) {
+    const dbService = await getDbServiceBySlug(slug);
+    if (!dbService) notFound();
+
+    const content = dbService.overview || dbService.description || "";
+    const image = dbService.image || "/images/gallery/ot.png";
+
+    return (
+      <main className="pt-24 pb-16">
+        {/* Hero */}
+        <section className="bg-gradient-to-br from-medical-50 via-white to-slate-50 py-16 mb-16 border-b border-slate-100">
+          <Container>
+            <div className="max-w-3xl">
+              <nav className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-6 uppercase tracking-widest flex-wrap">
+                <Link href="/" className="hover:text-medical-600 transition-colors">Home</Link>
+                <span>/</span>
+                <Link href="/orthopedic" className="hover:text-medical-600 transition-colors">Orthopedic</Link>
+                <span>/</span>
+                <span className="text-medical-600">{dbService.name}</span>
+              </nav>
+              <Link href="/orthopedic" className="inline-flex items-center gap-2 text-medical-600 font-bold mb-6 hover:gap-3 transition-all text-sm">
+                <ArrowLeft className="w-4 h-4" /> Back to Orthopedic Services
+              </Link>
+              <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-poppins leading-tight">{dbService.name}</h1>
+              {dbService.description && (
+                <p className="text-lg text-slate-600 leading-relaxed font-medium">{dbService.description}</p>
+              )}
+            </div>
+          </Container>
+        </section>
+
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="lg:col-span-2 space-y-12">
+              {/* Hero Image */}
+              <div className="relative aspect-video rounded-[2rem] overflow-hidden shadow-2xl bg-slate-100">
+                <Image src={image} alt={`${dbService.name} - Balaji Hospital Jaipur`} fill className="object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
+                <div className="absolute bottom-6 left-8">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md border border-white/30 rounded-full text-white text-xs font-bold uppercase tracking-widest">
+                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                    Expert Care at Balaji Hospital
+                  </span>
+                </div>
+              </div>
+
+              {content && (
+                <section>
+                  <h2 className="text-3xl font-bold text-slate-900 mb-6 font-poppins">Overview</h2>
+                  <div className="prose prose-slate max-w-none prose-p:leading-relaxed prose-p:text-slate-600 prose-headings:text-slate-900 prose-headings:font-bold">
+                    {content.trim().startsWith("<") ? (
+                      <div dangerouslySetInnerHTML={{ __html: content }} />
+                    ) : (
+                      content.split("\n\n").filter((c: string) => c.trim()).map((chunk: string, i: number) => (
+                        <p key={i}>{chunk.trim()}</p>
+                      ))
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {/* Why Balaji */}
+              <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100">
+                  <h3 className="text-xl font-bold text-slate-900 mb-5 font-poppins flex items-center gap-3">
+                    <Stethoscope className="w-6 h-6 text-medical-600" /> Why Choose Balaji Hospital?
+                  </h3>
+                  <ul className="space-y-3">
+                    {["30+ years of orthopaedic excellence", "50,000+ successful surgeries", "Minimally invasive techniques", "State-of-the-art OT & ICU", "Dedicated physiotherapy centre"].map((item, i) => (
+                      <li key={i} className="flex items-center gap-3 text-slate-600 text-sm font-medium">
+                        <CheckCircle2 className="w-4 h-4 text-medical-500 shrink-0" /> {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="p-8 bg-medical-600 rounded-3xl text-white">
+                  <h3 className="text-xs font-bold mb-5 font-poppins flex items-center gap-3 text-medical-100 uppercase tracking-widest">
+                    <ShieldCheck className="w-5 h-5" /> Quality Assurance
+                  </h3>
+                  <p className="text-medical-50 leading-relaxed text-sm">
+                    We follow strict international protocols for surgical safety and hygiene. All implants are internationally certified, sourced from leading global manufacturers.
+                  </p>
+                </div>
+              </section>
+            </div>
+
+            {/* Sidebar */}
+            <aside className="space-y-6 lg:sticky lg:top-28">
+              <ServiceBookingCTA serviceName={dbService.name} category={dbService.category || "Orthopedic"} />
+              <div className="p-6 bg-white rounded-[2rem] border border-slate-100 shadow-sm">
+                <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest">Direct Contact</h3>
+                <a href="tel:+917276229049" className="flex items-center gap-3 text-slate-600 hover:text-medical-600 transition-colors font-semibold mb-3">
+                  <Phone className="w-4 h-4 text-medical-500" /> +91 7276229049
+                </a>
+                <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
+                  <Clock className="w-3.5 h-3.5" /> 24/7 Emergency Available
+                </div>
+              </div>
+            </aside>
+          </div>
+        </Container>
+      </main>
+    );
+  }
+
+  // ── Existing static (SEO) slug path below ──
 
   const { seoEntry, summary, features, keywords, category } = data;
   // Prefer the content set via admin panel (Supabase), fall back to local data

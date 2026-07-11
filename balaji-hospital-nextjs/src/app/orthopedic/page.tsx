@@ -30,15 +30,55 @@ const iconMap: Record<string, React.ElementType> = {
   Activity, HeartPulse, Users, Bone, Stethoscope, Wind, CheckCircle2,
 };
 
-// Deduplicate services
-const seen = new Set<string>();
-const services = orthopedicServices.filter((s) => {
-  if (seen.has(s.slug)) return false;
-  seen.add(s.slug);
-  return true;
-});
+export const revalidate = 60; // Revalidate every 60 seconds to pick up new DB services
 
-export default function OrthopedicPage() {
+// Fetch orthopedic services from Supabase DB (admin-created)
+async function getDbOrthopedicServices() {
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const { data, error } = await supabase
+      .from("departments")
+      .select("id, slug, name, description, image, category")
+      .eq("is_active", true)
+      .or("category.eq.orthopedic,category.eq.Orthopedic")
+      .order("name", { ascending: true });
+
+    if (error || !data) return [];
+    return data as Array<{
+      id: string;
+      slug: string;
+      name: string;
+      description: string | null;
+      image: string | null;
+      category: string | null;
+    }>;
+  } catch {
+    return [];
+  }
+}
+
+export default async function OrthopedicPage() {
+  // 1. Static (hardcoded) services — deduplicated
+  const seen = new Set<string>();
+  const staticServices = orthopedicServices.filter((s) => {
+    if (seen.has(s.slug)) return false;
+    seen.add(s.slug);
+    return true;
+  });
+
+  // 2. DB services from admin panel
+  const dbServices = await getDbOrthopedicServices();
+
+  // 3. Merge: show DB services that are NOT already covered by static list
+  const staticSlugs = new Set(staticServices.map((s) => s.slug));
+  const newDbServices = dbServices.filter((d) => !staticSlugs.has(d.slug));
+
+  const totalCount = staticServices.length + newDbServices.length;
+
   return (
     <main className="pt-24 pb-16">
       {/* Hero */}
@@ -86,7 +126,7 @@ export default function OrthopedicPage() {
             { label: "Since", value: "1996" },
             { label: "Surgeries", value: "50,000+" },
             { label: "Specialists", value: "15+" },
-            { label: "Services", value: `${services.length}+` },
+            { label: "Services", value: `${totalCount}+` },
           ].map((stat) => (
             <div key={stat.label} className="p-6 bg-white rounded-2xl border border-slate-100 text-center shadow-sm">
               <div className="text-3xl font-black text-medical-600 mb-1">{stat.value}</div>
@@ -98,9 +138,10 @@ export default function OrthopedicPage() {
         {/* Services Grid */}
         <h2 className="text-2xl font-bold text-slate-900 mb-8 font-poppins">Our Orthopedic Services</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {services.map((svc) => {
+          {/* Static services (existing SEO pages) */}
+          {staticServices.map((svc) => {
             const seoSlug = orthopedicDataToSeoSlug[svc.slug];
-            const href = seoSlug ? `/orthopedic/${seoSlug}` : `/departments/orthopedic/${svc.slug}`;
+            const href = seoSlug ? `/orthopedic/${seoSlug}` : `/orthopedic/${svc.slug}`;
             const IconComp = iconMap[svc.icon] || CheckCircle2;
             return (
               <Link
@@ -131,6 +172,28 @@ export default function OrthopedicPage() {
               </Link>
             );
           })}
+
+          {/* DB-only services (added via admin panel) */}
+          {newDbServices.map((svc) => (
+            <Link
+              key={svc.slug}
+              href={`/orthopedic/${svc.slug}`}
+              className="group p-8 bg-white rounded-[2.5rem] border border-slate-100 hover:border-medical-300 transition-all hover:shadow-2xl hover:shadow-medical-100 flex flex-col hover:-translate-y-1 duration-300"
+            >
+              <div className="w-14 h-14 bg-medical-50 rounded-2xl flex items-center justify-center mb-6 text-medical-600 group-hover:bg-medical-600 group-hover:text-white transition-all duration-500 shrink-0">
+                <Stethoscope className="w-7 h-7" />
+              </div>
+              <h2 className="text-xl font-bold text-slate-900 mb-3 font-poppins group-hover:text-medical-600 transition-colors">
+                {svc.name}
+              </h2>
+              <p className="text-slate-500 leading-relaxed mb-6 flex-grow text-sm line-clamp-3">
+                {svc.description || "Expert orthopedic care and treatment available at Balaji Hospital Jaipur."}
+              </p>
+              <div className="inline-flex items-center gap-2 font-bold text-medical-600 text-sm group-hover:gap-4 transition-all">
+                Explore Treatment <ArrowRight className="w-4 h-4" />
+              </div>
+            </Link>
+          ))}
         </div>
 
         {/* Why Choose */}
