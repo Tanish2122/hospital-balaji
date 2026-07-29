@@ -35,7 +35,7 @@ export default function Hero() {
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-bold text-slate-900 leading-[1.15] lg:leading-[1.1]">
-                {"Best Orthopedic &"}<br className="hidden sm:block" />
+                {"Best Orthopedic & "}<br className="hidden sm:block" />
                 <span className="text-gradient">{"ENT Hospital in Jaipur"}</span>
               </h1>
 
