@@ -102,7 +102,7 @@ export default function Facilities() {
                   className="relative aspect-square rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="/images/gallery/ot.png"
+                    src="/images/facilities/WhatsApp Image 2026-07-28 at 11.54.33 AM.jpeg"
                     alt="Balaji Hospital Operation Theatre"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -118,8 +118,8 @@ export default function Facilities() {
                   className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="/images/gallery/physiotherapy.png"
-                    alt="Balaji Hospital Physiotherapy Centre"
+                    src="/images/facilities/WhatsApp Image 2026-07-28 at 11.54.29 AM.jpeg"
+                    alt="Balaji Hospital Private Room Bed"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                     sizes="(max-width: 1024px) 45vw, 22vw"
@@ -127,7 +127,7 @@ export default function Facilities() {
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent" />
                 </motion.div>
               </div>
-              <div className="space-y-6">
+              <div className="grid-cols-1 space-y-6">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -136,7 +136,7 @@ export default function Facilities() {
                   className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="/images/gallery/reception.png"
+                    src="/images/facilities/WhatsApp Image 2026-07-28 at 11.54.36 AM.jpeg"
                     alt="Balaji Hospital Reception Area"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -152,7 +152,7 @@ export default function Facilities() {
                   className="relative aspect-square rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="/images/gallery/digital-xray.png"
+                    src="/images/facilities/WhatsApp Image 2026-07-28 at 11.54.38 AM.jpeg"
                     alt="Balaji Hospital Digital X-Ray"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
