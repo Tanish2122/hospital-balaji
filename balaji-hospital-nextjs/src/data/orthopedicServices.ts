@@ -13,6 +13,29 @@ export interface OrthopedicService {
 
 export const orthopedicServices: OrthopedicService[] = [
   {
+    id: "fracture-treatment",
+    slug: "fracture-treatment",
+    title: "Fracture Treatment",
+    summary:
+      "24/7 Trauma and Fracture care at Balaji Hospital Jaipur. Expert management for simple and complex bone injuries.",
+    content:
+      "Balaji Hospital is Jaipur's leading trauma care centre, providing 24/7 expert fracture treatment. Our team specializes in managing a wide spectrum of bone injuries, from simple hairline fractures to complex comminuted and open fractures requiring advanced surgical intervention.\n\n### Emergency Trauma Services\nOur trauma unit is equipped with state-of-the-art operation theatres and diagnostic facilities to handle medical emergencies immediately. We follow strict protocols for infection control and functional restoration.\n\n### We Treat Fractures Caused By:\n- Road traffic accidents (Poly-trauma).\n- Slips, trips, and falls in elderly patients (Fragility fractures).\n- High-impact sports and workplace injuries.\n- Osteoporosis-related bone weakening.\n\n### Comprehensive Treatment Options:\n- **Non-Surgical:** Precision casting, splinting, and traction management.\n- **Surgical:** Internal fixation using modern plates, screws, and intramedullary nails; external fixation for complex open wounds.",
+    features: [
+      "24/7 Emergency Trauma Care with growth plate protection",
+      "Complex and Comminuted Fracture management",
+      "Open Fracture care with infection control",
+      "Internal Fixation — plates, screws, intramedullary nails",
+      "External Fixation for complex open wounds",
+      "Post-fracture Rehabilitation and Physiotherapy",
+      "Pediatric Fracture Management",
+    ],
+    icon: "Bone",
+    image: "/images/gallery/ot2.png",
+    keywords: ["fracture treatment jaipur", "trauma surgery jaipur", "bone injury specialist", "emergency orthopedic jaipur"],
+    metaDescription:
+      "Best Fracture Treatment in Jaipur: 24/7 Emergency Trauma care. Expert orthopedic surgeons for simple to complex fractures and bone injuries.",
+  },
+  {
     id: "knee-replacement",
     slug: "knee-replacement",
     title: "Knee Replacement",
@@ -88,7 +111,7 @@ export const orthopedicServices: OrthopedicService[] = [
     summary:
       "Leading sports medicine care for competitive athletes and active individuals, specializing in ligament reconstruction and arthroscopy.",
     content:
-      "Balaji Hospital is the premier destination for sports medicine in Jaipur. Our sports injury unit is dedicated to helping athletes and active individuals return to their peak performance after injuries. Led by experts in arthroscopy and ligament reconstruction, we provide cutting-edge diagnostic and therapeutic solutions.\n\n### Common Sports Injuries Treated:\n- **Ligament Tears:** ACL, PCL, MCL, and LCL reconstructions.\n- **Meniscus Injuries:** Repair and stabilization of the knee cartilage.\n- **Shoulder Injuries:** Rotator cuff repairs and stabilization for recurrent dislocations.\n- **Tendonitis & Overuse Injuries:** Tennis elbow, golfer's elbow, and shin splints.\n\n### Non-Surgical & Advanced Therapies\n- **PRP (Platelet-Rich Plasma) Therapy:** Accelerating healing for chronic tendon and joint issues.\n- **Advanced Physiotherapy:** Customized exercise protocols and biomechanical analysis.\n- **Cortisone Injections & Orthotics:** Targeted pain relief and support.\n\n### Goal-Oriented Recovery\nWe focus on faster recovery and a safe \"return-to-sport\" timeline. Every athlete receives a customized, evidence-based care plan that prioritizes safety and long-term functional stability.",
+      "Balaji Hospital is the premier destination for sports medicine in Jaipur. Our sports injury unit is dedicated to helping athletes and active individuals return to their peak performance after injuries. Led by experts in arthroscopy and ligament reconstruction, we provide cutting-edge diagnostic and therapeutic solutions.\n\n### Common Sports Injuries Treated:\n- **Ligament Tears:** ACL, PCL, MCL, and LCL reconstructions.\n- **Meniscus Injuries:** Repair and stabilization of the knee cartilage.\n- **Shoulder Injuries:** Rotator cuff repairs and stabilization for recurrent dislocations.\n- **Tendonitis & Overuse Injuries:** Tennis elbow, golfer's elbow, and shin splints.\n\n### Non-Surgical & Advanced Therapies\n- **PRP (Platelet-Rich Plasma) Therapy:** Accelerating healing for chronic tendon and joint issues.\n- **Advanced Physiotherapy:** Customized exercise protocols and biomechanical analysis.\n- **Cortisone Injections & Orthotics:** Targeted pain relief and support.\n- **Goal-Oriented Recovery**\nWe focus on faster recovery and a safe \"return-to-sport\" timeline. Every athlete receives a customized, evidence-based care plan that prioritizes safety and long-term functional stability.",
     features: [
       "ACL (Anterior Cruciate Ligament) Reconstruction",
       "MCL and PCL Ligament Repairs",
@@ -103,29 +126,6 @@ export const orthopedicServices: OrthopedicService[] = [
     keywords: ["sports medicine jaipur", "ACL reconstruction jaipur", "sports injury specialist", "knee arthroscopy jaipur"],
     metaDescription:
       "Premier Sports Medicine Hospital in Jaipur. Expert treatment for ACL tears, ligament injuries, and sports fractures. Get back to the game faster.",
-  },
-  {
-    id: "fracture-treatment",
-    slug: "fracture-treatment",
-    title: "Fracture Treatment",
-    summary:
-      "24/7 Trauma and Fracture care at Balaji Hospital Jaipur. Expert management for simple and complex bone injuries.",
-    content:
-      "Balaji Hospital is Jaipur's leading trauma care centre, providing 24/7 expert fracture treatment. Our team specializes in managing a wide spectrum of bone injuries, from simple hairline fractures to complex comminuted and open fractures requiring advanced surgical intervention.\n\n### Emergency Trauma Services\nOur trauma unit is equipped with state-of-the-art operation theatres and diagnostic facilities to handle medical emergencies immediately. We follow strict protocols for infection control and functional restoration.\n\n### We Treat Fractures Caused By:\n- Road traffic accidents (Poly-trauma).\n- Slips, trips, and falls in elderly patients (Fragility fractures).\n- High-impact sports and workplace injuries.\n- Osteoporosis-related bone weakening.\n\n### Comprehensive Treatment Options:\n- **Non-Surgical:** Precision casting, splinting, and traction management.\n- **Surgical:** Internal fixation using modern plates, screws, and intramedullary nails; external fixation for complex open wounds.",
-    features: [
-      "24/7 Emergency Trauma Care with growth plate protection",
-      "Complex and Comminuted Fracture management",
-      "Open Fracture care with infection control",
-      "Internal Fixation — plates, screws, intramedullary nails",
-      "External Fixation for complex open wounds",
-      "Post-fracture Rehabilitation and Physiotherapy",
-      "Pediatric Fracture Management",
-    ],
-    icon: "Bone",
-    image: "/images/gallery/ot2.png",
-    keywords: ["fracture treatment jaipur", "trauma surgery jaipur", "bone injury specialist", "emergency orthopedic jaipur"],
-    metaDescription:
-      "Best Fracture Treatment in Jaipur: 24/7 Emergency Trauma care. Expert orthopedic surgeons for simple to complex fractures and bone injuries.",
   },
   {
     id: "shoulder-arthroscopy",

@@ -23,13 +23,13 @@ import { Loader2 } from "lucide-react";
 // Titles and hrefs use exact keywords from the SEO sheet
 const staticServices = [
   {
-    id: "spine-treatment",
-    slug: "spine-treatment",
-    title: "Spine Treatment in Jaipur",
+    id: "fracture-treatment",
+    slug: "fracture-treatment",
+    title: "Best Fracture Treatment in Jaipur",
     description:
-      "Comprehensive care for spinal disorders including herniated discs, spinal stenosis, scoliosis, and complex deformity correction. Advanced surgical & non-surgical options.",
+      "Emergency and specialized care for all types of bone fractures — from simple closed fractures to complex open fractures — using modern internal and external fixation techniques.",
     category: "Orthopedic",
-    url: "/orthopedic/spine-treatment-in-jaipur",
+    url: "/orthopedic/best-fracture-treatment-in-jaipur",
   },
   {
     id: "knee-replacement",
@@ -50,13 +50,13 @@ const staticServices = [
     url: "/orthopedic/hip-replacement-hospital-in-jaipur",
   },
   {
-    id: "fracture-treatment",
-    slug: "fracture-treatment",
-    title: "Best Fracture Treatment in Jaipur",
+    id: "spine-treatment",
+    slug: "spine-treatment",
+    title: "Spine Treatment in Jaipur",
     description:
-      "Emergency and specialized care for all types of bone fractures — from simple closed fractures to complex open fractures — using modern internal and external fixation techniques.",
+      "Comprehensive care for spinal disorders including herniated discs, spinal stenosis, scoliosis, and complex deformity correction. Advanced surgical & non-surgical options.",
     category: "Orthopedic",
-    url: "/orthopedic/best-fracture-treatment-in-jaipur",
+    url: "/orthopedic/spine-treatment-in-jaipur",
   },
   {
     id: "ear-surgery",
@@ -76,6 +76,15 @@ const staticServices = [
     category: "Other",
     url: "/speciality/kidney-stones-treatment-in-jaipur",
   },
+];
+
+const HOME_SLUGS = [
+  "fracture-treatment",
+  "knee-replacement",
+  "hip-replacement",
+  "spine-treatment",
+  "ear-surgery",
+  "kidney-stones"
 ];
 
 const getIcon = (slug: string) => {
@@ -147,8 +156,7 @@ export default function Departments() {
           .from("departments")
           .select("*")
           .eq("is_active", true)
-          .order('name')
-          .limit(6);
+          .in("slug", HOME_SLUGS);
 
         if (error) throw error;
 
@@ -166,6 +174,10 @@ export default function Departments() {
               url: resolveUrl(d.slug, d.category),
             };
           });
+          
+          // Sort items by custom HOME_SLUGS order
+          mapped.sort((a, b) => HOME_SLUGS.indexOf(a.slug) - HOME_SLUGS.indexOf(b.slug));
+          
           setItems(mapped);
         }
       } catch (err) {
