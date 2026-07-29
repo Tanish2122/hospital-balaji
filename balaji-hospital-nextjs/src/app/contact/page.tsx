@@ -34,7 +34,7 @@ const ContactPage = () => {
 
           <div className="space-y-8">
             <h2 className="text-3xl font-bold text-slate-900 mb-8 font-poppins">Contact Info</h2>
-            
+
             <div className="flex gap-6 p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
               <div className="w-12 h-12 bg-medical-50 rounded-2xl flex items-center justify-center flex-shrink-0 text-medical-600">
                 <Phone className="w-6 h-6" />
@@ -83,13 +83,13 @@ const ContactPage = () => {
         </div>
 
         <div className="w-full h-[500px] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.123537243364!2d75.77259837543896!3d26.90483835002046!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396db37996a60547%3A0xc49bd83f80c6c8e3!2sBalaji%20Hospital%20%26%20Orthopaedic%20Center!5e0!3m2!1sen!2sin!4v1710255000000!5m2!1sen!2sin" 
-            width="100%" 
-            height="100%" 
-            style={{ border: 0 }} 
-            allowFullScreen 
-            loading="lazy" 
+          <iframe
+            src="https://www.google.com/maps?q=Balaji+Hospital+%26+Orthopaedic+Center+Jaipur"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           ></iframe>
         </div>
