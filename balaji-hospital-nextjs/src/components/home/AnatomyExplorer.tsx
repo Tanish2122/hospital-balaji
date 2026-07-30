@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 
 interface BodyPart {
   id: string
@@ -94,7 +95,7 @@ export default function AnatomyExplorer() {
               {/* Hotspots */}
               {bodyParts.map((part) => (
                 <button
-                  key={part.id}
+                   key={part.id}
                   onClick={() => handlePartClick(part)}
                   className={cn(
                     "absolute w-8 h-8 -translate-x-1/2 -translate-y-1/2 z-10 transition-all group",
@@ -155,10 +156,6 @@ export default function AnatomyExplorer() {
                 </p>
 
                 <div className="space-y-4">
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4" /> Real X-Ray Reports
-                  </h4>
-                  
                   {loadingCases ? (
                     <div className="py-12 flex justify-center">
                       <Loader2 className="w-8 h-8 animate-spin text-blue-200" />
@@ -185,10 +182,10 @@ export default function AnatomyExplorer() {
                   )}
                 </div>
 
-                <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm tracking-widest uppercase hover:bg-blue-500 transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-900/20">
+                <Link href="/appointment" className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm tracking-widest uppercase hover:bg-blue-500 transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-900/20">
                    BOOK APPOINTMENT
                    <ChevronRight className="w-4 h-4" />
-                </button>
+                </Link>
               </motion.div>
             )}
           </div>
@@ -223,9 +220,6 @@ export default function AnatomyExplorer() {
                 </p>
 
                 <div className="space-y-6">
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4" /> Case Studies
-                  </h4>
                   {loadingCases ? (
                     <div className="py-12 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-blue-600" /></div>
                   ) : cases.map((cs) => (
@@ -238,6 +232,11 @@ export default function AnatomyExplorer() {
                      </div>
                   ))}
                 </div>
+
+                <Link href="/appointment" className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm tracking-widest uppercase hover:bg-blue-500 transition-all flex items-center justify-center gap-3 shadow-lg shadow-blue-900/20">
+                   BOOK APPOINTMENT
+                   <ChevronRight className="w-4 h-4" />
+                </Link>
              </div>
           </motion.div>
         )}
