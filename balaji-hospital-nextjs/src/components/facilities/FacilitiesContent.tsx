@@ -19,8 +19,7 @@ import {
   Image as ImageIcon,
   Sparkles,
   Layers,
-  Loader2,
-  RefreshCw
+  Search
 } from "lucide-react";
 import FacilitiesCTA from "@/components/facilities/FacilitiesCTA";
 import { cn } from "@/lib/utils";
@@ -35,90 +34,6 @@ interface FacilityItem {
   type?: string;
 }
 
-const defaultFacilities: FacilityItem[] = [
-  {
-    id: "reception",
-    title: "Reception & OPD Area",
-    image: "/images/gallery/reception.png",
-    description:
-      "Our bright, spacious reception area ensures a smooth OPD experience for patients and their families. Dedicated staff at the registration desk guide you through the consultation process.",
-    badge: "Walk-ins Welcome",
-    category: "Reception & OPD",
-  },
-  {
-    id: "ot-1",
-    title: "Operation Theatres",
-    image: "/images/gallery/ot.png",
-    description:
-      "Fully modular and sterilised OTs equipped for orthopaedic (spine, knee, hip), ENT, plastic, and vascular procedures. Laminar airflow systems ensure 100% infection-free surgical environment.",
-    badge: "Modular OT",
-    category: "Operation Theatre",
-  },
-  {
-    id: "ot-2",
-    title: "Advanced OT Suite",
-    image: "/images/gallery/ot2.png",
-    description:
-      "Second fully equipped surgical suite for complex and simultaneous procedures, reducing patient waiting times. Equipped with C-Arm fluoroscopy for precision intra-operative guidance.",
-    badge: "C-Arm Equipped",
-    category: "Operation Theatre",
-  },
-  {
-    id: "xray",
-    title: "Digital X-Ray & Radiology",
-    image: "/images/gallery/digital-xray.png",
-    description:
-      "Our digital radiology suite provides clear, high-resolution images for fracture diagnosis, joint assessment, spine evaluation, and pre-surgical planning with minimal radiation exposure.",
-    badge: "Digital Imaging",
-    category: "Diagnostics",
-  },
-  {
-    id: "physio",
-    title: "Physiotherapy Centre",
-    image: "/images/gallery/physiotherapy.png",
-    description:
-      "A comprehensive rehabilitation centre with modern physiotherapy equipment — ultrasound therapy, TENS, IFT, traction units, exercise bikes, and a dedicated gym for post-op recovery.",
-    badge: "Full Rehab",
-    category: "Physiotherapy",
-  },
-  {
-    id: "physio-equip",
-    title: "Physiotherapy — Equipment",
-    image: "/images/gallery/physiotherapy1.png",
-    description:
-      "Specialised machines for targeted therapy including laser therapy, short-wave diathermy, and wax bath treatment for hand injuries and arthritis. Personalised sessions for every patient.",
-    badge: "Personalised Care",
-    category: "Physiotherapy",
-  },
-  {
-    id: "pharmacy",
-    title: "In-house Pharmacy",
-    image: "/images/gallery/medical-store.png",
-    description:
-      "Our 24/7 in-house pharmacy stocks all essential medicines, surgical consumables, and orthopaedic implants — ensuring zero delays between prescription and dispensing for admitted patients.",
-    badge: "24/7 Available",
-    category: "Pharmacy",
-  },
-  {
-    id: "ward",
-    title: "General Ward",
-    image: "/images/gallery/general-ward.png",
-    description:
-      "Clean, well-ventilated general wards with dedicated nursing stations for close patient monitoring. TV, call bell, and 24-hour attendant facility available for patient comfort.",
-    badge: "100+ Beds",
-    category: "Patient Wards",
-  },
-  {
-    id: "dressing",
-    title: "Dressing & Minor OT",
-    image: "/images/gallery/dressing-room.png",
-    description:
-      "Dedicated dressing room and minor procedure room for wound care, sutures, plaster application, and minor daycare procedures — reducing wait times and hospital admissions.",
-    badge: "Daycare Procedures",
-    category: "Procedure Room",
-  },
-];
-
 const features = [
   { title: "24/7 Emergency Care", icon: <Ambulance className="w-6 h-6" /> },
   { title: "100+ In-Patient Beds", icon: <Cpu className="w-6 h-6" /> },
@@ -129,7 +44,7 @@ const features = [
 ];
 
 export default function FacilitiesContent() {
-  const [facilitiesList, setFacilitiesList] = useState<FacilityItem[]>(defaultFacilities);
+  const [facilitiesList, setFacilitiesList] = useState<FacilityItem[]>([]);
   const [isDynamic, setIsDynamic] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{ title: string; image: string; description?: string; category?: string } | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("All");
@@ -149,15 +64,16 @@ export default function FacilitiesContent() {
         .order("created_at", { ascending: false });
 
       if (data && data.length > 0) {
-        // Filter items that are facility type or category
+        // Filter items that are facility type or facility category
         const facilityTypeItems = data.filter(
           (item) => 
             item.type === "facility" || 
             item.category?.toLowerCase().includes("facility") ||
             item.category?.toLowerCase().includes("theatre") ||
             item.category?.toLowerCase().includes("room") ||
+            item.category?.toLowerCase().includes("equipment") ||
             item.category?.toLowerCase().includes("view") ||
-            (!item.type && !item.category?.toLowerCase().includes("xray"))
+            (!item.type && !item.category?.toLowerCase().includes("xray") && !item.category?.toLowerCase().includes("news"))
         );
 
         if (facilityTypeItems.length > 0) {
@@ -176,19 +92,16 @@ export default function FacilitiesContent() {
             type: item.type,
           }));
 
-          // Merge: dynamic CMS items first, followed by default static facilities not duplicated
-          const combined = [
-            ...dynamicFacilities,
-            ...defaultFacilities.filter(
-              (def) => !dynamicFacilities.some((dyn) => dyn.title.toLowerCase() === def.title.toLowerCase())
-            ),
-          ];
-
-          setFacilitiesList(combined);
+          setFacilitiesList(dynamicFacilities);
+        } else {
+          setFacilitiesList([]);
         }
+      } else {
+        setFacilitiesList([]);
       }
     } catch (err) {
-      console.warn("Could not fetch facility gallery from Supabase, using default facilities.", err);
+      console.warn("Could not fetch facility gallery from Supabase.", err);
+      setFacilitiesList([]);
     } finally {
       setLoading(false);
     }
@@ -260,7 +173,7 @@ export default function FacilitiesContent() {
         {/* Dynamic Facility Grid / Loading Skeletons */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
-            {[1, 2, 3, 4, 5, 6].map((idx) => (
+            {[1, 2, 3].map((idx) => (
               <div key={idx} className="bg-white rounded-[2.5rem] p-4 border border-slate-100 animate-pulse space-y-4">
                 <div className="h-48 bg-slate-100 rounded-2xl" />
                 <div className="h-6 bg-slate-100 rounded-full w-2/3" />
@@ -268,7 +181,7 @@ export default function FacilitiesContent() {
               </div>
             ))}
           </div>
-        ) : (
+        ) : filteredFacilities.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
             {filteredFacilities.map((facility, index) => (
               <div
@@ -318,6 +231,12 @@ export default function FacilitiesContent() {
                 </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="col-span-full py-20 mb-24 bg-white rounded-[3rem] border border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
+            <Search className="w-12 h-12 mb-4 text-slate-300" />
+            <p className="font-bold text-slate-600">No facilities found.</p>
+            <p className="text-sm text-slate-400 mt-1">Upload facility assets in CMS under Gallery to publish them here.</p>
           </div>
         )}
 
