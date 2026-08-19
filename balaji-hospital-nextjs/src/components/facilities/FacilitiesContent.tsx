@@ -267,13 +267,31 @@ export default function FacilitiesContent() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                <div className="relative h-48 rounded-2xl overflow-hidden cursor-pointer" onClick={() => setSelectedImage({ title: "Orthopaedic Ward", image: "/images/gallery/img3.jpg", category: "Wards" })}>
-                  <Image
-                    src="/images/gallery/img3.jpg"
-                    alt="Orthopaedic Ward"
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-500"
+                <div 
+                  className="relative h-48 rounded-2xl overflow-hidden cursor-pointer group/img border border-white/10" 
+                  onClick={() => {
+                    const item = facilitiesList[0];
+                    setSelectedImage({ 
+                      title: item?.title || "Operation Theatre Suite", 
+                      image: item?.image || "/images/facilities/WhatsApp Image 2026-07-28 at 11.54.33 AM.jpeg", 
+                      description: item?.description || "State-of-the-art operation theatre suite at Balaji Hospital.",
+                      category: item?.badge || "Facility" 
+                    });
+                  }}
+                >
+                  <img
+                    src={facilitiesList[0]?.image || "/images/facilities/WhatsApp Image 2026-07-28 at 11.54.33 AM.jpeg"}
+                    alt={facilitiesList[0]?.title || "Hospital Facility"}
+                    className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-90 group-hover/img:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+                    <span className="text-[9px] font-black text-medical-400 uppercase tracking-widest">
+                      {facilitiesList[0]?.badge || "Facility"}
+                    </span>
+                    <h4 className="text-xs font-bold text-white truncate">
+                      {facilitiesList[0]?.title || "Operation Theatre Suite"}
+                    </h4>
+                  </div>
                 </div>
                 <div className="h-32 relative rounded-2xl overflow-hidden bg-medical-600 flex flex-col items-center justify-center p-6 text-center shadow-lg">
                   <span className="text-3xl font-black text-white">100+</span>
@@ -289,13 +307,31 @@ export default function FacilitiesContent() {
                     Trauma Care
                   </span>
                 </div>
-                <div className="relative h-48 rounded-2xl overflow-hidden cursor-pointer" onClick={() => setSelectedImage({ title: "Private Patient Room", image: "/images/gallery/img4.jpg", category: "Wards" })}>
-                  <Image
-                    src="/images/gallery/img4.jpg"
-                    alt="Private Patient Room"
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-500"
+                <div 
+                  className="relative h-48 rounded-2xl overflow-hidden cursor-pointer group/img border border-white/10" 
+                  onClick={() => {
+                    const item = facilitiesList[1] || facilitiesList[0];
+                    setSelectedImage({ 
+                      title: item?.title || "Patient Care Unit", 
+                      image: item?.image || "/images/facilities/WhatsApp Image 2026-07-28 at 11.54.36 AM.jpeg", 
+                      description: item?.description || "Patient care unit and diagnostic facilities at Balaji Hospital.",
+                      category: item?.badge || "Facility" 
+                    });
+                  }}
+                >
+                  <img
+                    src={facilitiesList[1]?.image || facilitiesList[0]?.image || "/images/facilities/WhatsApp Image 2026-07-28 at 11.54.36 AM.jpeg"}
+                    alt={facilitiesList[1]?.title || facilitiesList[0]?.title || "Hospital Facility"}
+                    className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-90 group-hover/img:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+                    <span className="text-[9px] font-black text-medical-400 uppercase tracking-widest">
+                      {facilitiesList[1]?.badge || facilitiesList[0]?.badge || "Facility"}
+                    </span>
+                    <h4 className="text-xs font-bold text-white truncate">
+                      {facilitiesList[1]?.title || facilitiesList[0]?.title || "Patient Care Unit"}
+                    </h4>
+                  </div>
                 </div>
               </div>
             </div>

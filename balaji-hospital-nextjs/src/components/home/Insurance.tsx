@@ -46,8 +46,8 @@ const partners = [
     name: "RGHS / Chiranjivi Yojana",
     logo: "/images/insurance/rghs.svg",
     badge: "Rajasthan Govt Scheme",
-    bg: "bg-gradient-to-br from-blue-900 via-slate-900 to-indigo-950 text-white border-blue-800 shadow-blue-900/20",
-    isGovt: true,
+    bg: "bg-gradient-to-br from-amber-100/70 via-white to-orange-50/60 border-amber-200 shadow-amber-900/5",
+    isGovtBadge: true,
   },
   {
     name: "United India Insurance",
@@ -96,28 +96,28 @@ export default function Insurance() {
               className={`p-6 sm:p-8 rounded-[2.5rem] border shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col items-center justify-between group ${partner.bg}`}
             >
               <div className="w-full flex justify-between items-center mb-6">
-                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${partner.isGovt ? 'bg-amber-400 text-slate-950' : 'bg-slate-100/80 text-slate-600'}`}>
+                <span className={`text-[10px] font-black uppercase tracking-widest px-3.5 py-1 rounded-full ${partner.isGovtBadge ? 'bg-amber-500 text-slate-950 shadow-sm' : 'bg-slate-100/90 text-slate-600'}`}>
                   {partner.badge}
                 </span>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               </div>
 
-              {/* Logo Box */}
-              <div className={`w-full h-24 sm:h-28 rounded-2xl flex items-center justify-center p-4 transition-transform duration-500 group-hover:scale-105 ${partner.isGovt ? 'bg-white/10 backdrop-blur-md' : 'bg-white shadow-inner'}`}>
+              {/* Logo Box - Clean white container for maximum clarity */}
+              <div className="w-full h-24 sm:h-28 rounded-2xl flex items-center justify-center p-4 bg-white shadow-inner border border-slate-100/80 transition-transform duration-500 group-hover:scale-105">
                 <Image
                   src={partner.logo}
                   alt={`${partner.name} Logo`}
-                  width={220}
-                  height={70}
-                  className={`max-h-full max-w-full object-contain ${partner.isGovt ? 'brightness-0 invert' : ''}`}
+                  width={240}
+                  height={80}
+                  className="max-h-full max-w-full object-contain"
                 />
               </div>
 
               <div className="mt-6 text-center">
-                <h3 className={`font-bold text-base sm:text-lg ${partner.isGovt ? 'text-white' : 'text-slate-900'} group-hover:text-medical-600 transition-colors`}>
+                <h3 className="font-bold text-base sm:text-lg text-slate-900 group-hover:text-medical-600 transition-colors">
                   {partner.name}
                 </h3>
-                <span className={`text-[11px] font-medium mt-1 block ${partner.isGovt ? 'text-blue-200' : 'text-slate-500'}`}>
+                <span className="text-[11px] font-medium mt-1 block text-slate-500">
                   Cashless Facility Available
                 </span>
               </div>

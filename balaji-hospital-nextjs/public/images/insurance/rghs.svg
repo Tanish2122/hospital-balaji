@@ -1,14 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90">
-  <g transform="translate(15, 10)">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 90" width="340" height="90">
+  <g transform="translate(12, 10)">
     <!-- Rajasthan Govt Seal Emblem -->
     <circle cx="35" cy="35" r="32" fill="#0B4A8B" />
-    <circle cx="35" cy="35" r="28" fill="none" stroke="#FF9933" stroke-width="2" />
-    <!-- Ashoka Stambha / Wheat Seal Center -->
-    <path d="M35,15 L39,26 L50,26 L41,33 L45,44 L35,37 L25,44 L29,33 L20,26 L31,26 Z" fill="#FF9933" />
-    <circle cx="35" cy="35" r="8" fill="#ffffff" />
-    <path d="M35,29 L35,41 M29,35 L41,35" stroke="#0B4A8B" stroke-width="2.5" stroke-linecap="round" />
+    <circle cx="35" cy="35" r="28" fill="none" stroke="#FF9933" stroke-width="2.5" />
+    <!-- Star & Plus Center Emblem -->
+    <path d="M35,14 L39,26 L51,26 L41,33 L45,45 L35,37 L25,45 L29,33 L19,26 L31,26 Z" fill="#FF9933" />
+    <circle cx="35" cy="35" r="9" fill="#ffffff" />
+    <path d="M35,28 L35,42 M28,35 L42,35" stroke="#0B4A8B" stroke-width="3" stroke-linecap="round" />
   </g>
-  <text x="92" y="34" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="22" fill="#0B4A8B" letter-spacing="1">RGHS</text>
-  <text x="92" y="52" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="12" fill="#E65100" letter-spacing="0.5">CHIRANJIVI YOJANA</text>
-  <text x="92" y="67" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="8" fill="#2E7D32" letter-spacing="1">GOVT. OF RAJASTHAN SCHEME</text>
+  <!-- High contrast readable bold typography -->
+  <text x="94" y="34" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="28" fill="#0B4A8B" letter-spacing="1">RGHS</text>
+  <text x="94" y="54" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="15" fill="#D97706" letter-spacing="0.5">CHIRANJIVI YOJANA</text>
+  <text x="94" y="70" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="10" fill="#15803D" letter-spacing="1">GOVT. OF RAJASTHAN SCHEME</text>
 </svg>
