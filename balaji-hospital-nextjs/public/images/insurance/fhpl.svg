@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90">
+  <g transform="translate(15, 12)">
+    <!-- Family Health Plan heart & hands icon -->
+    <circle cx="33" cy="33" r="30" fill="#E53935" opacity="0.1" />
+    <path d="M33,48 C33,48 16,34 16,23 C16,16 22,11 28,11 C31,11 33,14 33,14 C33,14 35,11 38,11 C44,11 50,16 50,23 C50,34 33,48 33,48 Z" fill="#E53935" />
+    <path d="M26,24 C26,24 29,20 33,24 C37,20 40,24 40,24" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" />
+  </g>
+  <text x="92" y="38" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="24" fill="#C62828" letter-spacing="1">FHPL</text>
+  <text x="92" y="56" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="11" fill="#1565C0" letter-spacing="0.5">FAMILY HEALTH PLAN TPA</text>
+  <text x="92" y="69" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="8" fill="#757575" letter-spacing="1">SERVICES LIMITED</text>
+</svg>

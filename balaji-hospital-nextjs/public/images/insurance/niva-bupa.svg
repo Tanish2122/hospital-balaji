@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90">
+  <g transform="translate(15, 12)">
+    <!-- Niva Bupa double loop heart icon -->
+    <path d="M22,34 C12,24 12,12 24,12 C30,12 34,16 34,22 C34,16 38,12 44,12 C56,12 56,24 46,34 L34,48 Z" fill="#004976" />
+    <path d="M30,38 C22,30 22,20 30,20 C34,20 37,23 37,27 C37,23 40,20 44,20 C52,20 52,30 44,38 L37,46 Z" fill="#FF6B00" opacity="0.9" />
+  </g>
+  <text x="85" y="42" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="24" fill="#004976" letter-spacing="-0.5">niva bupa</text>
+  <text x="86" y="60" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="11" fill="#FF6B00" letter-spacing="2">Health Insurance</text>
+</svg>

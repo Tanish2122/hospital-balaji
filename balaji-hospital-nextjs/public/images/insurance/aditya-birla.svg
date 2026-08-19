@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90">
+  <defs>
+    <linearGradient id="ab-red" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D31145" />
+      <stop offset="100%" stop-color="#9C0A2E" />
+    </linearGradient>
+    <linearGradient id="ab-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFC220" />
+      <stop offset="100%" stop-color="#E59400" />
+    </linearGradient>
+  </defs>
+  <!-- Rising Sun Sunburst Geometric Emblem -->
+  <g transform="translate(15, 10)">
+    <polygon points="35,10 43,26 27,26" fill="url(#ab-red)" />
+    <polygon points="35,10 52,18 43,26" fill="url(#ab-gold)" />
+    <polygon points="35,10 57,28 47,33" fill="url(#ab-red)" />
+    <polygon points="35,10 59,40 48,40" fill="url(#ab-gold)" />
+    <polygon points="35,10 55,52 45,47" fill="url(#ab-red)" />
+    <polygon points="35,10 47,60 40,52" fill="url(#ab-gold)" />
+    <polygon points="35,10 35,62 30,52" fill="url(#ab-red)" />
+    <polygon points="35,10 23,60 30,52" fill="url(#ab-gold)" />
+    <polygon points="35,10 15,52 25,47" fill="url(#ab-red)" />
+    <polygon points="35,10 11,40 22,40" fill="url(#ab-gold)" />
+    <polygon points="35,10 13,28 23,33" fill="url(#ab-red)" />
+    <polygon points="35,10 18,18 27,26" fill="url(#ab-gold)" />
+    <circle cx="35" cy="36" r="14" fill="#9C0A2E" />
+  </g>
+  <!-- Typography -->
+  <text x="95" y="36" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="19" fill="#9C0A2E" letter-spacing="1">ADITYA BIRLA</text>
+  <text x="95" y="58" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="17" fill="#E59400" letter-spacing="3">CAPITAL</text>
+</svg>

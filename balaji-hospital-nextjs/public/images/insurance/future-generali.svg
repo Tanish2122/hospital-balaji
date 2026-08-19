@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90">
+  <g transform="translate(12, 10)">
+    <!-- Red Box with Lion / Generali Wings Icon -->
+    <rect x="0" y="0" width="68" height="68" rx="12" fill="#C8102E" />
+    <path d="M16,46 C16,46 22,20 34,20 C46,20 52,46 52,46 M22,34 L46,34 M34,20 L34,50" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none" />
+    <circle cx="34" cy="27" r="4" fill="#ffffff" />
+  </g>
+  <text x="92" y="34" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="18" fill="#C8102E" letter-spacing="0.5">FUTURE</text>
+  <text x="92" y="54" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="18" fill="#111827" letter-spacing="0.5">GENERALI</text>
+  <text x="92" y="70" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="8" fill="#C8102E" letter-spacing="1">TOTAL INSURANCE SOLUTIONS</text>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90">
+  <!-- SBI Keyhole Symbol -->
+  <g transform="translate(15, 12)">
+    <circle cx="33" cy="33" r="30" fill="#00A3E0" />
+    <circle cx="33" cy="33" r="10" fill="#ffffff" />
+    <rect x="29" y="33" width="8" height="24" fill="#ffffff" />
+  </g>
+  <!-- Text -->
+  <text x="92" y="38" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="22" fill="#0A2540" letter-spacing="1">SBI General</text>
+  <text x="92" y="58" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="12" fill="#00A3E0" letter-spacing="2">INSURANCE</text>
+  <text x="92" y="71" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="8" fill="#546E7A" letter-spacing="0.5">SURAKSHA AUR BHAROSA DONO</text>
+</svg>
