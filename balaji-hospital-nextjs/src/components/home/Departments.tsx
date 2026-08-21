@@ -13,6 +13,7 @@ import {
   HeartPulse,
   ChevronDown,
   ArrowRight,
+  CheckCircle2,
 } from "lucide-react";
 import { orthopedicDataToSeoSlug, entDataToSeoSlug, otherDataToSeoSlug } from "@/data/seoSlugMap";
 import { useEffect, useState } from "react";
@@ -68,11 +69,11 @@ const staticServices = [
     url: "/ent/best-ear-surgery-hospital-in-jaipur",
   },
   {
-    id: "sports-medicine",
-    slug: "sports-medicine",
-    title: "Best Sports Medicine Hospital in Jaipur",
+    id: "best-acl-surgeon-in-jaipur",
+    slug: "best-acl-surgeon-in-jaipur",
+    title: "Best ACL Surgeon in Jaipur",
     description:
-      "Leading sports medicine care for competitive athletes and active individuals, specializing in ligament reconstruction, arthroscopy, and sports injury recovery.",
+      "Reliable surgical solution for ACL tears, restoring knee stability and function.",
     category: "Orthopedic",
     url: "/orthopedic/best-sports-medicine-hospital-in-jaipur",
   },
@@ -84,21 +85,21 @@ const HOME_SLUGS = [
   "hip-replacement",
   "spine-treatment",
   "ear-surgery",
-  "sports-medicine"
+  "best-acl-surgeon-in-jaipur"
 ];
 
 const getIcon = (slug: string) => {
   switch (slug) {
-    case "spine-treatment":      return Bone;
-    case "knee-replacement":     return Activity;
-    case "hip-replacement":      return Activity;
-    case "fracture-treatment":   return Bone;
-    case "shoulder-arthroscopy": return HeartPulse;
-    case "ear-surgery":          return Microscope;
-    case "nose-surgery":         return Wind;
-    case "throat-surgery":       return Wind;
-    case "kidney-stones":        return Flame;
-    default:                     return Stethoscope;
+    case "spine-treatment":           return Bone;
+    case "knee-replacement":          return Activity;
+    case "hip-replacement":           return Activity;
+    case "fracture-treatment":        return Bone;
+    case "shoulder-arthroscopy":      return HeartPulse;
+    case "ear-surgery":               return Microscope;
+    case "nose-surgery":              return Wind;
+    case "throat-surgery":            return Wind;
+    case "best-acl-surgeon-in-jaipur": return CheckCircle2;
+    default:                          return Stethoscope;
   }
 };
 
