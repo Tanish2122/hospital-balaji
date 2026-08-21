@@ -78,6 +78,7 @@ export default function ConsultationPopup() {
           phone: formData.phone,
           department: formData.treatment,
           reason: `Free Consultation Request - ${formData.treatment}`,
+          isPopupForm: true,
         }),
       });
 

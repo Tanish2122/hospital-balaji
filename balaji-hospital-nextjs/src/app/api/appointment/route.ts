@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { generateId } from "@/lib/id-generator";
 import { sendWhatsAppMessage, notifyBooking, notifyEmergency } from "@/lib/whatsapp";
+import { sendConsultationEmail } from "@/lib/email";
 import { doctors } from "@/data/doctors";
 import { hospitals } from "@/lib/hospitals";
 
@@ -52,20 +53,22 @@ export async function POST(request: Request) {
     } else if (type === "non-emergency") {
       const { 
         patientName, whatsapp, phone, doctorId, department, date, slotId, hospitalId,
-        appointmentType, previousVisitDate, email, reason: customReason 
+        appointmentType, previousVisitDate, email, reason: customReason, isPopupForm 
       } = body;
       const aptId = generateId("APT");
       const cleanPhone = whatsapp || phone;
+      const apptDate = date || new Date().toISOString().split("T")[0];
+      const apptSlot = slotId || "Free Consultation Request";
 
       // Select hospital (Standardized)
       const hospital = hospitals.find(h => h.id === hospitalId) || hospitals[0];
 
       // Find doctor details
       let doctor = doctors.find(d => d.id === doctorId);
-      let doctorName = doctor ? doctor.name : doctorId;
+      let doctorName = doctor ? doctor.name : (doctorId || "Duty Doctor");
 
       // If not in static list, fetch from Supabase
-      if (!doctor) {
+      if (doctorId && !doctor) {
         const { data: dbDoctor } = await supabase
           .from("doctors")
           .select("name")
@@ -81,8 +84,8 @@ export async function POST(request: Request) {
       const { count: existingCount } = await supabase
         .from("appointments")
         .select("*", { count: "exact", head: true })
-        .eq("doctor_id", doctorId)
-        .eq("appointment_date", date)
+        .eq("doctor_id", doctorId || null)
+        .eq("appointment_date", apptDate)
         .not("status", "eq", "CANCELLED");
 
       const appointmentNo = (existingCount || 0) + 1;
@@ -97,11 +100,11 @@ export async function POST(request: Request) {
           phone: cleanPhone,
           email: email || null,
           whatsapp: cleanPhone,
-          doctor_id: doctorId,
+          doctor_id: doctorId || null,
           doctor_name: doctorName,
           department: department,
-          appointment_date: date,
-          appointment_time: slotId,
+          appointment_date: apptDate,
+          appointment_time: apptSlot,
           appointment_no: appointmentNo,
           appointment_type: appointmentType || 'new',
           previous_visit_date: previousVisitDate || null,
@@ -111,21 +114,37 @@ export async function POST(request: Request) {
 
       if (error) throw error;
 
-      // 4. Trigger Unified WhatsApp Notification (Patient, Admin, Doctor)
-      await notifyBooking({
-        patient: { name: patientName, phone: cleanPhone },
-        appointment: { 
-          date, 
-          time: slotId, 
-          id: aptId,
-          no: appointmentNo // Added serial number
-        } as any,
-        doctor: { 
-          name: doctorName, 
-          speciality: department,
-          phone: (doctor as any)?.phone 
-        }
-      });
+      // 4. Trigger Email Notification to balajihospjprinsurance@gmail.com
+      try {
+        await sendConsultationEmail({
+          patientName,
+          phone: cleanPhone,
+          treatment: department || "General Consultation",
+          source: isPopupForm ? "Free Consultation Popup Form" : "Website Appointment Form",
+        });
+      } catch (emailErr) {
+        console.error("Email notification error:", emailErr);
+      }
+
+      // 5. Trigger Unified WhatsApp Notification (Patient, Admin, Doctor)
+      try {
+        await notifyBooking({
+          patient: { name: patientName, phone: cleanPhone },
+          appointment: { 
+            date: apptDate, 
+            time: apptSlot, 
+            id: aptId,
+            no: appointmentNo // Added serial number
+          } as any,
+          doctor: { 
+            name: doctorName, 
+            speciality: department || "General",
+            phone: (doctor as any)?.phone 
+          }
+        });
+      } catch (waErr) {
+        console.error("WhatsApp notification error:", waErr);
+      }
 
       return NextResponse.json({ success: true, id: aptId });
     }
