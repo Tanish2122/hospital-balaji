@@ -68,13 +68,13 @@ const staticServices = [
     url: "/ent/best-ear-surgery-hospital-in-jaipur",
   },
   {
-    id: "kidney-stones",
-    slug: "kidney-stones",
-    title: "Kidney Stones Treatment in Jaipur",
+    id: "sports-medicine",
+    slug: "sports-medicine",
+    title: "Best Sports Medicine Hospital in Jaipur",
     description:
-      "Modern laser lithotripsy and non-invasive ESWL for effective removal of kidney and urinary stones with minimal recovery time.",
-    category: "Other",
-    url: "/speciality/kidney-stones-treatment-in-jaipur",
+      "Leading sports medicine care for competitive athletes and active individuals, specializing in ligament reconstruction, arthroscopy, and sports injury recovery.",
+    category: "Orthopedic",
+    url: "/orthopedic/best-sports-medicine-hospital-in-jaipur",
   },
 ];
 
@@ -84,7 +84,7 @@ const HOME_SLUGS = [
   "hip-replacement",
   "spine-treatment",
   "ear-surgery",
-  "kidney-stones"
+  "sports-medicine"
 ];
 
 const getIcon = (slug: string) => {

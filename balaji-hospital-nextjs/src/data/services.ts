@@ -98,17 +98,4 @@ export const services: Service[] = [
     category: "Other",
     url: "/orthopedic/plastic-vascular-surgery-in-jaipur",
   },
-  {
-    id: "kidney-stones",
-    title: "Kidney Stones Treatment",
-    description:
-      "Modern laser lithotripsy and non-invasive ESWL for effective removal of kidney and urinary stones.",
-    content: "Balaji Hospital offers advanced urological care specializing in the non-invasive and minimally invasive management of kidney and urinary stones. We prioritize faster recovery and patient comfort.\n\n### Advanced Stone Care:\n- **Laser Lithotripsy:** Using precision laser energy to fragment stones into small particles.\n- **ESWL (Extracorporeal Shock Wave Lithotripsy):** Non-surgical stone fragmentation using shock waves.\n- **PCNL & URS:** Advanced endoscopic procedures for complex and large stones.\n- **Preventative Care:** Personalized diet and lifestyle guidance to prevent stone recurrence.",
-    features: ["Laser Lithotripsy (Mini-PCNL)", "URS / RIRS for Ureteric Stones", "ESWL (Non-Surgical Fragmentation)", "Diagnostic Ultrasound & IVP", "Stone Recurrence Prevention guidance", "Painless Stone Removal protocols"],
-    icon: "Flame",
-    image: "/images/gallery/kidney stones.jpeg",
-    category: "Other",
-    url: "/speciality/kidney-stones-treatment-in-jaipur",
-  },
-
 ];
