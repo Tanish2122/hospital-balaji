@@ -36,16 +36,20 @@ export default function Contact() {
     setErrorMessage("");
 
     try {
-      const { error } = await supabase.from("contact_forms").insert([
-        {
-          name: `${formData.firstName} ${formData.lastName}`.trim(),
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           phone: formData.phone,
           email: formData.email,
           message: formData.message,
-        },
-      ]);
+        }),
+      });
 
-      if (error) throw error;
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || "Failed to send message");
 
       setStatus("success");
       setFormData({ firstName: "", lastName: "", email: "", phone: "", message: "" });

@@ -34,7 +34,19 @@ export async function POST(request: Request) {
 
       if (error) throw error;
 
-      // 2. Trigger Unified Emergency Notification (Patient, Admin, Receptionist, Doctor)
+      // 2. Trigger Email Notification to balajihospjprinsurance@gmail.com
+      try {
+        await sendConsultationEmail({
+          patientName,
+          phone,
+          treatment: `🚨 EMERGENCY: ${description || "Emergency Care"}`,
+          source: "Website Emergency Form",
+        });
+      } catch (emailErr) {
+        console.error("Emergency email notification error:", emailErr);
+      }
+
+      // 3. Trigger Unified Emergency Notification (Patient, Admin, Receptionist, Doctor)
       const patientPhoneRaw = (whatsapp || phone).replace(/\D/g, "");
       const formattedPatientPhone = patientPhoneRaw.length === 10 ? `91${patientPhoneRaw}` : patientPhoneRaw;
 
