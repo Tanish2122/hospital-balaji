@@ -102,7 +102,7 @@ export default function Facilities() {
                   className="relative aspect-square rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="/images/facilities/WhatsApp Image 2026-07-28 at 11.54.33 AM.jpeg"
+                    src="/images/facilities/Modern operation therator.jpeg"
                     alt="Balaji Hospital Operation Theatre"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -118,7 +118,7 @@ export default function Facilities() {
                   className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="/images/facilities/WhatsApp Image 2026-07-28 at 11.54.29 AM.jpeg"
+                    src="/images/facilities/Room.jpeg"
                     alt="Balaji Hospital Private Room Bed"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -136,7 +136,7 @@ export default function Facilities() {
                   className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="/images/facilities/WhatsApp Image 2026-07-28 at 11.54.36 AM.jpeg"
+                    src="/images/facilities/reception_new.jpg"
                     alt="Balaji Hospital Reception Area"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -152,8 +152,8 @@ export default function Facilities() {
                   className="relative aspect-square rounded-[2rem] overflow-hidden shadow-2xl group"
                 >
                   <Image
-                    src="/images/facilities/WhatsApp Image 2026-07-28 at 11.54.38 AM.jpeg"
-                    alt="Balaji Hospital Digital X-Ray"
+                    src="/images/facilities/xray.jpeg"
+                    alt="Balaji Hospital Digital Radiology & X-Ray"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                     sizes="(max-width: 1024px) 45vw, 22vw"
