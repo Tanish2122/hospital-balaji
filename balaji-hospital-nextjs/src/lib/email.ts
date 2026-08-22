@@ -8,7 +8,7 @@ export interface ConsultationEmailData {
   submittedAt?: string;
 }
 
-const DEFAULT_RECIPIENT = "balajihospjprinsurance@gmail.com";
+const DEFAULT_RECIPIENT = "balajihospjprinsurance@gmail.com, balajihospital072@gmail.com";
 
 /**
  * Creates nodemailer transporter using environment variables or fallback SMTP settings
