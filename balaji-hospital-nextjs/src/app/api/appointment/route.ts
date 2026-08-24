@@ -7,6 +7,24 @@ import { doctors } from "@/data/doctors";
 import { hospitals } from "@/lib/hospitals";
 
 
+function parseTimeToPostgres(slot: string | undefined): string | null {
+  if (!slot) return null;
+  const match = slot.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+  if (match) {
+    let hours = parseInt(match[1], 10);
+    const minutes = match[2];
+    const period = match[3]?.toUpperCase();
+    if (period === "PM" && hours < 12) hours += 12;
+    if (period === "AM" && hours === 12) hours = 0;
+    const hStr = hours.toString().padStart(2, "0");
+    return `${hStr}:${minutes}:00`;
+  }
+  if (/^\d{2}:\d{2}(:\d{2})?$/.test(slot)) {
+    return slot.length === 5 ? `${slot}:00` : slot;
+  }
+  return null;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -70,7 +88,9 @@ export async function POST(request: Request) {
       const aptId = generateId("APT");
       const cleanPhone = whatsapp || phone;
       const apptDate = date || new Date().toISOString().split("T")[0];
-      const apptSlot = slotId || "Free Consultation Request";
+      const dbAppointmentTime = parseTimeToPostgres(slotId);
+      const displayTime = slotId || "Free Consultation Request";
+      const dbReason = customReason || (isPopupForm ? `Free Consultation Request - ${department}` : "General Consultation");
 
       // Select hospital (Standardized)
       const hospital = hospitals.find(h => h.id === hospitalId) || hospitals[0];
@@ -116,17 +136,17 @@ export async function POST(request: Request) {
           doctor_name: doctorName,
           department: department,
           appointment_date: apptDate,
-          appointment_time: apptSlot,
+          appointment_time: dbAppointmentTime,
           appointment_no: appointmentNo,
           appointment_type: appointmentType || 'new',
           previous_visit_date: previousVisitDate || null,
-          reason: customReason || (appointmentType === 'followup' ? `Follow-up (Last visit: ${previousVisitDate})` : "General Consultation"),
+          reason: dbReason,
           status: "CONFIRMED"
         }]);
 
       if (error) throw error;
 
-      // 4. Trigger Email Notification to balajihospjprinsurance@gmail.com
+      // 4. Trigger Email Notification to balajihospjprinsurance@gmail.com & balajihospital072@gmail.com
       try {
         await sendConsultationEmail({
           patientName,
@@ -144,7 +164,7 @@ export async function POST(request: Request) {
           patient: { name: patientName, phone: cleanPhone },
           appointment: { 
             date: apptDate, 
-            time: apptSlot, 
+            time: displayTime, 
             id: aptId,
             no: appointmentNo // Added serial number
           } as any,
